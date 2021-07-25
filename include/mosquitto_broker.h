@@ -462,6 +462,21 @@ mosq_EXPORT const char *mosquitto_client_username(const struct mosquitto *client
  */
 mosq_EXPORT int mosquitto_set_username(struct mosquitto *client, const char *username);
 
+/* Function: mosquitto_set_clientid
+ *
+ * Set the client id for a client.
+ *
+ * This effectively forces the client onto another message queue.
+ * Can be used to scope client ids by prefixing the client id with some user-specific data.
+ * eg. "client1" could become "user1-client1".
+ *
+ * Returns:
+ *   MOSQ_ERR_SUCCESS - on success
+ *   MOSQ_ERR_INVAL - if client is NULL, or if clientid is not a valid utf-8 string
+ *   MOSQ_ERR_NOMEM - on out of memory
+ */
+mosq_EXPORT int mosquitto_set_clientid(struct mosquitto *client, const char *clientid);
+
 
 /* =========================================================================
  *

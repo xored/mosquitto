@@ -30,6 +30,7 @@
 	mosquitto_pub_topic_check;
 	mosquitto_realloc;
 	mosquitto_set_username;
+	mosquitto_set_clientid;
 	mosquitto_strdup;
 	mosquitto_sub_matches_acl;
 	mosquitto_sub_matches_acl_with_pattern;

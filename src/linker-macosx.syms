@@ -29,6 +29,7 @@ _mosquitto_property_free_all
 _mosquitto_pub_topic_check
 _mosquitto_realloc
 _mosquitto_set_username
+_mosquitto_set_clientid
 _mosquitto_strdup
 _mosquitto_sub_matches_acl
 _mosquitto_sub_matches_acl_with_pattern
