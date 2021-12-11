@@ -1,6 +1,7 @@
 DIRS= \
 		dynamic-security \
-		examples
+		examples \
+		persist-sqlite
 
 .PHONY : all binary check clean reallyclean test install uninstall
 

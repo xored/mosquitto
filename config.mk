@@ -132,6 +132,9 @@ WITH_OLD_KEEPALIVE=no
 # broker plugins from working.
 WITH_LTO=no
 
+# Build with sqlite3 support - this enables the sqlite persistence plugin.
+WITH_SQLITE=yes
+
 # =============================================================================
 # End of user configuration
 # =============================================================================

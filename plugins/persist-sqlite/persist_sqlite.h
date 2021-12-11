@@ -1,0 +1,68 @@
+/*
+Copyright (c) 2021 Roger Light <roger@atchoo.org>
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License 2.0
+and Eclipse Distribution License v1.0 which accompany this distribution.
+
+The Eclipse Public License is available at
+   https://www.eclipse.org/legal/epl-2.0/
+and the Eclipse Distribution License is available at
+  http://www.eclipse.org/org/documents/edl-v10.php.
+
+SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+Contributors:
+   Roger Light - initial implementation and documentation.
+*/
+
+#ifndef PERSIST_SQLITE_H
+#define PERSIST_SQLITE_H
+
+#include <sqlite3.h>
+
+#ifndef UNUSED
+#  define UNUSED(A) (void)(A)
+#endif
+
+struct mosquitto_sqlite {
+	char *db_file;
+	sqlite3 *db;
+	sqlite3_stmt *client_add_stmt;
+	sqlite3_stmt *client_remove_stmt;
+	sqlite3_stmt *client_update_stmt;
+	sqlite3_stmt *subscription_add_stmt;
+	sqlite3_stmt *subscription_remove_stmt;
+	sqlite3_stmt *subscription_clear_stmt;
+	sqlite3_stmt *client_msg_add_stmt;
+	sqlite3_stmt *client_msg_remove_stmt;
+	sqlite3_stmt *client_msg_update_stmt;
+	sqlite3_stmt *client_msg_clear_stmt;
+	sqlite3_stmt *msg_add_stmt;
+	sqlite3_stmt *msg_remove_stmt;
+	sqlite3_stmt *msg_load_stmt;
+	sqlite3_stmt *retain_add_stmt;
+	sqlite3_stmt *retain_remove_stmt;
+	int synchronous;
+};
+
+int persist_sqlite__init(struct mosquitto_sqlite *ms);
+void persist_sqlite__cleanup(struct mosquitto_sqlite *ms);
+
+int persist_sqlite__restore_cb(int event, void *event_data, void *userdata);
+
+int persist_sqlite__client_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__client_update_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__client_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__client_msg_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__client_msg_clear_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__client_msg_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__client_msg_update_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__msg_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__msg_load_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__msg_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__retain_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__retain_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__subscription_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__subscription_remove_cb(int event, void *event_data, void *userdata);
+#endif
