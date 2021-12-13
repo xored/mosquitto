@@ -22,6 +22,7 @@ if(CJSON_FOUND AND WITH_TLS)
 		../../lib/base64_mosq.c ../../lib/base64_mosq.h
 		clients.c
 		clientlist.c
+		config.c
 		config_init.c
 		dynamic_security.h
 		groups.c

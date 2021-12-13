@@ -36,7 +36,7 @@ Contributors:
 MOSQUITTO_PLUGIN_DECLARE_VERSION(5);
 
 static mosquitto_plugin_id_t *plg_id = NULL;
-static char *config_file = NULL;
+char *g_config_file = NULL;
 struct dynsec__acl_default_access default_access = {false, false, false, false};
 
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data)
@@ -276,199 +276,6 @@ internal_error:
 }
 
 
-static int dynsec__general_config_load(cJSON *tree)
-{
-	cJSON *j_default_access, *jtmp;
-
-	j_default_access = cJSON_GetObjectItem(tree, "defaultACLAccess");
-	if(j_default_access && cJSON_IsObject(j_default_access)){
-		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_PUB_C_SEND);
-		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.publish_c_send = cJSON_IsTrue(jtmp);
-		}else{
-			default_access.publish_c_send = false;
-		}
-
-		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_PUB_C_RECV);
-		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.publish_c_recv = cJSON_IsTrue(jtmp);
-		}else{
-			default_access.publish_c_recv = false;
-		}
-
-		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_SUB_GENERIC);
-		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.subscribe = cJSON_IsTrue(jtmp);
-		}else{
-			default_access.subscribe = false;
-		}
-
-		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_UNSUB_GENERIC);
-		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.unsubscribe = cJSON_IsTrue(jtmp);
-		}else{
-			default_access.unsubscribe = false;
-		}
-	}
-	return MOSQ_ERR_SUCCESS;
-}
-
-static int dynsec__general_config_save(cJSON *tree)
-{
-	cJSON *j_default_access;
-
-	j_default_access = cJSON_CreateObject();
-	if(j_default_access == NULL){
-		return 1;
-	}
-	cJSON_AddItemToObject(tree, "defaultACLAccess", j_default_access);
-
-	if(cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_SEND, default_access.publish_c_send) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_RECV, default_access.publish_c_recv) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_SUB_GENERIC, default_access.subscribe) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_UNSUB_GENERIC, default_access.unsubscribe) == NULL
-			){
-
-		return 1;
-	}
-
-	return MOSQ_ERR_SUCCESS;
-}
-
-static int dynsec__config_load(void)
-{
-	FILE *fptr;
-	long flen_l;
-	size_t flen;
-	char *json_str;
-	cJSON *tree;
-
-	/* Load from file */
-	fptr = fopen(config_file, "rb");
-	if(fptr == NULL){
-		/* Attempt to initialise a new config file */
-		if(dynsec__config_init(config_file) == MOSQ_ERR_SUCCESS){
-			mosquitto_log_printf(MOSQ_LOG_INFO, "Dynamic security plugin config not found, generating a default config.");
-			mosquitto_log_printf(MOSQ_LOG_INFO, "  Generated passwords are at %s.pw", config_file);
-			/* If it works, try to open the file again */
-			fptr = fopen(config_file, "rb");
-		}
-
-		if(fptr == NULL){
-			mosquitto_log_printf(MOSQ_LOG_ERR,
-					"Error loading Dynamic security plugin config: File is not readable - check permissions.");
-			return MOSQ_ERR_UNKNOWN;
-		}
-	}
-
-	fseek(fptr, 0, SEEK_END);
-	flen_l = ftell(fptr);
-	if(flen_l < 0){
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error loading Dynamic security plugin config: %s", strerror(errno));
-		fclose(fptr);
-		return 1;
-	}else if(flen_l == 0){
-		fclose(fptr);
-		return 0;
-	}
-	flen = (size_t)flen_l;
-	fseek(fptr, 0, SEEK_SET);
-	json_str = mosquitto_calloc(flen+1, sizeof(char));
-	if(json_str == NULL){
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error: Out of memory.");
-		fclose(fptr);
-		return 1;
-	}
-	if(fread(json_str, 1, flen, fptr) != flen){
-		mosquitto_log_printf(MOSQ_LOG_WARNING, "Error loading Dynamic security plugin config: Unable to read file contents.\n");
-		mosquitto_free(json_str);
-		fclose(fptr);
-		return 1;
-	}
-	fclose(fptr);
-
-	tree = cJSON_Parse(json_str);
-	mosquitto_free(json_str);
-	if(tree == NULL){
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error loading Dynamic security plugin config: File is not valid JSON.\n");
-		return 1;
-	}
-
-	if(dynsec__general_config_load(tree)
-			|| dynsec_roles__config_load(tree)
-			|| dynsec_clients__config_load(tree)
-			|| dynsec_groups__config_load(tree)
-			){
-
-		cJSON_Delete(tree);
-		return 1;
-	}
-
-	cJSON_Delete(tree);
-	return 0;
-}
-
-
-void dynsec__config_save(void)
-{
-	cJSON *tree;
-	size_t file_path_len;
-	char *file_path;
-	FILE *fptr;
-	size_t json_str_len;
-	char *json_str;
-
-	tree = cJSON_CreateObject();
-	if(tree == NULL) return;
-
-	if(dynsec__general_config_save(tree)
-			|| dynsec_clients__config_save(tree)
-			|| dynsec_groups__config_save(tree)
-			|| dynsec_roles__config_save(tree)){
-
-		cJSON_Delete(tree);
-		return;
-	}
-
-	/* Print json to string */
-	json_str = cJSON_Print(tree);
-	if(json_str == NULL){
-		cJSON_Delete(tree);
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error saving Dynamic security plugin config: Out of memory.\n");
-		return;
-	}
-	cJSON_Delete(tree);
-	json_str_len = strlen(json_str);
-
-	/* Save to file */
-	file_path_len = strlen(config_file) + 1;
-	file_path = mosquitto_malloc(file_path_len);
-	if(file_path == NULL){
-		mosquitto_free(json_str);
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error saving Dynamic security plugin config: Out of memory.\n");
-		return;
-	}
-	snprintf(file_path, file_path_len, "%s.new", config_file);
-
-	fptr = fopen(file_path, "wt");
-	if(fptr == NULL){
-		mosquitto_free(json_str);
-		mosquitto_free(file_path);
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error saving Dynamic security plugin config: File is not writable - check permissions.\n");
-		return;
-	}
-	fwrite(json_str, 1, json_str_len, fptr);
-	mosquitto_free(json_str);
-	fclose(fptr);
-
-	/* Everything is ok, so move new file over proper file */
-	if(rename(file_path, config_file) < 0){
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error updating dynsec config file: %s", strerror(errno));
-	}
-	mosquitto_free(file_path);
-}
-
-
 int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, struct mosquitto_opt *options, int option_count)
 {
 	int i;
@@ -477,14 +284,14 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 
 	for(i=0; i<option_count; i++){
 		if(!strcasecmp(options[i].key, "config_file")){
-			config_file = mosquitto_strdup(options[i].value);
-			if(config_file == NULL){
+			g_config_file = mosquitto_strdup(options[i].value);
+			if(g_config_file == NULL){
 				return MOSQ_ERR_NOMEM;
 			}
 			break;
 		}
 	}
-	if(config_file == NULL){
+	if(g_config_file == NULL){
 		mosquitto_log_printf(MOSQ_LOG_WARNING, "Warning: Dynamic security plugin has no plugin_opt_config_file defined. The plugin will not be activated.");
 		return MOSQ_ERR_SUCCESS;
 	}
@@ -510,8 +317,8 @@ int mosquitto_plugin_cleanup(void *user_data, struct mosquitto_opt *options, int
 	dynsec_clients__cleanup();
 	dynsec_roles__cleanup();
 
-	mosquitto_free(config_file);
-	config_file = NULL;
+	mosquitto_free(g_config_file);
+	g_config_file = NULL;
 	return MOSQ_ERR_SUCCESS;
 }
 

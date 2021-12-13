@@ -132,6 +132,7 @@ struct dynsec__acl_default_access{
 
 extern struct dynsec__group *dynsec_anonymous_group;
 extern struct dynsec__acl_default_access default_access;
+extern char *g_config_file;
 
 /* ################################################################
  * #
@@ -141,6 +142,7 @@ extern struct dynsec__acl_default_access default_access;
 
 int dynsec__config_init(const char *filename);
 void dynsec__config_save(void);
+int dynsec__config_load(void);
 int dynsec__handle_control(cJSON *j_responses, struct mosquitto *context, cJSON *commands);
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data);
 

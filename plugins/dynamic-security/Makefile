@@ -14,6 +14,7 @@ OBJS=	\
 		base64_mosq.o \
 		clients.o \
 		clientlist.o \
+		config.o \
 		config_init.o \
 		groups.o \
 		grouplist.o \
@@ -54,6 +55,9 @@ clients.o : clients.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 clientlist.o : clientlist.c dynamic_security.h
+	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
+
+config.o : config.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 config_init.o : config_init.c dynamic_security.h
