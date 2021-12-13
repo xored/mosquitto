@@ -259,11 +259,7 @@ void context__add_to_disused(struct mosquitto *context)
 
 	mosquitto__set_state(context, mosq_cs_disused);
 
-	if(context->id){
-		context__remove_from_by_id(context);
-		mosquitto__free(context->id);
-		context->id = NULL;
-	}
+	context__remove_from_by_id(context);
 
 	context->for_free_next = db.ll_for_free;
 	db.ll_for_free = context;
