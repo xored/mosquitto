@@ -173,6 +173,7 @@ struct plugin__callbacks{
 	struct mosquitto__callback *persist_client_msg_add;
 	struct mosquitto__callback *persist_client_msg_remove;
 	struct mosquitto__callback *persist_client_msg_update;
+	struct mosquitto__callback *persist_client_msg_clear;
 	struct mosquitto__callback *persist_msg_add;
 	struct mosquitto__callback *persist_msg_remove;
 	struct mosquitto__callback *persist_msg_load;
@@ -865,6 +866,7 @@ void plugin_persist__handle_subscription_remove(struct mosquitto *context, const
 void plugin_persist__handle_client_msg_add(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
 void plugin_persist__handle_client_msg_remove(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
 void plugin_persist__handle_client_msg_update(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
+void plugin_persist__handle_client_msg_clear(struct mosquitto *context, uint8_t direction);
 void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg);
 void plugin_persist__handle_msg_remove(struct mosquitto_msg_store *msg);
 void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg);

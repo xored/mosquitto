@@ -719,6 +719,7 @@ int db__messages_delete(struct mosquitto *context, bool force_free)
 		context->msgs_in.queued_bytes12 = 0;
 		context->msgs_in.queued_count = 0;
 		context->msgs_in.queued_count12 = 0;
+		plugin_persist__handle_client_msg_clear(context, mosq_md_in);
 	}
 
 	if(force_free || (context->bridge && context->bridge->clean_start_local)
@@ -734,6 +735,7 @@ int db__messages_delete(struct mosquitto *context, bool force_free)
 		context->msgs_out.queued_bytes12 = 0;
 		context->msgs_out.queued_count = 0;
 		context->msgs_out.queued_count12 = 0;
+		plugin_persist__handle_client_msg_clear(context, mosq_md_out);
 	}
 
 	return MOSQ_ERR_SUCCESS;
