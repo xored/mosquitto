@@ -201,8 +201,15 @@ void plugin_persist__handle_client_msg_remove(struct mosquitto *context, const s
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
+	if(context->session_expiry_interval == 0
+			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)){
+
+		return;
+	}
+
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
+
 	event_data.client_id = context->id;
 	event_data.cmsg_id = cmsg->cmsg_id;
 	event_data.mid = cmsg->mid;

@@ -719,6 +719,7 @@ int sub__clean_session(struct mosquitto *context)
 
 		hier = context->subs[i]->hier;
 
+		plugin_persist__handle_subscription_remove(context, context->subs[i]->topic_filter);
 		if(context->subs[i]->shared){
 			leaf = context->subs[i]->shared->subs;
 			while(leaf){

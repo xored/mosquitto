@@ -130,9 +130,7 @@ int handle__unsubscribe(struct mosquitto *context)
 		log__printf(NULL, MOSQ_LOG_DEBUG, "\t%s", sub);
 		if(allowed){
 			rc = sub__remove(context, sub, db.subs, &reason);
-			if(context->session_expiry_interval > 0){
-				plugin_persist__handle_subscription_remove(context, sub);
-			}
+			plugin_persist__handle_subscription_remove(context, sub);
 		}else{
 			rc = MOSQ_ERR_SUCCESS;
 		}

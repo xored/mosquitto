@@ -157,7 +157,7 @@ int retain__store(const char *topic, struct mosquitto_msg_store *stored, char **
 #endif
 
 	if(retainhier->retained){
-		if(persist){
+		if(persist && retainhier->retained->topic[0] != '$'){
 			plugin_persist__handle_retain_remove(retainhier->retained);
 		}
 		db__msg_store_ref_dec(&retainhier->retained);
@@ -171,11 +171,9 @@ int retain__store(const char *topic, struct mosquitto_msg_store *stored, char **
 	if(stored->payloadlen){
 		retainhier->retained = stored;
 		db__msg_store_ref_inc(retainhier->retained);
-		if(retainhier->retained->topic[0] != '$'){
-			if(persist){
-				plugin_persist__handle_msg_add(retainhier->retained);
-				plugin_persist__handle_retain_add(retainhier->retained);
-			}
+		if(persist && retainhier->retained->topic[0] != '$'){
+			plugin_persist__handle_msg_add(retainhier->retained);
+			plugin_persist__handle_retain_add(retainhier->retained);
 		}
 #ifdef WITH_SYS_TREE
 		db.retained_count++;
