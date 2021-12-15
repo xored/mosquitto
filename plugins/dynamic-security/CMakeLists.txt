@@ -24,6 +24,8 @@ if(CJSON_FOUND AND WITH_TLS)
 		clientlist.c
 		config.c
 		config_init.c
+		control.c
+		default_acl.c
 		dynamic_security.h
 		groups.c
 		grouplist.c

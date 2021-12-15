@@ -145,6 +145,7 @@ void dynsec__config_save(void);
 int dynsec__config_load(void);
 int dynsec__handle_control(cJSON *j_responses, struct mosquitto *context, cJSON *commands);
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data);
+int dynsec_control_callback(int event, void *event_data, void *userdata);
 
 
 /* ################################################################
@@ -154,6 +155,8 @@ void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const 
  * ################################################################ */
 
 int dynsec__acl_check_callback(int event, void *event_data, void *userdata);
+int dynsec__process_set_default_acl_access(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec__process_get_default_acl_access(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
 
 
 /* ################################################################

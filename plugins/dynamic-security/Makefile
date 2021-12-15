@@ -16,6 +16,8 @@ OBJS=	\
 		clientlist.o \
 		config.o \
 		config_init.o \
+		control.o \
+		default_acl.o \
 		groups.o \
 		grouplist.o \
 		hash.o \
@@ -61,6 +63,12 @@ config.o : config.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 config_init.o : config_init.c dynamic_security.h
+	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
+
+control.o : control.c dynamic_security.h
+	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
+
+default_acl.o : default_acl.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 groups.o : groups.c dynamic_security.h
