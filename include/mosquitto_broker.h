@@ -77,17 +77,17 @@ enum mosquitto_plugin_event {
 	MOSQ_EVT_PERSIST_RESTORE = 12,
 	MOSQ_EVT_PERSIST_CONFIG_ADD = 13,
 	MOSQ_EVT_PERSIST_MSG_ADD = 14,
-	MOSQ_EVT_PERSIST_MSG_REMOVE = 15,
+	MOSQ_EVT_PERSIST_MSG_DELETE = 15,
 	MOSQ_EVT_PERSIST_MSG_LOAD = 16,
 	MOSQ_EVT_PERSIST_RETAIN_ADD = 17,
-	MOSQ_EVT_PERSIST_RETAIN_REMOVE = 18,
+	MOSQ_EVT_PERSIST_RETAIN_DELETE = 18,
 	MOSQ_EVT_PERSIST_CLIENT_ADD = 19,
-	MOSQ_EVT_PERSIST_CLIENT_REMOVE = 20,
+	MOSQ_EVT_PERSIST_CLIENT_DELETE = 20,
 	MOSQ_EVT_PERSIST_CLIENT_UPDATE = 21,
 	MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD = 22,
-	MOSQ_EVT_PERSIST_SUBSCRIPTION_REMOVE = 23,
+	MOSQ_EVT_PERSIST_SUBSCRIPTION_DELETE = 23,
 	MOSQ_EVT_PERSIST_CLIENT_MSG_ADD = 24,
-	MOSQ_EVT_PERSIST_CLIENT_MSG_REMOVE = 25,
+	MOSQ_EVT_PERSIST_CLIENT_MSG_DELETE = 25,
 	MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE = 26,
 	MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR = 27,
 	MOSQ_EVT_PERSIST_CLIENT_MSG_LOAD = 28,
@@ -210,7 +210,7 @@ struct mosquitto_evt_persist_restore {
 	void *future[8];
 };
 
-/* Data for the MOSQ_EVT_PERSIST_CLIENT_ADD/_REMOVE/_UPDATE event */
+/* Data for the MOSQ_EVT_PERSIST_CLIENT_ADD/_DELETE/_UPDATE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_client {
@@ -235,7 +235,7 @@ struct mosquitto_evt_persist_client {
 };
 
 
-/* Data for the MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD/_REMOVE event */
+/* Data for the MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD/_DELETE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_subscription {
@@ -250,7 +250,7 @@ struct mosquitto_evt_persist_subscription {
 };
 
 
-/* Data for the MOSQ_EVT_PERSIST_CLIENT_MSG_ADD/_REMOVE/_UPDATE event */
+/* Data for the MOSQ_EVT_PERSIST_CLIENT_MSG_ADD/_DELETE/_UPDATE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_client_msg {
@@ -270,7 +270,7 @@ struct mosquitto_evt_persist_client_msg {
 };
 
 
-/* Data for the MOSQ_EVT_PERSIST_MSG_ADD/_REMOVE/_LOAD event */
+/* Data for the MOSQ_EVT_PERSIST_MSG_ADD/_DELETE/_LOAD event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_msg {
@@ -296,7 +296,7 @@ struct mosquitto_evt_persist_msg {
 };
 
 
-/* Data for the MOSQ_EVT_PERSIST_RETAIN/_REMOVE event */
+/* Data for the MOSQ_EVT_PERSIST_RETAIN/_DELETE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_retain {
@@ -859,19 +859,19 @@ int mosquitto_persist_client_add(struct mosquitto_evt_persist_client *client);
 int mosquitto_persist_client_update(struct mosquitto_evt_persist_client *client);
 
 
-/* Function: mosquitto_persist_client_remove
+/* Function: mosquitto_persist_client_delete
  *
- * Use to remove client session for a client from the broker
+ * Use to delete client session for a client from the broker
  *
  * Parameters:
- *   client_id - the client id of the client to remove
+ *   client_id - the client id of the client to delete
  *
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success
  *   MOSQ_ERR_INVAL - if client_id is NULL
  *   MOSQ_ERR_NOT_FOUND - the referenced client is not found
  */
-int mosquitto_persist_client_remove(const char *client_id);
+int mosquitto_persist_client_delete(const char *client_id);
 
 
 /* Function: mosquitto_persist_client_msg_add
@@ -903,9 +903,9 @@ int mosquitto_persist_client_remove(const char *client_id);
 int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *client_msg);
 
 
-/* Function: mosquitto_persist_client_msg_remove
+/* Function: mosquitto_persist_client_msg_delete
  *
- * Use to remove a client message for a particular client.
+ * Use to delete a client message for a particular client.
  *
  * Parameters:
  *   client_msg->plugin_client_id - the client id of the client that the
@@ -924,7 +924,7 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
  *   MOSQ_ERR_INVAL - if client_msg or client_msg->plugin_client_id is NULL
  *   MOSQ_ERR_NOT_FOUND - the client is not found
  */
-int mosquitto_persist_client_msg_remove(struct mosquitto_evt_persist_client_msg *client_msg);
+int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg *client_msg);
 
 
 /* Function: mosquitto_persist_client_msg_update
@@ -990,9 +990,9 @@ int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg 
 int mosquitto_persist_msg_add(struct mosquitto_evt_persist_msg *msg);
 
 
-/* Function: mosquitto_persist_msg_remove
+/* Function: mosquitto_persist_msg_delete
  *
- * Use to remove a stored message.
+ * Use to delete a stored message.
  *
  * Parameters:
  *   store_id - the stored message ID
@@ -1000,7 +1000,7 @@ int mosquitto_persist_msg_add(struct mosquitto_evt_persist_msg *msg);
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success
  */
-int mosquitto_persist_msg_remove(uint64_t store_id);
+int mosquitto_persist_msg_delete(uint64_t store_id);
 
 
 /* Function: mosquitto_persist_subscription_add
@@ -1022,9 +1022,9 @@ int mosquitto_persist_msg_remove(uint64_t store_id);
 int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t subscription_options, uint32_t subscription_identifier);
 
 
-/* Function: mosquitto_persist_subscription_remove
+/* Function: mosquitto_persist_subscription_delete
  *
- * Use to remove a subscription for a client
+ * Use to delete a subscription for a client
  *
  * Parameters:
  *   client_id - the client id of the client the new subscription is for
@@ -1036,12 +1036,12 @@ int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t
  *   MOSQ_ERR_NOT_FOUND - the referenced client was not found
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_subscription_remove(const char *client_id, const char *topic);
+int mosquitto_subscription_delete(const char *client_id, const char *topic);
 
 
 /* Function: mosquitto_persist_retain_add
  *
- * Use to add a retained message. It is not required to remove a retained
+ * Use to add a retained message. It is not required to delete a retained
  * message for an existing topic first.
  *
  * Parameters:
@@ -1059,9 +1059,9 @@ int mosquitto_subscription_remove(const char *client_id, const char *topic);
 int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *retain);
 
 
-/* Function: mosquitto_persist_retain_remove
+/* Function: mosquitto_persist_retain_delete
  *
- * Use to remove a retained message.
+ * Use to delete a retained message.
  *
  * Parameters:
  *   msg->plugin_topic - the topic that the message references
@@ -1073,7 +1073,7 @@ int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *retain);
  *   MOSQ_ERR_INVAL - if msg or msg->plugin_topic are NULL
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_persist_retain_remove(const char *topic);
+int mosquitto_persist_retain_delete(const char *topic);
 
 #ifdef __cplusplus
 }

@@ -93,32 +93,32 @@ static struct mosquitto__callback **plugin__get_callback_base(struct mosquitto__
 			return &security_options->plugin_callbacks.persist_restore;
 		case MOSQ_EVT_PERSIST_CLIENT_ADD:
 			return &security_options->plugin_callbacks.persist_client_add;
-		case MOSQ_EVT_PERSIST_CLIENT_REMOVE:
-			return &security_options->plugin_callbacks.persist_client_remove;
+		case MOSQ_EVT_PERSIST_CLIENT_DELETE:
+			return &security_options->plugin_callbacks.persist_client_delete;
 		case MOSQ_EVT_PERSIST_CLIENT_UPDATE:
 			return &security_options->plugin_callbacks.persist_client_update;
 		case MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD:
 			return &security_options->plugin_callbacks.persist_subscription_add;
-		case MOSQ_EVT_PERSIST_SUBSCRIPTION_REMOVE:
-			return &security_options->plugin_callbacks.persist_subscription_remove;
+		case MOSQ_EVT_PERSIST_SUBSCRIPTION_DELETE:
+			return &security_options->plugin_callbacks.persist_subscription_delete;
 		case MOSQ_EVT_PERSIST_CLIENT_MSG_ADD:
 			return &security_options->plugin_callbacks.persist_client_msg_add;
-		case MOSQ_EVT_PERSIST_CLIENT_MSG_REMOVE:
-			return &security_options->plugin_callbacks.persist_client_msg_remove;
+		case MOSQ_EVT_PERSIST_CLIENT_MSG_DELETE:
+			return &security_options->plugin_callbacks.persist_client_msg_delete;
 		case MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE:
 			return &security_options->plugin_callbacks.persist_client_msg_update;
 		case MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR:
 			return &security_options->plugin_callbacks.persist_client_msg_clear;
 		case MOSQ_EVT_PERSIST_MSG_ADD:
 			return &security_options->plugin_callbacks.persist_msg_add;
-		case MOSQ_EVT_PERSIST_MSG_REMOVE:
-			return &security_options->plugin_callbacks.persist_msg_remove;
+		case MOSQ_EVT_PERSIST_MSG_DELETE:
+			return &security_options->plugin_callbacks.persist_msg_delete;
 		case MOSQ_EVT_PERSIST_MSG_LOAD:
 			return &security_options->plugin_callbacks.persist_msg_load;
 		case MOSQ_EVT_PERSIST_RETAIN_ADD:
 			return &security_options->plugin_callbacks.persist_retain_add;
-		case MOSQ_EVT_PERSIST_RETAIN_REMOVE:
-			return &security_options->plugin_callbacks.persist_retain_remove;
+		case MOSQ_EVT_PERSIST_RETAIN_DELETE:
+			return &security_options->plugin_callbacks.persist_retain_delete;
 		default:
 			return NULL;
 	}

@@ -94,7 +94,7 @@ int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *msg)
 
 
 
-int mosquitto_persist_retain_remove(const char *topic)
+int mosquitto_persist_retain_delete(const char *topic)
 {
 	struct mosquitto_msg_store stored;
 	int rc = MOSQ_ERR_UNKNOWN;
@@ -158,7 +158,7 @@ int retain__store(const char *topic, struct mosquitto_msg_store *stored, char **
 
 	if(retainhier->retained){
 		if(persist && retainhier->retained->topic[0] != '$'){
-			plugin_persist__handle_retain_remove(retainhier->retained);
+			plugin_persist__handle_retain_delete(retainhier->retained);
 		}
 		db__msg_store_ref_dec(&retainhier->retained);
 #ifdef WITH_SYS_TREE
@@ -192,7 +192,7 @@ static int retain__process(struct mosquitto__retainhier *branch, struct mosquitt
 	struct mosquitto_msg_store *retained;
 
 	if(branch->retained->message_expiry_time > 0 && db.now_real_s >= branch->retained->message_expiry_time){
-		plugin_persist__handle_retain_remove(branch->retained);
+		plugin_persist__handle_retain_delete(branch->retained);
 		db__msg_store_ref_dec(&branch->retained);
 		branch->retained = NULL;
 #ifdef WITH_SYS_TREE

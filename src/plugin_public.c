@@ -501,7 +501,7 @@ error:
 }
 
 
-int mosquitto_persist_client_remove(const char *client_id)
+int mosquitto_persist_client_delete(const char *client_id)
 {
 	struct mosquitto *context;
 
@@ -563,7 +563,7 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 }
 
 
-int mosquitto_persist_client_msg_remove(struct mosquitto_evt_persist_client_msg *client_msg)
+int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg *client_msg)
 {
 	struct mosquitto *context;
 
@@ -621,7 +621,7 @@ int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t
 }
 
 
-int mosquitto_subscription_remove(const char *client_id, const char *topic)
+int mosquitto_subscription_delete(const char *client_id, const char *topic)
 {
 	struct mosquitto *context;
 	uint8_t reason;
@@ -702,7 +702,7 @@ error:
 }
 
 
-int mosquitto_persist_msg_remove(uint64_t store_id)
+int mosquitto_persist_msg_delete(uint64_t store_id)
 {
 	struct mosquitto_msg_store *stored;
 

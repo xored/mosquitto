@@ -166,19 +166,19 @@ struct plugin__callbacks{
 	struct mosquitto__callback *reload;
 	struct mosquitto__callback *persist_restore;
 	struct mosquitto__callback *persist_client_add;
-	struct mosquitto__callback *persist_client_remove;
+	struct mosquitto__callback *persist_client_delete;
 	struct mosquitto__callback *persist_client_update;
 	struct mosquitto__callback *persist_subscription_add;
-	struct mosquitto__callback *persist_subscription_remove;
+	struct mosquitto__callback *persist_subscription_delete;
 	struct mosquitto__callback *persist_client_msg_add;
-	struct mosquitto__callback *persist_client_msg_remove;
+	struct mosquitto__callback *persist_client_msg_delete;
 	struct mosquitto__callback *persist_client_msg_update;
 	struct mosquitto__callback *persist_client_msg_clear;
 	struct mosquitto__callback *persist_msg_add;
-	struct mosquitto__callback *persist_msg_remove;
+	struct mosquitto__callback *persist_msg_delete;
 	struct mosquitto__callback *persist_msg_load;
 	struct mosquitto__callback *persist_retain_add;
-	struct mosquitto__callback *persist_retain_remove;
+	struct mosquitto__callback *persist_retain_delete;
 };
 
 struct mosquitto__security_options {
@@ -859,18 +859,18 @@ void plugin__handle_tick(void);
 int plugin__callback_unregister_all(mosquitto_plugin_id_t *identifier);
 void plugin_persist__handle_restore(void);
 void plugin_persist__handle_client_add(struct mosquitto *context);
-void plugin_persist__handle_client_remove(struct mosquitto *context);
+void plugin_persist__handle_client_delete(struct mosquitto *context);
 void plugin_persist__handle_client_update(struct mosquitto *context);
 void plugin_persist__handle_subscription_add(struct mosquitto *context, const char *sub, uint8_t subscription_options, uint32_t subscription_identifier);
-void plugin_persist__handle_subscription_remove(struct mosquitto *context, const char *sub);
+void plugin_persist__handle_subscription_delete(struct mosquitto *context, const char *sub);
 void plugin_persist__handle_client_msg_add(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
-void plugin_persist__handle_client_msg_remove(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
+void plugin_persist__handle_client_msg_delete(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
 void plugin_persist__handle_client_msg_update(struct mosquitto *context, const struct mosquitto_client_msg *cmsg);
 void plugin_persist__handle_client_msg_clear(struct mosquitto *context, uint8_t direction);
 void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg);
-void plugin_persist__handle_msg_remove(struct mosquitto_msg_store *msg);
+void plugin_persist__handle_msg_delete(struct mosquitto_msg_store *msg);
 void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg);
-void plugin_persist__handle_retain_remove(struct mosquitto_msg_store *msg);
+void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg);
 
 /* ============================================================
  * Property related functions

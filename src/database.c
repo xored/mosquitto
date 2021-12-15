@@ -282,7 +282,7 @@ void db__msg_store_remove(struct mosquitto_msg_store *store, bool notify)
 	db.msg_store_count--;
 	db.msg_store_bytes -= store->payloadlen;
 	if(db.shutdown == false || notify == true){
-		plugin_persist__handle_msg_remove(store);
+		plugin_persist__handle_msg_delete(store);
 	}
 	db__msg_store_free(store);
 }
@@ -330,7 +330,7 @@ static void db__message_remove(struct mosquitto *context, struct mosquitto_msg_d
 		return;
 	}
 
-	plugin_persist__handle_client_msg_remove(context, item);
+	plugin_persist__handle_client_msg_delete(context, item);
 
 	DL_DELETE(msg_data->inflight, item);
 	if(item->store){

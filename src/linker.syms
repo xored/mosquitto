@@ -23,14 +23,14 @@
 	mosquitto_malloc;
 	mosquitto_persist_client_add;
 	mosquitto_persist_client_msg_add;
-	mosquitto_persist_client_msg_remove;
+	mosquitto_persist_client_msg_delete;
 	mosquitto_persist_client_msg_update;
-	mosquitto_persist_client_remove;
+	mosquitto_persist_client_delete;
 	mosquitto_persist_client_update;
 	mosquitto_persist_msg_add;
-	mosquitto_persist_msg_remove;
+	mosquitto_persist_msg_delete;
 	mosquitto_persist_retain_add;
-	mosquitto_persist_retain_remove;
+	mosquitto_persist_retain_delete;
 	mosquitto_plugin_set_info;
 	mosquitto_property_add_binary;
 	mosquitto_property_add_byte;
@@ -58,7 +58,7 @@
 	mosquitto_sub_matches_acl_with_pattern;
 	mosquitto_sub_topic_check;
 	mosquitto_subscription_add;
-	mosquitto_subscription_remove;
+	mosquitto_subscription_delete;
 	mosquitto_topic_matches_sub;
 	mosquitto_topic_matches_sub_with_pattern;
 	mosquitto_validate_utf8;
