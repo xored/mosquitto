@@ -53,6 +53,9 @@ void plugin_persist__handle_client_add(struct mosquitto *context)
 	struct mosquitto_message_v5 will;
 
 	UNUSED(will); /* FIXME */
+
+	if(db.shutdown) return;
+
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
 	event_data.client_id = context->id;
@@ -83,6 +86,8 @@ void plugin_persist__handle_client_update(struct mosquitto *context)
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 	struct mosquitto_message_v5 will;
+
+	if(db.shutdown) return;
 
 	UNUSED(will); /* FIXME */
 	opts = &db.config->security_options;
@@ -115,7 +120,11 @@ void plugin_persist__handle_client_delete(struct mosquitto *context)
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(context->session_expiry_interval > 0 || context->id == NULL || context->state == mosq_cs_duplicate){
+	if(context->session_expiry_interval > 0
+			|| context->id == NULL
+			|| context->state == mosq_cs_duplicate
+			|| db.shutdown){
+
 		return;
 	}
 	opts = &db.config->security_options;
@@ -133,6 +142,8 @@ void plugin_persist__handle_subscription_add(struct mosquitto *context, const ch
 	struct mosquitto_evt_persist_subscription event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
+
+	if(db.shutdown) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -153,6 +164,8 @@ void plugin_persist__handle_subscription_delete(struct mosquitto *context, const
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
+	if(db.shutdown) return;
+
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
 	event_data.client_id = context->id;
@@ -171,7 +184,8 @@ void plugin_persist__handle_client_msg_add(struct mosquitto *context, const stru
 	struct mosquitto__security_options *opts;
 
 	if(context->session_expiry_interval == 0
-			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)){
+			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)
+			|| db.shutdown){
 
 		return;
 	}
@@ -202,7 +216,8 @@ void plugin_persist__handle_client_msg_delete(struct mosquitto *context, const s
 	struct mosquitto__security_options *opts;
 
 	if(context->session_expiry_interval == 0
-			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)){
+			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)
+			|| db.shutdown){
 
 		return;
 	}
@@ -229,6 +244,8 @@ void plugin_persist__handle_client_msg_update(struct mosquitto *context, const s
 	struct mosquitto_evt_persist_client_msg event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
+
+	if(db.shutdown) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -272,7 +289,7 @@ void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg)
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(msg->stored) return;
+	if(msg->stored || db.shutdown) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -307,7 +324,7 @@ void plugin_persist__handle_msg_delete(struct mosquitto_msg_store *msg)
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(msg->stored == false) return;
+	if(msg->stored == false || db.shutdown) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -327,6 +344,8 @@ void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
+	if(db.shutdown) return;
+
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
 
@@ -344,6 +363,8 @@ void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg)
 	struct mosquitto_evt_persist_retain event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
+
+	if(db.shutdown) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
