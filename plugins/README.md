@@ -68,3 +68,10 @@ to subscribers.
 This plugin removes the `/uplink` end part of topics that match the pattern
 `device/+/data/uplink`, so devices publishing to `device/0001/data/uplink` will
 effectively be publishing to `device/0001/data`.
+
+## Examples / Wildcard temp
+This is an **example** plugin that denies access to the `#` subscription topic
+only. This prevents clients from discovering which topics are active and
+reduces outgoing bandwidth. If clients connect with username `wildcard` and
+subscribes to `#` they will be allowed 20 seconds of access, after which the
+subscription will be silently removed.

@@ -8,7 +8,8 @@ DIRS= \
 		message-timestamp \
 		payload-modification \
 		print-ip-on-publish \
-		topic-modification
+		topic-modification \
+		wildcard-temp
 
 .PHONY : all binary check clean reallyclean test install uninstall
 
