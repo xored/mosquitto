@@ -36,6 +36,8 @@ docker/local/mosq.tar.gz
 
 examples/mysql_log/mosquitto_mysql_log
 examples/temperature_conversion/mqtt_temperature_conversion
+examples/publish/basic-1
+examples/publish/basic-websockets-1
 
 lib/cpp/libmosquittopp.so*
 lib/cpp/libmosquittopp.a

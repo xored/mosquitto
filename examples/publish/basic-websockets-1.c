@@ -1,5 +1,7 @@
 /*
  * This example shows how to publish messages from outside of the Mosquitto network loop.
+ *
+ * This is identical to basic-1.c apart from that it uses WebSockets.
  */
 
 #include <mosquitto.h>
@@ -104,6 +106,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Error: Out of memory.\n");
 		return 1;
 	}
+	mosquitto_int_option(mosq, MOSQ_OPT_TRANSPORT, MOSQ_T_WEBSOCKETS);
 
 	/* Configure callbacks. This should be done before connecting ideally. */
 	mosquitto_connect_callback_set(mosq, on_connect);
@@ -113,7 +116,7 @@ int main(int argc, char *argv[])
 	 * This call makes the socket connection only, it does not complete the MQTT
 	 * CONNECT/CONNACK flow, you should use mosquitto_loop_start() or
 	 * mosquitto_loop_forever() for processing net traffic. */
-	rc = mosquitto_connect(mosq, "test.mosquitto.org", 1883, 60);
+	rc = mosquitto_connect(mosq, "test.mosquitto.org", 8080, 60);
 	if(rc != MOSQ_ERR_SUCCESS){
 		mosquitto_destroy(mosq);
 		fprintf(stderr, "Error: %s\n", mosquitto_strerror(rc));
