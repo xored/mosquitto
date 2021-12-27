@@ -16,6 +16,13 @@ This is an **example** plugin that demonstrates a basic authentication callback
 that allows clients based on their IP address. Password based authentication is
 preferred over this very simple type of access control.
 
+## Examples / Client lifetime stats
+This is an **example** plugin that collects counts of how long client sessions
+last, in different time buckets of 0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1k,
+2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 1M, 2M, 5M, 10M, 20M, 50M, 100M, 200M,
+500M seconds. It periodically publishes the counts at
+`$SYS/broker/client/lifetimes/<bucket>`.
+
 ## Examples / Client properties
 This is an **example** plugin that demonstrates some of the functions for
 retrieving client information such as client id and username.
@@ -55,6 +62,12 @@ verified the payload is the correct format before modifying it.
 This plugin adds the text string "hello " to the beginning of each payload, so
 with anything other than simple plain text messages it will corrupt the payload
 contents.
+
+## Examples / Payload size stats
+This is an **example** plugin that collects counts of payload message sizes, in
+time buckets of 0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1k, 2k, 5k, 10k, 20k,
+50k, 100k, 200k, 500k, 1M, 2M, 5M, 10M, 20M, 50M, 100M, 200M, 500M bytes. It
+periodically publishes the counts at `$SYS/broker/publish/sizes/<bucket>`.
 
 ## Examples / Print IP on publish
 This is an **example** plugin that prints out client ID and IP address of any

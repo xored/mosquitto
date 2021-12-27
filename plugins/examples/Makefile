@@ -1,12 +1,14 @@
 DIRS= \
 		add-properties \
 		auth-by-ip \
+		client-lifetime-stats \
 		client-properties \
 		connection-state \
 		delayed-auth \
 		force-retain \
 		message-timestamp \
 		payload-modification \
+		payload-size-stats \
 		print-ip-on-publish \
 		topic-modification \
 		wildcard-temp
