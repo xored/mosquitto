@@ -248,6 +248,7 @@ struct mosquitto *net__socket_accept(struct mosquitto__listener_sock *listensock
 	}
 
 	mux__new(new_context);
+	keepalive__add(new_context);
 
 	return new_context;
 }
