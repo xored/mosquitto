@@ -16,8 +16,7 @@ def do_test(plugin_ver):
     write_config(conf_file, port, plugin_ver)
 
     rc = 1
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="readonly")
+    connect_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="readonly")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 53

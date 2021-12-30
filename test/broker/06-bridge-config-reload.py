@@ -27,7 +27,7 @@ def accept_new_connection(sock):
 
     client_id = socket.gethostname()+".bridge_sample"
     connect_packet = mosq_test.gen_connect(
-        client_id, keepalive=60, clean_session=False, proto_ver=0x84)
+        client_id, clean_session=False, proto_ver=0x84)
     connack_packet = mosq_test.gen_connack()
 
     mosq_test.expect_packet(conn, "connect", connect_packet)

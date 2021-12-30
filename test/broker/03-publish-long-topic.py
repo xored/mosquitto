@@ -10,8 +10,7 @@ from mosq_test_helper import *
 def do_test(start_broker, proto_ver):
     rc = 1
     mid = 19
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("03-pub-long-test", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("03-pub-long-test", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     publish_packet = mosq_test.gen_publish("/"*65535, qos=1, mid=mid, payload="message", proto_ver=proto_ver)

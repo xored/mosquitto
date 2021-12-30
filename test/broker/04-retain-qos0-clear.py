@@ -8,8 +8,7 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("retain-qos0-clear-test", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("retain-qos0-clear-test", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     publish_packet = mosq_test.gen_publish("retain/qos0/clear/test", qos=0, payload="retained message", retain=True, proto_ver=proto_ver)

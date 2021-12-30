@@ -32,9 +32,8 @@ def do_test(proto_ver, outgoing_retain):
     write_config(conf_file, port1, port2, bridge_protocol, outgoing_retain)
 
     rc = 1
-    keepalive = 60
     client_id = socket.gethostname()+".bridge_sample"
-    connect_packet = mosq_test.gen_connect(client_id, keepalive=keepalive, clean_session=False, proto_ver=proto_ver_connect)
+    connect_packet = mosq_test.gen_connect(client_id, clean_session=False, proto_ver=proto_ver_connect)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1
@@ -52,7 +51,7 @@ def do_test(proto_ver, outgoing_retain):
         publish_packet = mosq_test.gen_publish("bridge/retain/test", qos=0, retain=False, payload="message", proto_ver=proto_ver)
 
 
-    helper_connect_packet = mosq_test.gen_connect("helper", keepalive=keepalive, clean_session=True, proto_ver=proto_ver)
+    helper_connect_packet = mosq_test.gen_connect("helper", clean_session=True, proto_ver=proto_ver)
     helper_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
     helper_publish_packet = mosq_test.gen_publish("bridge/retain/test", qos=0, retain=True, payload="message", proto_ver=proto_ver)
 

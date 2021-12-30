@@ -16,8 +16,7 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port)
 
 rc = 1
-keepalive = 10
-connect_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="test-username", password="wrong")
+connect_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="test-username", password="wrong")
 connack_packet = mosq_test.gen_connack(rc=5)
 
 broker = mosq_test.start_broker(filename=os.path.basename(__file__), use_conf=True, port=port)

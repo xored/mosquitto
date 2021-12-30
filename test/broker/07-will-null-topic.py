@@ -6,8 +6,7 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("will-null-topic", keepalive=keepalive, will_topic="", will_payload=struct.pack("!4sB7s", b"will", 0, b"message"), proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("will-null-topic", will_topic="", will_payload=struct.pack("!4sB7s", b"will", 0, b"message"), proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=2, proto_ver=proto_ver)
 
     port = mosq_test.get_port()

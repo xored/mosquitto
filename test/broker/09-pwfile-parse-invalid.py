@@ -25,8 +25,7 @@ def write_pwfile(filename, bad_line1, bad_line2):
 
 def do_test(port, connack_rc, username, password):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("username-password-check", keepalive=keepalive, username=username, password=password)
+    connect_packet = mosq_test.gen_connect("username-password-check", username=username, password=password)
     connack_packet = mosq_test.gen_connack(rc=connack_rc)
 
     try:

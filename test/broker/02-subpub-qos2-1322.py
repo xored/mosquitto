@@ -38,16 +38,15 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 60
-    pub_connect_packet = mosq_test.gen_connect("02-subpub-qos2-1322-pub", keepalive=keepalive, clean_session=False, proto_ver=proto_ver, session_expiry=60)
+    pub_connect_packet = mosq_test.gen_connect("02-subpub-qos2-1322-pub", clean_session=False, proto_ver=proto_ver, session_expiry=60)
     pub_connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
     pub_connack2_packet = mosq_test.gen_connack(rc=0, flags=1, proto_ver=proto_ver)
-    pub_connect_packet_clear = mosq_test.gen_connect("02-subpub-qos2-1322-pub", keepalive=keepalive, proto_ver=proto_ver)
+    pub_connect_packet_clear = mosq_test.gen_connect("02-subpub-qos2-1322-pub", proto_ver=proto_ver)
 
-    sub1_connect_packet = mosq_test.gen_connect("02-subpub-qos2-1322-sub1", keepalive=keepalive, proto_ver=proto_ver)
+    sub1_connect_packet = mosq_test.gen_connect("02-subpub-qos2-1322-sub1", proto_ver=proto_ver)
     sub1_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    sub2_connect_packet = mosq_test.gen_connect("02-subpub-qos2-1322-sub2", keepalive=keepalive, proto_ver=proto_ver)
+    sub2_connect_packet = mosq_test.gen_connect("02-subpub-qos2-1322-sub2", proto_ver=proto_ver)
     sub2_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1

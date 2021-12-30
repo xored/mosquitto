@@ -31,9 +31,8 @@ def do_test(proto_ver):
     write_config(conf_file, port1, port2, bridge_protocol)
 
     rc = 1
-    keepalive = 60
     client_id = socket.gethostname()+".bridge_sample"
-    connect_packet = mosq_test.gen_connect(client_id, keepalive=keepalive, clean_session=False, proto_ver=proto_ver_connect)
+    connect_packet = mosq_test.gen_connect(client_id, clean_session=False, proto_ver=proto_ver_connect)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     if proto_ver == 5:
@@ -73,7 +72,7 @@ def do_test(proto_ver):
         bridge.send(suback_packet)
 
         # Helper
-        helper_connect_packet = mosq_test.gen_connect("test-helper", keepalive=keepalive, proto_ver=proto_ver)
+        helper_connect_packet = mosq_test.gen_connect("test-helper", proto_ver=proto_ver)
         helper_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
         mid = 128
         helper_publish_packet = mosq_test.gen_publish("bridge/disconnect/test", qos=1, mid=mid, payload="disconnect-message", proto_ver=proto_ver)

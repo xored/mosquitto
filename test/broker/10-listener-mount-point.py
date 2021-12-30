@@ -15,7 +15,7 @@ def write_config(filename, port1, port2):
 
 
 def helper(port, proto_ver):
-    connect_packet = mosq_test.gen_connect("10-listener-mount-helper", keepalive=60, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("10-listener-mount-helper", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     publish_packet = mosq_test.gen_publish("10/listener/mount/test", qos=0, payload="mount point", proto_ver=proto_ver)

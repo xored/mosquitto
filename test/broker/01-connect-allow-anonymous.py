@@ -38,8 +38,7 @@ def do_test(use_conf, write_config, expect_success):
     try:
         for proto_ver in [4, 5]:
             rc = 1
-            keepalive = 10
-            connect_packet = mosq_test.gen_connect("connect-anon-test-%d" % (proto_ver), keepalive=keepalive, proto_ver=proto_ver)
+            connect_packet = mosq_test.gen_connect("connect-anon-test-%d" % (proto_ver), proto_ver=proto_ver)
 
             if proto_ver == 5:
                 if expect_success == True:

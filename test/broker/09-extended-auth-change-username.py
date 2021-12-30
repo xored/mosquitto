@@ -27,7 +27,7 @@ def do_test(per_listener):
     rc = 1
 
     # Connect without a username - this means no access
-    connect1_packet = mosq_test.gen_connect("client-params-test1", keepalive=42, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("client-params-test1", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 1
@@ -40,7 +40,7 @@ def do_test(per_listener):
 
     # Connect without a username, but have the plugin change it
     props = mqtt5_props.gen_string_prop(mqtt5_props.PROP_AUTHENTICATION_METHOD, "change")
-    connect2_packet = mosq_test.gen_connect("client-params-test2", keepalive=42, proto_ver=5, properties=props)
+    connect2_packet = mosq_test.gen_connect("client-params-test2", proto_ver=5, properties=props)
     props = mqtt5_props.gen_string_prop(mqtt5_props.PROP_AUTHENTICATION_METHOD, "change")
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5, properties=props)
 

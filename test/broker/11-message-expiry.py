@@ -24,8 +24,7 @@ write_config(conf_file, port)
 
 
 rc = 1
-keepalive = 60
-connect_packet = mosq_test.gen_connect("subpub-qos0-test", keepalive=keepalive, proto_ver=5, clean_session=False, session_expiry=60)
+connect_packet = mosq_test.gen_connect("subpub-qos0-test", proto_ver=5, clean_session=False, session_expiry=60)
 connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5, flags=1)
 

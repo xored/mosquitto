@@ -7,8 +7,7 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect("will-no-payload", keepalive=keepalive, will_topic="will/topic", will_qos=1, will_retain=True, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("will-no-payload", will_topic="will/topic", will_qos=1, will_retain=True, proto_ver=proto_ver)
     b = list(struct.unpack("B"*len(connect_packet), connect_packet))
 
     bmod = b[0:len(b)-2]

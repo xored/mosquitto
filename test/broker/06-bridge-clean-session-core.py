@@ -97,8 +97,7 @@ def do_test(proto_ver, cs, lcs=None):
 
     def make_conn(client_tag, proto, cs, session_present=False):
         client_id = socket.gethostname() + "." + client_tag
-        keepalive = 60
-        conn = mosq_test.gen_connect(client_id, keepalive=keepalive, clean_session=cs, proto_ver=proto, session_expiry=0 if cs else 5000)
+        conn = mosq_test.gen_connect(client_id, clean_session=cs, proto_ver=proto, session_expiry=0 if cs else 5000)
         connack = mosq_test.gen_connack(rc=0, proto_ver=proto_ver, flags=1 if session_present else 0)
         return AckedPair(conn, connack)
 

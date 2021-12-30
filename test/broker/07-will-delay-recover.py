@@ -8,15 +8,14 @@ from mosq_test_helper import *
 
 def do_test(start_broker, clean_session):
     rc = 1
-    keepalive = 60
 
     mid = 1
-    connect1_packet = mosq_test.gen_connect("will-delay-recovery", keepalive=keepalive, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("will-delay-recovery", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     connect_props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_SESSION_EXPIRY_INTERVAL, 30)
     props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_WILL_DELAY_INTERVAL, 3)
-    connect2_packet = mosq_test.gen_connect("will-delay-recovery-helper", keepalive=keepalive, proto_ver=5, will_topic="will/delay/recovery/test", will_payload=b"will delay", will_properties=props, clean_session=clean_session, properties=connect_props)
+    connect2_packet = mosq_test.gen_connect("will-delay-recovery-helper", proto_ver=5, will_topic="will/delay/recovery/test", will_payload=b"will delay", will_properties=props, clean_session=clean_session, properties=connect_props)
     connack2a_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
     if clean_session == True:
         connack2b_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
@@ -26,7 +25,7 @@ def do_test(start_broker, clean_session):
     subscribe_packet = mosq_test.gen_subscribe(mid, "will/delay/recovery/test", 0, proto_ver=5)
     suback_packet = mosq_test.gen_suback(mid, 0, proto_ver=5)
 
-    connect2_packet_clear = mosq_test.gen_connect("will-delay-recovery-helper", keepalive=keepalive, proto_ver=5)
+    connect2_packet_clear = mosq_test.gen_connect("will-delay-recovery-helper", proto_ver=5)
 
     port = mosq_test.get_port()
     if start_broker:

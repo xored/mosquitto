@@ -73,10 +73,9 @@ create_role_apply_response = {'responses': [
 
 
 rc = 1
-keepalive = 10
 
 # Admin
-connect_packet_admin = mosq_test.gen_connect("ctrl-test", keepalive=keepalive, username="admin", password="admin")
+connect_packet_admin = mosq_test.gen_connect("ctrl-test", username="admin", password="admin")
 connack_packet_admin = mosq_test.gen_connack(rc=0)
 
 mid = 1
@@ -84,7 +83,7 @@ subscribe_packet_admin = mosq_test.gen_subscribe(mid, "$CONTROL/dynamic-security
 suback_packet_admin = mosq_test.gen_suback(mid, 1)
 
 # Client
-connect_packet = mosq_test.gen_connect("cid", keepalive=keepalive, proto_ver=5)
+connect_packet = mosq_test.gen_connect("cid", proto_ver=5)
 connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
 mid = 1

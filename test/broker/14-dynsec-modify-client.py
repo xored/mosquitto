@@ -139,8 +139,7 @@ get_client_response3 = {'responses':[{'command': 'getClient', 'data': {'client':
 
 
 rc = 1
-keepalive = 10
-connect_packet = mosq_test.gen_connect("ctrl-test", keepalive=keepalive, username="admin", password="admin")
+connect_packet = mosq_test.gen_connect("ctrl-test", username="admin", password="admin")
 connack_packet = mosq_test.gen_connack(rc=0)
 
 mid = 2

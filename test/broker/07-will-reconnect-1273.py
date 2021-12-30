@@ -9,16 +9,15 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 60
 
-    connect1_packet = mosq_test.gen_connect("will-reconnect-helper", keepalive=keepalive, proto_ver=proto_ver)
+    connect1_packet = mosq_test.gen_connect("will-reconnect-helper", proto_ver=proto_ver)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1
     subscribe1_packet = mosq_test.gen_subscribe(mid, "will/reconnect/test", 0, proto_ver=proto_ver)
     suback1_packet = mosq_test.gen_suback(mid, 0, proto_ver=proto_ver)
 
-    connect2_packet = mosq_test.gen_connect("will-1273", keepalive=keepalive, will_topic="will/reconnect/test", will_payload=b"will msg",clean_session=False, proto_ver=proto_ver, session_expiry=60)
+    connect2_packet = mosq_test.gen_connect("will-1273", will_topic="will/reconnect/test", will_payload=b"will msg",clean_session=False, proto_ver=proto_ver, session_expiry=60)
     connack2a_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
     connack2b_packet = mosq_test.gen_connack(rc=0, flags=1, proto_ver=proto_ver)
 
@@ -26,7 +25,7 @@ def do_test(start_broker, proto_ver):
 
     publish_packet = mosq_test.gen_publish("will/reconnect/test", qos=0, payload="alive", proto_ver=proto_ver)
 
-    connect2_packet_clear = mosq_test.gen_connect("will-1273", keepalive=keepalive, proto_ver=proto_ver)
+    connect2_packet_clear = mosq_test.gen_connect("will-1273", proto_ver=proto_ver)
 
     port = mosq_test.get_port()
     if start_broker:

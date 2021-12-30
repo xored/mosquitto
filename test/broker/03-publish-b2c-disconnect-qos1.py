@@ -5,7 +5,7 @@
 from mosq_test_helper import *
 
 def helper(port):
-    connect_packet = mosq_test.gen_connect("03-b2c-disco-qos1-helper", keepalive=60)
+    connect_packet = mosq_test.gen_connect("03-b2c-disco-qos1-helper")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 128
@@ -21,11 +21,10 @@ def do_test(start_broker, proto_ver):
 
     rc = 1
     mid = 3265
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("03-b2c-disco-qos1", keepalive=keepalive, clean_session=False, proto_ver=proto_ver, session_expiry=60)
+    connect_packet = mosq_test.gen_connect("03-b2c-disco-qos1", clean_session=False, proto_ver=proto_ver, session_expiry=60)
     connack1_packet = mosq_test.gen_connack(flags=0, rc=0, proto_ver=proto_ver)
     connack2_packet = mosq_test.gen_connack(flags=1, rc=0, proto_ver=proto_ver)
-    connect_packet_clear = mosq_test.gen_connect("03-b2c-disco-qos1", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet_clear = mosq_test.gen_connect("03-b2c-disco-qos1", proto_ver=proto_ver)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "03/b2c/qos1/disconnect/test", 1, proto_ver=proto_ver)
     suback_packet = mosq_test.gen_suback(mid, 1, proto_ver=proto_ver)

@@ -13,7 +13,6 @@ rc = 1
 
 persist_help.init(port)
 
-keepalive = 10
 topic1 = "test/retain1"
 topic2 = "test/retain2"
 topic3 = "test/retain3"
@@ -22,7 +21,7 @@ qos = 0
 payload2 = "retained message 2"
 payload3 = "retained message 3"
 proto_ver = 4
-connect_packet = mosq_test.gen_connect(source_id, keepalive=keepalive, proto_ver=proto_ver, clean_session=True)
+connect_packet = mosq_test.gen_connect(source_id, proto_ver=proto_ver, clean_session=True)
 connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
 publish1_packet = mosq_test.gen_publish(topic1, qos=qos, payload="retained message 1", retain=True, proto_ver=proto_ver)

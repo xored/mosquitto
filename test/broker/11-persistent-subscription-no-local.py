@@ -17,9 +17,8 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port)
 
 rc = 1
-keepalive = 60
 connect_packet = mosq_test.gen_connect(
-    "persistent-subscription-test", keepalive=keepalive, clean_session=False, proto_ver=5, session_expiry=60
+    "persistent-subscription-test", clean_session=False, proto_ver=5, session_expiry=60
 )
 connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 connack_packet2 = mosq_test.gen_connack(rc=0, flags=1, proto_ver=5)  # session present

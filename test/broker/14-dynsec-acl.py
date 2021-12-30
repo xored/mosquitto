@@ -97,8 +97,7 @@ delete_role_command = {"commands":[
 delete_role_response = {'responses': [{'command': 'deleteRole'}]}
 
 rc = 1
-keepalive = 10
-connect_packet_admin = mosq_test.gen_connect("ctrl-test", keepalive=keepalive, username="admin", password="admin")
+connect_packet_admin = mosq_test.gen_connect("ctrl-test", username="admin", password="admin")
 connack_packet_admin = mosq_test.gen_connack(rc=0)
 
 mid = 2
@@ -106,7 +105,7 @@ subscribe_packet_admin = mosq_test.gen_subscribe(mid, "$CONTROL/dynamic-security
 suback_packet_admin = mosq_test.gen_suback(mid, 1)
 
 # Success
-connect_packet_with_id1 = mosq_test.gen_connect("cid", keepalive=keepalive, username="user_one", password="password", proto_ver=5)
+connect_packet_with_id1 = mosq_test.gen_connect("cid", username="user_one", password="password", proto_ver=5)
 connack_packet_with_id1 = mosq_test.gen_connack(rc=0, proto_ver=5)
 
 mid = 4

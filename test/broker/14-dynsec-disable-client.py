@@ -51,11 +51,10 @@ enable_client_command = { "commands": [{
 enable_client_response = {'responses':[{'command': 'enableClient'}]}
 
 rc = 1
-keepalive = 10
-connect_packet = mosq_test.gen_connect("ctrl-test", keepalive=keepalive, username="admin", password="admin")
+connect_packet = mosq_test.gen_connect("ctrl-test", username="admin", password="admin")
 connack_packet = mosq_test.gen_connack(rc=0)
 
-client_connect_packet = mosq_test.gen_connect("cid", keepalive=keepalive, username="user_one", password="password")
+client_connect_packet = mosq_test.gen_connect("cid", username="user_one", password="password")
 client_connack_packet1 = mosq_test.gen_connack(rc=5)
 client_connack_packet2 = mosq_test.gen_connack(rc=0)
 

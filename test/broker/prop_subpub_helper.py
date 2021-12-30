@@ -9,8 +9,7 @@ from mosq_test_helper import *
 def prop_subpub_helper(start_broker, test_name, props_out, props_in, expect_proto_error=False):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect(test_name, keepalive=keepalive, proto_ver=5)
+    connect_packet = mosq_test.gen_connect(test_name, proto_ver=5)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "%s/subpub/qos0" % (test_name), 0, proto_ver=5)

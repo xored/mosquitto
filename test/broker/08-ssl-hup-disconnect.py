@@ -35,8 +35,7 @@ def do_test(option):
     write_pwfile(pw_file)
 
     rc = 1
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect("connect-success-test", keepalive=keepalive)
+    connect_packet = mosq_test.gen_connect("connect-success-test")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port, use_conf=True)

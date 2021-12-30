@@ -10,15 +10,14 @@ port = mosq_test.get_port()
 def disco_test(test, disconnect_packet):
     global rc
 
-    keepalive = 10
-    connect1_packet = mosq_test.gen_connect("sub", proto_ver=5, keepalive=keepalive)
+    connect1_packet = mosq_test.gen_connect("sub", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 1
     subscribe1_packet = mosq_test.gen_subscribe(mid, "failure", 0, proto_ver=5)
     suback1_packet = mosq_test.gen_suback(mid, 0, proto_ver=5)
 
-    connect2_packet = mosq_test.gen_connect("connect-disconnect-test", proto_ver=5, keepalive=keepalive, will_topic="failure", will_payload=b"failure")
+    connect2_packet = mosq_test.gen_connect("connect-disconnect-test", proto_ver=5, will_topic="failure", will_payload=b"failure")
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     sock1 = mosq_test.do_client_connect(connect1_packet, connack1_packet, port=port)

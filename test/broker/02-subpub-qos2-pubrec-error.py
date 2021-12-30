@@ -5,7 +5,7 @@
 from mosq_test_helper import *
 
 def helper(port):
-    connect_packet = mosq_test.gen_connect("02-subpub-qos2-pubrec-error-helper", keepalive=60)
+    connect_packet = mosq_test.gen_connect("02-subpub-qos2-pubrec-error-helper")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 1
@@ -32,8 +32,7 @@ def helper(port):
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("02-subpub-qos2-pubrec-error", keepalive=keepalive, proto_ver=5)
+    connect_packet = mosq_test.gen_connect("02-subpub-qos2-pubrec-error", proto_ver=5)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 1

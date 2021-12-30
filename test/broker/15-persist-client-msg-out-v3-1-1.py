@@ -14,7 +14,6 @@ rc = 1
 
 persist_help.init(port)
 
-keepalive = 10
 client_id = "persist-client-msg-v3-1-1"
 proto_ver = 4
 
@@ -23,7 +22,7 @@ topic0 = "client-msg/0"
 topic1 = "client-msg/1"
 topic2 = "client-msg/2"
 
-connect_packet = mosq_test.gen_connect(client_id, keepalive=keepalive, proto_ver=proto_ver, clean_session=False)
+connect_packet = mosq_test.gen_connect(client_id, proto_ver=proto_ver, clean_session=False)
 connack_packet1 = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 connack_packet2 = mosq_test.gen_connack(rc=0, flags=1, proto_ver=proto_ver)
 mid = 1
@@ -34,7 +33,7 @@ suback_packet1 = mosq_test.gen_suback(mid=mid, qos=1, proto_ver=proto_ver)
 subscribe_packet2 = mosq_test.gen_subscribe(mid, topic2, qos=2, proto_ver=proto_ver)
 suback_packet2 = mosq_test.gen_suback(mid=mid, qos=2, proto_ver=proto_ver)
 
-connect_packet_helper = mosq_test.gen_connect(helper_id, keepalive=keepalive, proto_ver=proto_ver, clean_session=True)
+connect_packet_helper = mosq_test.gen_connect(helper_id, proto_ver=proto_ver, clean_session=True)
 publish_packet0 = mosq_test.gen_publish(topic=topic0, qos=0, payload="message", proto_ver=proto_ver)
 mid = 1
 publish_packet1 = mosq_test.gen_publish(topic=topic1, qos=1, payload="message", mid=mid, proto_ver=proto_ver)

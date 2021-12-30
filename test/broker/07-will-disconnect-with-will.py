@@ -7,13 +7,12 @@ from mosq_test_helper import *
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
 
     mid = 1
-    connect1_packet = mosq_test.gen_connect("will-with-disconnect-test", keepalive=keepalive, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("will-with-disconnect-test", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect2_packet = mosq_test.gen_connect("will-with-disconnect-helper", keepalive=keepalive, proto_ver=5, will_topic="will/with/disconnect/test", will_payload=b"will delay", will_qos=2)
+    connect2_packet = mosq_test.gen_connect("will-with-disconnect-helper", proto_ver=5, will_topic="will/with/disconnect/test", will_payload=b"will delay", will_qos=2)
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
     disconnect_packet = mosq_test.gen_disconnect(reason_code=4, proto_ver=5)
 

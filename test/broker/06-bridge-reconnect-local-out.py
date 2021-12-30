@@ -33,8 +33,7 @@ def do_test(proto_ver):
     write_config(conf_file, port1, port2, bridge_protocol)
 
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("bridge-reconnect-test", keepalive=keepalive, proto_ver=proto_ver_connect)
+    connect_packet = mosq_test.gen_connect("bridge-reconnect-test", proto_ver=proto_ver_connect)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 180
@@ -74,7 +73,7 @@ def do_test(proto_ver):
         mosq_test.do_send_receive(sock, subscribe_packet, suback_packet, "suback")
 
         # Helper
-        helper_connect_packet = mosq_test.gen_connect("test-helper", keepalive=keepalive, proto_ver=proto_ver)
+        helper_connect_packet = mosq_test.gen_connect("test-helper", proto_ver=proto_ver)
         helper_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
         helper_publish_packet = mosq_test.gen_publish("bridge/reconnect", qos=1, mid=1, payload="bridge-reconnect-message", proto_ver=proto_ver)
         helper_puback_packet = mosq_test.gen_puback(mid=1, proto_ver=proto_ver)

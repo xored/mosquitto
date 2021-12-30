@@ -25,8 +25,7 @@ def do_test(per_listener, proto_ver, clean_start, allow_zero, client_port, expec
     write_config(conf_file, port1, port2, per_listener, allow_zero)
 
     rc = 1
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect("", keepalive=keepalive, proto_ver=proto_ver, clean_session=clean_start)
+    connect_packet = mosq_test.gen_connect("", proto_ver=proto_ver, clean_session=clean_start)
     if proto_ver == 4:
         if expect_fail == True:
             connack_packet = mosq_test.gen_connack(rc=2, proto_ver=proto_ver)

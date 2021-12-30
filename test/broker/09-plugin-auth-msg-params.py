@@ -15,8 +15,7 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port)
 
 rc = 1
-keepalive = 10
-connect_packet = mosq_test.gen_connect("msg-param-test", keepalive=keepalive)
+connect_packet = mosq_test.gen_connect("msg-param-test")
 connack_packet = mosq_test.gen_connack(rc=0)
 
 mid = 2

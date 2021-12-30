@@ -16,10 +16,10 @@ def do_test(proto_ver):
     write_config(conf_file, port)
 
     rc = 1
-    connect_packet = mosq_test.gen_connect("delayed-auth-test", keepalive=42, username="delayed-username", password="good", proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("delayed-auth-test", username="delayed-username", password="good", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    connect_packet2 = mosq_test.gen_connect("delayed-auth-test", keepalive=42, username="delayed-username", password="bad", proto_ver=proto_ver)
+    connect_packet2 = mosq_test.gen_connect("delayed-auth-test", username="delayed-username", password="bad", proto_ver=proto_ver)
     if proto_ver == 5:
         connack_packet2 = mosq_test.gen_connack(rc=mqtt5_rc.MQTT_RC_NOT_AUTHORIZED, proto_ver=proto_ver, property_helper=False)
     else:

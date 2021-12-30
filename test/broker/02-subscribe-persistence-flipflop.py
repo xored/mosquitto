@@ -26,12 +26,11 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 60
-    connect_packet_sub_persistent = mosq_test.gen_connect("flipflop-test", keepalive=keepalive, clean_session=False, proto_ver=proto_ver)
-    connect_packet_sub_clean = mosq_test.gen_connect("flipflop-test", keepalive=keepalive, clean_session=True, proto_ver=proto_ver)
+    connect_packet_sub_persistent = mosq_test.gen_connect("flipflop-test", clean_session=False, proto_ver=proto_ver)
+    connect_packet_sub_clean = mosq_test.gen_connect("flipflop-test", clean_session=True, proto_ver=proto_ver)
     connack_packet_sub = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    connect_packet_pub = mosq_test.gen_connect("flipflop-test-pub", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet_pub = mosq_test.gen_connect("flipflop-test-pub", proto_ver=proto_ver)
     connack_packet_pub = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid=1

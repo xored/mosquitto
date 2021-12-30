@@ -8,8 +8,7 @@ from mosq_test_helper import *
 
 def do_test(start_broker, clean_start):
     rc = 1
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect(None, proto_ver=5, keepalive=keepalive, clean_session=clean_start)
+    connect_packet = mosq_test.gen_connect(None, proto_ver=5, clean_session=clean_start)
 
     props = mqtt5_props.gen_string_prop(mqtt5_props.PROP_ASSIGNED_CLIENT_IDENTIFIER, "auto-00000000-0000-0000-0000-000000000000")
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5, properties=props)

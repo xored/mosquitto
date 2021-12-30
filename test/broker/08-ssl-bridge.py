@@ -21,9 +21,8 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port1, port2)
 
 rc = 1
-keepalive = 60
 client_id = socket.gethostname()+".bridge_test"
-connect_packet = mosq_test.gen_connect(client_id, keepalive=keepalive, clean_session=False, proto_ver=128+4)
+connect_packet = mosq_test.gen_connect(client_id, clean_session=False, proto_ver=128+4)
 connack_packet = mosq_test.gen_connack(rc=0)
 
 mid = 1

@@ -16,8 +16,7 @@ write_config(conf_file, port)
 
 rc = 1
 
-keepalive = 10
-connect_packet = mosq_test.gen_connect("12-max-packet-broker", proto_ver=5, keepalive=keepalive)
+connect_packet = mosq_test.gen_connect("12-max-packet-broker", proto_ver=5)
 props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_MAXIMUM_PACKET_SIZE, 40)
 connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5, properties=props)
 

@@ -8,11 +8,10 @@ from mosq_test_helper import *
 def do_test(start_broker, proto_ver, clean_session):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect1_packet = mosq_test.gen_connect("will-qos0-test", keepalive=keepalive, proto_ver=proto_ver)
+    connect1_packet = mosq_test.gen_connect("will-qos0-test", proto_ver=proto_ver)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    connect2_packet = mosq_test.gen_connect("will-qos0-helper", keepalive=keepalive, will_topic="will/qos0/test", will_payload=b"will-message", clean_session=clean_session, proto_ver=proto_ver, session_expiry=60)
+    connect2_packet = mosq_test.gen_connect("will-qos0-helper", will_topic="will/qos0/test", will_payload=b"will-message", clean_session=clean_session, proto_ver=proto_ver, session_expiry=60)
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "will/qos0/test", 0, proto_ver=proto_ver)
@@ -20,7 +19,7 @@ def do_test(start_broker, proto_ver, clean_session):
 
     publish_packet = mosq_test.gen_publish("will/qos0/test", qos=0, payload="will-message", proto_ver=proto_ver)
 
-    connect2_packet_clear = mosq_test.gen_connect("will-qos0-helper", keepalive=keepalive, proto_ver=proto_ver)
+    connect2_packet_clear = mosq_test.gen_connect("will-qos0-helper", proto_ver=proto_ver)
 
     port = mosq_test.get_port()
     if start_broker:

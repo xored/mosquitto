@@ -25,15 +25,14 @@ def do_test(proto_ver):
     write_pwfile(pw_file)
 
     rc = 1
-    keepalive = 10
-    connect1_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="user", password="password", will_topic="will/test", will_payload=b"will msg", proto_ver=proto_ver)
+    connect1_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="user", password="password", will_topic="will/test", will_payload=b"will msg", proto_ver=proto_ver)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1
     subscribe_packet = mosq_test.gen_subscribe(mid, topic="will/test", qos=0, proto_ver=proto_ver)
     suback_packet = mosq_test.gen_suback(mid, 0, proto_ver=proto_ver)
 
-    connect2_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="user", password="password9", proto_ver=proto_ver)
+    connect2_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="user", password="password9", proto_ver=proto_ver)
     if proto_ver == 5:
         connack2_packet = mosq_test.gen_connack(rc=mqtt5_rc.MQTT_RC_NOT_AUTHORIZED, proto_ver=proto_ver, properties=None)
     else:

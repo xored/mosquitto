@@ -5,8 +5,7 @@
 from mosq_test_helper import *
 
 def test(port):
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("subhier-crash", keepalive=keepalive)
+    connect_packet = mosq_test.gen_connect("subhier-crash")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 1

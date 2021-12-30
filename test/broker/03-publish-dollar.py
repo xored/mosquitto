@@ -7,8 +7,7 @@ from mosq_test_helper import *
 def do_test(start_broker):
     rc = 1
     mid = 19
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("pub-dollar-test", keepalive=keepalive)
+    connect_packet = mosq_test.gen_connect("pub-dollar-test")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     publish_packet = mosq_test.gen_publish("$test/test", qos=1, mid=mid, payload="message")

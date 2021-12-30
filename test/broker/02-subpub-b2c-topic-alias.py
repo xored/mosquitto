@@ -7,15 +7,14 @@ from mosq_test_helper import *
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
     props = mqtt5_props.gen_uint16_prop(mqtt5_props.PROP_TOPIC_ALIAS_MAXIMUM, 65535)
-    connect_packet = mosq_test.gen_connect("02-b2c-topic-alias", keepalive=keepalive, proto_ver=5, properties=props)
+    connect_packet = mosq_test.gen_connect("02-b2c-topic-alias", proto_ver=5, properties=props)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     subscribe_packet = mosq_test.gen_subscribe(topic="02/b2c/topic/alias/#", qos=0, mid=1, proto_ver=5)
     suback_packet = mosq_test.gen_suback(qos=0, mid=1, proto_ver=5)
 
-    connect_packet_helper = mosq_test.gen_connect("02-b2c-topic-alias-helper", keepalive=keepalive, proto_ver=5)
+    connect_packet_helper = mosq_test.gen_connect("02-b2c-topic-alias-helper", proto_ver=5)
     connack_packet_helper = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     port = mosq_test.get_port()

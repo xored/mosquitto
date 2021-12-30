@@ -27,8 +27,7 @@ def write_acl(filename, global_en, user_en, pattern_en):
 
 
 def single_test(port, per_listener, username, topic, expect_deny):
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("acl-check", keepalive=keepalive, username=username)
+    connect_packet = mosq_test.gen_connect("acl-check", username=username)
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 1

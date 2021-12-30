@@ -7,8 +7,7 @@ from mosq_test_helper import *
 def do_test(start_broker, proto_ver):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("subscribe-invalid-utf8", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("subscribe-invalid-utf8", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "invalid/utf8", 0, proto_ver=proto_ver)

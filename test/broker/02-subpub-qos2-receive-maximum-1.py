@@ -7,8 +7,7 @@ from mosq_test_helper import *
 
 def helper(port):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("subpub-qos2-recv-max1-helper", keepalive=keepalive, proto_ver=5)
+    connect_packet = mosq_test.gen_connect("subpub-qos2-recv-max1-helper", proto_ver=5)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 1
@@ -45,9 +44,8 @@ def helper(port):
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
     props = mqtt5_props.gen_uint16_prop(mqtt5_props.PROP_RECEIVE_MAXIMUM, 1)
-    connect_packet = mosq_test.gen_connect("subpub-qos2-receive-max1", keepalive=keepalive, proto_ver=5, properties=props)
+    connect_packet = mosq_test.gen_connect("subpub-qos2-receive-max1", proto_ver=5, properties=props)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 1

@@ -44,8 +44,7 @@ env['PYTHONPATH'] = '../../lib/python:'+pp
 
 
 rc = 1
-keepalive = 60
-connect_packet = mosq_test.gen_connect("no-psk-test-client", keepalive=keepalive)
+connect_packet = mosq_test.gen_connect("no-psk-test-client")
 connack_packet = mosq_test.gen_connack(rc=0)
 
 mid = 1

@@ -17,22 +17,21 @@ from mosq_test_helper import *
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
     mid = 1
 
-    connect1_packet = mosq_test.gen_connect("02-shared-client1", keepalive=keepalive, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("02-shared-client1", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect2_packet = mosq_test.gen_connect("02-shared-client2", keepalive=keepalive, proto_ver=5)
+    connect2_packet = mosq_test.gen_connect("02-shared-client2", proto_ver=5)
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect3_packet = mosq_test.gen_connect("02-shared-client3", keepalive=keepalive, proto_ver=5)
+    connect3_packet = mosq_test.gen_connect("02-shared-client3", proto_ver=5)
     connack3_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect4_packet = mosq_test.gen_connect("02-shared-client4", keepalive=keepalive, proto_ver=5)
+    connect4_packet = mosq_test.gen_connect("02-shared-client4", proto_ver=5)
     connack4_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect5_packet = mosq_test.gen_connect("02-shared-client5", keepalive=keepalive, proto_ver=5)
+    connect5_packet = mosq_test.gen_connect("02-shared-client5", proto_ver=5)
     connack5_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     subscribe1_packet = mosq_test.gen_subscribe(mid, "02A/#", 0, proto_ver=5)

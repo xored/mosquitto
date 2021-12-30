@@ -9,16 +9,15 @@ from mosq_test_helper import *
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
 
     mid = 1
-    connect1_packet = mosq_test.gen_connect("will-session-exp", keepalive=keepalive, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("will-session-exp", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     will_props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_WILL_DELAY_INTERVAL, 4)
     connect_props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_SESSION_EXPIRY_INTERVAL, 2)
 
-    connect2_packet = mosq_test.gen_connect("will-session-exp-helper", keepalive=keepalive, proto_ver=5, properties=connect_props, will_topic="will/session-expiry/test", will_payload=b"will delay", will_qos=2, will_properties=will_props)
+    connect2_packet = mosq_test.gen_connect("will-session-exp-helper", proto_ver=5, properties=connect_props, will_topic="will/session-expiry/test", will_payload=b"will delay", will_qos=2, will_properties=will_props)
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "will/session-expiry/test", 0, proto_ver=5)

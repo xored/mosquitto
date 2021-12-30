@@ -6,7 +6,7 @@
 from mosq_test_helper import *
 
 def helper(port):
-    connect_packet = mosq_test.gen_connect("03-b2c-qos2-len-helper", keepalive=60)
+    connect_packet = mosq_test.gen_connect("03-b2c-qos2-len-helper")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 1
@@ -25,8 +25,7 @@ def helper(port):
 def do_test(start_broker, test, pubrec_packet, pubcomp_packet):
     rc = 1
     mid = 3265
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("03-b2c-qos2-len-test", keepalive=keepalive, clean_session=False, proto_ver=5)
+    connect_packet = mosq_test.gen_connect("03-b2c-qos2-len-test", clean_session=False, proto_ver=5)
     connack_packet = mosq_test.gen_connack(flags=0, rc=0, proto_ver=5)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "03/b2c/qos2/len/test", 2, proto_ver=5)

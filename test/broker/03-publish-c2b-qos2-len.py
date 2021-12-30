@@ -8,8 +8,7 @@ from mosq_test_helper import *
 def do_test(start_broker, test, pubrel_packet):
     rc = 1
     mid = 3265
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("03-c2b-qos2-len", keepalive=keepalive, clean_session=False, proto_ver=5)
+    connect_packet = mosq_test.gen_connect("03-c2b-qos2-len", clean_session=False, proto_ver=5)
     connack_packet = mosq_test.gen_connack(flags=0, rc=0, proto_ver=5)
 
     mid = 1

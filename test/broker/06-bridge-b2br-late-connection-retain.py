@@ -40,12 +40,11 @@ def do_test(proto_ver):
     persistence_file = os.path.basename(__file__).replace('.py', '.db')
 
     rc = 1
-    keepalive = 60
     client_id = socket.gethostname()+".bridge_sample"
-    connect_packet = mosq_test.gen_connect(client_id, keepalive=keepalive, clean_session=False, proto_ver=proto_ver_connect)
+    connect_packet = mosq_test.gen_connect(client_id, clean_session=False, proto_ver=proto_ver_connect)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    c_connect_packet = mosq_test.gen_connect("client", keepalive=keepalive, proto_ver=proto_ver)
+    c_connect_packet = mosq_test.gen_connect("client", proto_ver=proto_ver)
     c_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1

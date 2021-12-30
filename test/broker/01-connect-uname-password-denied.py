@@ -18,8 +18,7 @@ def do_test(proto_ver):
     write_config(conf_file, port)
 
     rc = 1
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="user", password="password9", proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="user", password="password9", proto_ver=proto_ver)
     if proto_ver == 5:
         connack_packet = mosq_test.gen_connack(rc=mqtt5_rc.MQTT_RC_NOT_AUTHORIZED, proto_ver=proto_ver, properties=None)
     else:

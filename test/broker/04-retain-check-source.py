@@ -31,8 +31,7 @@ def do_test(proto_ver, per_listener):
 
 
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("retain-check", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("retain-check", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1

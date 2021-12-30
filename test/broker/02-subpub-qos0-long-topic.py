@@ -7,8 +7,7 @@ from mosq_test_helper import *
 def do_test(start_broker, topic, succeeds):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("02-subpub-qos0-long-topic", keepalive=keepalive)
+    connect_packet = mosq_test.gen_connect("02-subpub-qos0-long-topic")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, topic, 0)

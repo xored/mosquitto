@@ -5,7 +5,7 @@
 from mosq_test_helper import *
 
 def helper(port):
-    connect_packet = mosq_test.gen_connect("05-clean-qos1-test-helper", keepalive=60)
+    connect_packet = mosq_test.gen_connect("05-clean-qos1-test-helper")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 128
@@ -21,8 +21,7 @@ def helper(port):
 def do_test(start_broker, proto_ver):
     rc = 1
     mid = 109
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("05-clean-session", keepalive=keepalive, clean_session=False, proto_ver=proto_ver, session_expiry=60)
+    connect_packet = mosq_test.gen_connect("05-clean-session", clean_session=False, proto_ver=proto_ver, session_expiry=60)
     connack1_packet = mosq_test.gen_connack(flags=0, rc=0, proto_ver=proto_ver)
     connack2_packet = mosq_test.gen_connack(flags=1, rc=0, proto_ver=proto_ver)
 
@@ -35,7 +34,7 @@ def do_test(start_broker, proto_ver):
     publish_packet = mosq_test.gen_publish("qos1/05-clean_session/test", qos=1, mid=mid, payload="clean-session-message", proto_ver=proto_ver)
     puback_packet = mosq_test.gen_puback(mid, proto_ver=proto_ver)
 
-    connect_packet_clear = mosq_test.gen_connect("05-clean-session", keepalive=keepalive, clean_session=True, proto_ver=proto_ver, session_expiry=0)
+    connect_packet_clear = mosq_test.gen_connect("05-clean-session", clean_session=True, proto_ver=proto_ver, session_expiry=0)
 
     port = mosq_test.get_port()
     if start_broker:

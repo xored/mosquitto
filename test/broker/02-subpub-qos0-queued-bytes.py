@@ -13,11 +13,10 @@ def write_config(filename, port):
 
 def do_test(proto_ver):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("subpub-qos0-bytes", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("subpub-qos0-bytes", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    connect_packet_helper = mosq_test.gen_connect("qos0-bytes-helper", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet_helper = mosq_test.gen_connect("qos0-bytes-helper", proto_ver=proto_ver)
 
     mid = 1
     subscribe_packet = mosq_test.gen_subscribe(mid, "subpub/qos0/queued/bytes", 1, proto_ver=proto_ver)

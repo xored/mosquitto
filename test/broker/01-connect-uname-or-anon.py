@@ -24,11 +24,10 @@ def do_test(allow_anonymous, password_file, username, expect_success):
     try:
         for proto_ver in [4, 5]:
             rc = 1
-            keepalive = 10
             if username:
-                connect_packet = mosq_test.gen_connect("connect-test-%d" % (proto_ver), keepalive=keepalive, proto_ver=proto_ver, username="user", password="password")
+                connect_packet = mosq_test.gen_connect("connect-test-%d" % (proto_ver), proto_ver=proto_ver, username="user", password="password")
             else:
-                connect_packet = mosq_test.gen_connect("connect-test-%d" % (proto_ver), keepalive=keepalive, proto_ver=proto_ver)
+                connect_packet = mosq_test.gen_connect("connect-test-%d" % (proto_ver), proto_ver=proto_ver)
 
             if proto_ver == 5:
                 if expect_success == True:

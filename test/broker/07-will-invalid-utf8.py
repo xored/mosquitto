@@ -7,8 +7,7 @@ from mosq_test_helper import *
 def do_test(start_broker, proto_ver):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("will-invalid-utf8", keepalive=keepalive, will_topic="will/invalid/utf8", proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("will-invalid-utf8", will_topic="will/invalid/utf8", proto_ver=proto_ver)
 
     b = list(struct.unpack("B"*len(connect_packet), connect_packet))
     b[40] = 0 # Topic should never have a 0x0000

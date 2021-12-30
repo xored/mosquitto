@@ -11,8 +11,7 @@ def do_test(subscribe_packet, reason_code, error_string, port):
     global rc
     rc = 1
 
-    keepalive = 10
-    connect_packet = mosq_test.gen_connect("13-malformed-subscribe-v5", proto_ver=5, keepalive=keepalive)
+    connect_packet = mosq_test.gen_connect("13-malformed-subscribe-v5", proto_ver=5)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 0

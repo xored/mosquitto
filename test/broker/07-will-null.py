@@ -5,7 +5,7 @@
 from mosq_test_helper import *
 
 def helper(port, proto_ver):
-    connect_packet = mosq_test.gen_connect("07-will-null-helper", keepalive=60, will_topic="will/null/test", proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("07-will-null-helper", will_topic="will/null/test", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
     sock = mosq_test.do_client_connect(connect_packet, connack_packet, port=port)
     sock.close()
@@ -13,8 +13,7 @@ def helper(port, proto_ver):
 def do_test(start_broker, proto_ver):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("07-will-null-test", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("07-will-null-test", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "will/null/test", 0, proto_ver=proto_ver)

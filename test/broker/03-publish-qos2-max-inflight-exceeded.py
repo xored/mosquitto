@@ -8,15 +8,14 @@ def do_test(proto_ver):
     port = mosq_test.get_port()
 
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("pub-qos2-inflight-exceeded", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("pub-qos2-inflight-exceeded", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port)
 
     try:
         sock = mosq_test.do_client_connect(connect_packet, connack_packet, port=port, timeout=10)
-        
+
         for i in range(1, 21):
             publish_packet = mosq_test.gen_publish("pub/qos2/max/inflight/exceeded", qos=2, mid=i, payload="message", proto_ver=proto_ver)
             pubrec_packet = mosq_test.gen_pubrec(mid=i, proto_ver=proto_ver)

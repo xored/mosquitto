@@ -84,12 +84,11 @@ def do_test(proto_ver):
     write_config(conf_file, port1, port2, bridge_protocol)
 
     rc = 1
-    keepalive = 60
     client_id = socket.gethostname()+".bridge_sample"
-    connect_packet = mosq_test.gen_connect(client_id, keepalive=keepalive, clean_session=False, proto_ver=proto_ver_connect)
+    connect_packet = mosq_test.gen_connect(client_id, clean_session=False, proto_ver=proto_ver_connect)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
-    client_connect_packet = mosq_test.gen_connect("pub-test", keepalive=keepalive, proto_ver=proto_ver)
+    client_connect_packet = mosq_test.gen_connect("pub-test", proto_ver=proto_ver)
     client_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     ssock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

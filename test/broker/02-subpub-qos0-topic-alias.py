@@ -7,11 +7,10 @@ from mosq_test_helper import *
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
-    connect1_packet = mosq_test.gen_connect("02-subpub-qos0-topic-alias", keepalive=keepalive, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("02-subpub-qos0-topic-alias", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect2_packet = mosq_test.gen_connect("02-subpub-qos0-topic-alias-helper", keepalive=keepalive, proto_ver=5)
+    connect2_packet = mosq_test.gen_connect("02-subpub-qos0-topic-alias-helper", proto_ver=5)
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     mid = 1

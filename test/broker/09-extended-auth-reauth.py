@@ -16,7 +16,7 @@ rc = 1
 # First authentication succeeds
 props = mqtt5_props.gen_string_prop(mqtt5_props.PROP_AUTHENTICATION_METHOD, "repeat")
 props += mqtt5_props.gen_string_prop(mqtt5_props.PROP_AUTHENTICATION_DATA, "repeat")
-connect_packet = mosq_test.gen_connect("client-params-test", keepalive=42, proto_ver=5, properties=props)
+connect_packet = mosq_test.gen_connect("client-params-test", proto_ver=5, properties=props)
 
 props = mqtt5_props.gen_uint16_prop(mqtt5_props.PROP_TOPIC_ALIAS_MAXIMUM, 10)
 props += mqtt5_props.gen_string_prop(mqtt5_props.PROP_AUTHENTICATION_METHOD, "repeat")

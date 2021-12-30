@@ -35,7 +35,7 @@ class MsgSequence(object):
             self.add_default_connect(proto_ver=proto_ver)
 
     def add_default_connect(self, proto_ver):
-        self.add_send(mosq_test.gen_connect(self.name, keepalive=60, proto_ver=proto_ver))
+        self.add_send(mosq_test.gen_connect(self.name, proto_ver=proto_ver))
         self.add_recv(mosq_test.gen_connack(rc=0, proto_ver=proto_ver), "default connack")
 
     def add_send(self, message):
@@ -68,7 +68,7 @@ class MsgSequence(object):
 
     def _publish_message(self, msg):
         sock = mosq_test.client_connect_only(hostname="localhost", port=1888, timeout=2)
-        sock.send(mosq_test.gen_connect("helper", keepalive=60))
+        sock.send(mosq_test.gen_connect("helper"))
         mosq_test.expect_packet(sock, "connack", mosq_test.gen_connack(rc=0))
 
         m = msg.message

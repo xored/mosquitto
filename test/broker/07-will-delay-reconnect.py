@@ -9,17 +9,16 @@ from mosq_test_helper import *
 
 def do_test(start_broker):
     rc = 1
-    keepalive = 60
 
     mid = 1
-    connect1_packet = mosq_test.gen_connect("will-delay-reconnect-test", keepalive=keepalive, proto_ver=5)
+    connect1_packet = mosq_test.gen_connect("will-delay-reconnect-test", proto_ver=5)
     connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_WILL_DELAY_INTERVAL, 3)
-    connect2a_packet = mosq_test.gen_connect("will-delay-reconnect-helper", keepalive=keepalive, proto_ver=5, will_topic="will/delay/reconnect/test", will_payload=b"will delay", will_properties=props, clean_session=False)
+    connect2a_packet = mosq_test.gen_connect("will-delay-reconnect-helper", proto_ver=5, will_topic="will/delay/reconnect/test", will_payload=b"will delay", will_properties=props, clean_session=False)
     connack2a_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
-    connect2b_packet = mosq_test.gen_connect("will-delay-reconnect-helper", keepalive=keepalive, proto_ver=5, clean_session=True)
+    connect2b_packet = mosq_test.gen_connect("will-delay-reconnect-helper", proto_ver=5, clean_session=True)
     connack2b_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "will/delay/reconnect/test", 0, proto_ver=5)

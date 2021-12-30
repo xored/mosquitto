@@ -26,8 +26,7 @@ def do_test(port, per_listener):
     write_acl(acl_file)
 
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("acl-check", keepalive=keepalive)
+    connect_packet = mosq_test.gen_connect("acl-check")
     connack_packet = mosq_test.gen_connack(rc=0)
 
     mid = 1

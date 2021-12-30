@@ -7,11 +7,10 @@ from mosq_test_helper import *
 
 def do_test():
     rc = 1
-    keepalive = 60
 
     mid = 1
     props = mqtt5_props.gen_uint32_prop(mqtt5_props.PROP_WILL_DELAY_INTERVAL, 3)
-    connect_packet = mosq_test.gen_connect("will-573191-test", keepalive=keepalive, proto_ver=5, will_topic="", will_properties=props)
+    connect_packet = mosq_test.gen_connect("will-573191-test", proto_ver=5, will_topic="", will_properties=props)
     connack_packet = b""
 
     port = mosq_test.get_port()

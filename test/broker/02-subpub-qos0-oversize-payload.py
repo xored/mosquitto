@@ -13,14 +13,13 @@ def write_config(filename, port):
 def do_test(proto_ver):
     rc = 1
     mid = 53
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("02-subpub-qos0-oversize", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("02-subpub-qos0-oversize", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     subscribe_packet = mosq_test.gen_subscribe(mid, "subpub/qos0/oversize", 0, proto_ver=proto_ver)
     suback_packet = mosq_test.gen_suback(mid, 0, proto_ver=proto_ver)
 
-    connect2_packet = mosq_test.gen_connect("02-subpub-qos0-oversize-helper", keepalive=keepalive, proto_ver=proto_ver)
+    connect2_packet = mosq_test.gen_connect("02-subpub-qos0-oversize-helper", proto_ver=proto_ver)
     connack2_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     publish_packet_ok = mosq_test.gen_publish("subpub/qos0/oversize", qos=0, payload="A", proto_ver=proto_ver)

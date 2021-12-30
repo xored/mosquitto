@@ -34,8 +34,7 @@ def do_test(proto_ver):
     write_config(conf_file, port1, port2, bridge_protocol)
 
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("bridge-u-test", keepalive=keepalive, proto_ver=proto_ver_connect)
+    connect_packet = mosq_test.gen_connect("bridge-u-test", proto_ver=proto_ver_connect)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 180

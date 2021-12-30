@@ -6,8 +6,7 @@ from mosq_test_helper import *
 
 def do_test(start_broker, proto_ver):
     rc = 1
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("subscribe-test", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("subscribe-test", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     mid = 1

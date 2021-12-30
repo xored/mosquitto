@@ -8,8 +8,7 @@ mid = 1
 def helper(port, topic, reason_code):
     global mid
 
-    keepalive = 60
-    connect_packet = mosq_test.gen_connect("03-publish-dollar-v5", keepalive=keepalive, proto_ver=5)
+    connect_packet = mosq_test.gen_connect("03-publish-dollar-v5", proto_ver=5)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
     publish_packet = mosq_test.gen_publish(topic, qos=1, mid=mid, payload="message", proto_ver=5)
 

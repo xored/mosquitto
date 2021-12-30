@@ -18,9 +18,8 @@ def do_test(proto_ver):
     write_config(conf_file, port)
 
     rc = 1
-    keepalive = 60
     mid = 16
-    connect_packet = mosq_test.gen_connect("retain-qos0-test", keepalive=keepalive, proto_ver=proto_ver)
+    connect_packet = mosq_test.gen_connect("retain-qos0-test", proto_ver=proto_ver)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
     publish_packet = mosq_test.gen_publish("retain/qos0/test", qos=0, payload="retained message", retain=True, proto_ver=proto_ver)

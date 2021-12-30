@@ -17,11 +17,10 @@ def do_test(plugin_ver):
     write_config(conf_file, port, plugin_ver)
 
     rc = 1
-    keepalive = 10
-    connect1_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="readwrite", clean_session=False)
+    connect1_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="readwrite", clean_session=False)
     connack1_packet = mosq_test.gen_connack(rc=0)
 
-    connect2_packet = mosq_test.gen_connect("connect-uname-pwd-test", keepalive=keepalive, username="readwrite", clean_session=False)
+    connect2_packet = mosq_test.gen_connect("connect-uname-pwd-test", username="readwrite", clean_session=False)
     connack2_packet = mosq_test.gen_connack(rc=0,flags=1)
 
     mid = 1

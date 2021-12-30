@@ -11,10 +11,8 @@ from mosq_test_helper import *
 def do_test(start_broker):
     rc = 1
 
-    keepalive = 10
-
-    connect_packet1 = mosq_test.gen_connect("12-response-topic-client1", proto_ver=5, keepalive=keepalive)
-    connect_packet2 = mosq_test.gen_connect("12-response-topic-client2", proto_ver=5, keepalive=keepalive)
+    connect_packet1 = mosq_test.gen_connect("12-response-topic-client1", proto_ver=5)
+    connect_packet2 = mosq_test.gen_connect("12-response-topic-client2", proto_ver=5)
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
     subscribe_packet1 = mosq_test.gen_subscribe(mid=1, topic="12/response/topic/normal/topic", qos=0, proto_ver=5)

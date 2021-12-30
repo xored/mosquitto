@@ -16,10 +16,9 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port)
 
 rc = 1
-keepalive = 60
 
 connect_packet = mosq_test.gen_connect(
-    "persistent-subscription-test", keepalive=keepalive, clean_session=False, proto_ver=5, session_expiry=60
+    "persistent-subscription-test", clean_session=False, proto_ver=5, session_expiry=60
 )
 connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 connack_packet2 = mosq_test.gen_connack(rc=0, flags=1, proto_ver=5)  # session present
@@ -34,7 +33,7 @@ props = mqtt5_props.gen_varint_prop(mqtt5_props.PROP_SUBSCRIPTION_IDENTIFIER, 53
 publish_packet2 = mosq_test.gen_publish("subpub/qos1", qos=1, mid=mid, payload="message", proto_ver=5, properties=props)
 
 
-helper_connect_packet = mosq_test.gen_connect("helper", keepalive=keepalive, clean_session=True, proto_ver=5)
+helper_connect_packet = mosq_test.gen_connect("helper", clean_session=True, proto_ver=5)
 helper_connack_packet = mosq_test.gen_connack(rc=0, proto_ver=5)
 
 mid = 1

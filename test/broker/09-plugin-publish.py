@@ -14,8 +14,7 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port)
 
 rc = 1
-keepalive = 10
-connect1_packet = mosq_test.gen_connect("test-client", keepalive=keepalive, username="readwrite", clean_session=False, proto_ver=proto_ver)
+connect1_packet = mosq_test.gen_connect("test-client", username="readwrite", clean_session=False, proto_ver=proto_ver)
 connack1_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
 
 publish_packet = mosq_test.gen_publish("init", qos=0, proto_ver=proto_ver)

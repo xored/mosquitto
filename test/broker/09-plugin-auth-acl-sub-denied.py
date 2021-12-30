@@ -17,8 +17,7 @@ conf_file = os.path.basename(__file__).replace('.py', '.conf')
 write_config(conf_file, port)
 
 rc = 1
-keepalive = 10
-connect_packet = mosq_test.gen_connect("sub-denied-test", keepalive=keepalive, username="denied")
+connect_packet = mosq_test.gen_connect("sub-denied-test", username="denied")
 connack_packet = mosq_test.gen_connack(rc=0)
 
 mid = 53

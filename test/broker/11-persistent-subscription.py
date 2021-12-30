@@ -18,9 +18,8 @@ def do_test(proto_ver):
 
     rc = 1
     mid = 530
-    keepalive = 60
     connect_packet = mosq_test.gen_connect(
-        "persistent-subscription-test", keepalive=keepalive, clean_session=False, proto_ver=proto_ver, session_expiry=60
+        "persistent-subscription-test", clean_session=False, proto_ver=proto_ver, session_expiry=60
     )
     connack_packet = mosq_test.gen_connack(rc=0, proto_ver=proto_ver)
     connack_packet2 = mosq_test.gen_connack(rc=0, flags=1, proto_ver=proto_ver)  # session present
