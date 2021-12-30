@@ -231,7 +231,7 @@ void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_retain_remove(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg)
 {
 	UNUSED(msg);
 }

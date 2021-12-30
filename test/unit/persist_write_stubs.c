@@ -175,7 +175,7 @@ void plugin_persist__handle_client_msg_add(struct mosquitto *context, const stru
 	UNUSED(context);
 	UNUSED(cmsg);
 }
-void plugin_persist__handle_client_msg_remove(struct mosquitto *context, const struct mosquitto_client_msg *cmsg)
+void plugin_persist__handle_client_msg_delete(struct mosquitto *context, const struct mosquitto_client_msg *cmsg)
 {
 	UNUSED(context);
 	UNUSED(cmsg);
@@ -194,7 +194,7 @@ void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_msg_remove(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_msg_delete(struct mosquitto_msg_store *msg)
 {
 	UNUSED(msg);
 }
@@ -202,7 +202,12 @@ void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_retain_remove(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg)
 {
 	UNUSED(msg);
+}
+void plugin_persist__handle_subscription_delete(struct mosquitto *context, const char *sub)
+{
+	UNUSED(context);
+	UNUSED(sub);
 }
