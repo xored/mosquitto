@@ -69,9 +69,7 @@ int mosquitto_socks5_set(struct mosquitto *mosq, const char *host, int port, con
 	if(!host || strlen(host) > 256) return MOSQ_ERR_INVAL;
 	if(port < 1 || port > UINT16_MAX) return MOSQ_ERR_INVAL;
 
-	mosquitto__free(mosq->socks5_host);
-	mosq->socks5_host = NULL;
-
+	mosquitto__FREE(mosq->socks5_host);
 	mosq->socks5_host = mosquitto__strdup(host);
 	if(!mosq->socks5_host){
 		return MOSQ_ERR_NOMEM;
@@ -79,11 +77,8 @@ int mosquitto_socks5_set(struct mosquitto *mosq, const char *host, int port, con
 
 	mosq->socks5_port = (uint16_t)port;
 
-	mosquitto__free(mosq->socks5_username);
-	mosq->socks5_username = NULL;
-
-	mosquitto__free(mosq->socks5_password);
-	mosq->socks5_password = NULL;
+	mosquitto__FREE(mosq->socks5_username);
+	mosquitto__FREE(mosq->socks5_password);
 
 	if(username){
 		if(strlen(username) > UINT8_MAX){
@@ -100,7 +95,7 @@ int mosquitto_socks5_set(struct mosquitto *mosq, const char *host, int port, con
 			}
 			mosq->socks5_password = mosquitto__strdup(password);
 			if(!mosq->socks5_password){
-				mosquitto__free(mosq->socks5_username);
+				mosquitto__FREE(mosq->socks5_username);
 				return MOSQ_ERR_NOMEM;
 			}
 		}
@@ -161,7 +156,7 @@ int socks5__send(struct mosquitto *mosq)
 		mosq->in_packet.to_process = 2;
 		mosq->in_packet.payload = mosquitto__malloc(sizeof(uint8_t)*2);
 		if(!mosq->in_packet.payload){
-			mosquitto__free(packet);
+			mosquitto__FREE(packet);
 			return MOSQ_ERR_NOMEM;
 		}
 
@@ -219,7 +214,7 @@ int socks5__send(struct mosquitto *mosq)
 		mosq->in_packet.to_process = 5;
 		mosq->in_packet.payload = mosquitto__malloc(sizeof(uint8_t)*5);
 		if(!mosq->in_packet.payload){
-			mosquitto__free(packet);
+			mosquitto__FREE(packet);
 			return MOSQ_ERR_NOMEM;
 		}
 
@@ -245,7 +240,7 @@ int socks5__send(struct mosquitto *mosq)
 		mosq->in_packet.to_process = 2;
 		mosq->in_packet.payload = mosquitto__malloc(sizeof(uint8_t)*2);
 		if(!mosq->in_packet.payload){
-			mosquitto__free(packet);
+			mosquitto__FREE(packet);
 			return MOSQ_ERR_NOMEM;
 		}
 

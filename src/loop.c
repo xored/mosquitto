@@ -147,11 +147,11 @@ static void queue_plugin_msgs(void)
 		}else{
 			db__messages_easy_queue(NULL, msg->topic, (uint8_t)msg->qos, (uint32_t)msg->payloadlen, msg->payload, msg->retain, message_expiry, &msg->properties);
 		}
-		mosquitto__free(msg->topic);
-		mosquitto__free(msg->payload);
+		mosquitto__FREE(msg->topic);
+		mosquitto__FREE(msg->payload);
 		mosquitto_property_free_all(&msg->properties);
-		mosquitto__free(msg->clientid);
-		mosquitto__free(msg);
+		mosquitto__FREE(msg->clientid);
+		mosquitto__FREE(msg);
 	}
 }
 

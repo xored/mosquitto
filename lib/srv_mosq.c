@@ -89,7 +89,7 @@ int mosquitto_connect_srv(struct mosquitto *mosq, const char *host, int keepaliv
 		}
 #endif
 		ares_search(mosq->achan, h, ns_c_in, ns_t_srv, srv_callback, mosq);
-		mosquitto__free(h);
+		mosquitto__FREE(h);
 	}
 
 	mosquitto__set_state(mosq, mosq_cs_connect_srv);

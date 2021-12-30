@@ -106,8 +106,7 @@ void packet__cleanup(struct mosquitto__packet_in *packet)
 	packet->remaining_count = 0;
 	packet->remaining_mult = 1;
 	packet->remaining_length = 0;
-	mosquitto__free(packet->payload);
-	packet->payload = NULL;
+	mosquitto__FREE(packet->payload);
 	packet->to_process = 0;
 	packet->pos = 0;
 }
@@ -123,7 +122,7 @@ void packet__cleanup_all_no_locks(struct mosquitto *mosq)
 		/* Free data and reset values */
 		mosq->out_packet = mosq->out_packet->next;
 
-		mosquitto__free(packet);
+		mosquitto__FREE(packet);
 	}
 	mosq->out_packet_count = 0;
 	mosq->out_packet_last = NULL;
@@ -315,7 +314,7 @@ int packet__write(struct mosquitto *mosq)
 		}
 
 		next_packet = packet__get_next_out(mosq);
-		mosquitto__free(packet);
+		mosquitto__FREE(packet);
 		packet = next_packet;
 
 #ifdef WITH_BROKER

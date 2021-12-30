@@ -129,7 +129,7 @@ void __stdcall service_main(DWORD dwArgc, LPTSTR *lpszArgv)
 		SetServiceStatus(service_handle, &service_status);
 
 		main(argc, argv);
-		mosquitto__free(argv);
+		mosquitto__FREE(argv);
 
 		service_status.dwCurrentState = SERVICE_STOPPED;
 		SetServiceStatus(service_handle, &service_status);

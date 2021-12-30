@@ -78,12 +78,12 @@ static struct mosquitto *bridge__new(struct mosquitto__bridge *bridge)
 	HASH_FIND(hh_id, db.contexts_by_id, local_id, strlen(local_id), new_context);
 	if(new_context){
 		/* (possible from persistent db) */
-		mosquitto__free(local_id);
+		mosquitto__FREE(local_id);
 	}else{
 		/* id wasn't found, so generate a new context */
 		new_context = context__init();
 		if(!new_context){
-			mosquitto__free(local_id);
+			mosquitto__FREE(local_id);
 			return NULL;
 		}
 		new_context->transport = mosq_t_tcp;
@@ -304,7 +304,7 @@ static int bridge__connect_step1(struct mosquitto *context)
 
 			notification_payload = '0';
 			rc = will__set(context, notification_topic, 1, &notification_payload, qos, true, NULL);
-			mosquitto__free(notification_topic);
+			mosquitto__FREE(notification_topic);
 			if(rc != MOSQ_ERR_SUCCESS){
 				return rc;
 			}
@@ -531,10 +531,10 @@ int bridge__connect(struct mosquitto *context)
 			notification_payload = '0';
 			rc = will__set(context, notification_topic, 1, &notification_payload, qos, true, NULL);
 			if(rc != MOSQ_ERR_SUCCESS){
-				mosquitto__free(notification_topic);
+				mosquitto__FREE(notification_topic);
 				return rc;
 			}
-			mosquitto__free(notification_topic);
+			mosquitto__FREE(notification_topic);
 		}
 	}
 
@@ -652,12 +652,12 @@ int bridge__on_connect(struct mosquitto *context)
 				if(send__real_publish(context, mosquitto__mid_generate(context),
 						notification_topic, 1, &notification_payload, qos, retain, 0, 0, NULL, 0)){
 
-					mosquitto__free(notification_topic);
+					mosquitto__FREE(notification_topic);
 					return 1;
 				}
 			}
 			db__messages_easy_queue(context, notification_topic, qos, 1, &notification_payload, 1, 0, NULL);
-			mosquitto__free(notification_topic);
+			mosquitto__FREE(notification_topic);
 		}
 	}
 
@@ -776,7 +776,7 @@ void bridge__db_cleanup(void)
 			context__cleanup(db.bridges[i], true);
 		}
 	}
-	mosquitto__free(db.bridges);
+	mosquitto__FREE(db.bridges);
 }
 
 
@@ -796,30 +796,23 @@ void bridge__cleanup(struct mosquitto *context)
 	db.bridge_count--;
 	db.bridges = mosquitto__realloc(db.bridges, (unsigned) db.bridge_count * sizeof(db.bridges[0]));
 
-	mosquitto__free(context->bridge->name);
-	context->bridge->name = NULL;
-
-	mosquitto__free(context->bridge->local_clientid);
-	context->bridge->local_clientid = NULL;
-
-	mosquitto__free(context->bridge->local_username);
-	context->bridge->local_username = NULL;
-
-	mosquitto__free(context->bridge->local_password);
-	context->bridge->local_password = NULL;
+	mosquitto__FREE(context->bridge->name);
+	mosquitto__FREE(context->bridge->local_clientid);
+	mosquitto__FREE(context->bridge->local_username);
+	mosquitto__FREE(context->bridge->local_password);
 
 	if(context->bridge->remote_clientid != context->id){
-		mosquitto__free(context->bridge->remote_clientid);
+		mosquitto__FREE(context->bridge->remote_clientid);
 	}
 	context->bridge->remote_clientid = NULL;
 
 	if(context->bridge->remote_username != context->username){
-		mosquitto__free(context->bridge->remote_username);
+		mosquitto__FREE(context->bridge->remote_username);
 	}
 	context->bridge->remote_username = NULL;
 
 	if(context->bridge->remote_password != context->password){
-		mosquitto__free(context->bridge->remote_password);
+		mosquitto__FREE(context->bridge->remote_password);
 	}
 	context->bridge->remote_password = NULL;
 #ifdef WITH_TLS
@@ -830,11 +823,10 @@ void bridge__cleanup(struct mosquitto *context)
 #endif
 
 	for(i=0; i<context->bridge->address_count; i++){
-		mosquitto__free(context->bridge->addresses[i].address);
+		mosquitto__FREE(context->bridge->addresses[i].address);
 	}
 
-	mosquitto__free(context->bridge->addresses);
-	context->bridge->addresses = NULL;
+	mosquitto__FREE(context->bridge->addresses);
 
 	config__bridge_cleanup(context->bridge);
 	context->bridge = NULL;
@@ -849,7 +841,7 @@ static void bridge__packet_cleanup(struct mosquitto *context)
     while(context->out_packet){
 		packet = context->out_packet;
 		context->out_packet = context->out_packet->next;
-		mosquitto__free(packet);
+		mosquitto__FREE(packet);
 	}
 	context->out_packet = NULL;
 	context->out_packet_last = NULL;
@@ -1052,8 +1044,7 @@ void bridge_check(void)
 							if(context->adns->ar_result){
 								freeaddrinfo(context->adns->ar_result);
 							}
-							mosquitto__free(context->adns);
-							context->adns = NULL;
+							mosquitto__FREE(context->adns);
 							context->bridge->restart_t = 0;
 						}
 					}else{

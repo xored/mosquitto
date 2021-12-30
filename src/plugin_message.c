@@ -47,7 +47,7 @@ static int plugin__handle_message_single(struct mosquitto__security_options *opt
 
 	stored->topic = event_data.topic;
 	if(stored->payload != event_data.payload){
-		mosquitto__free(stored->payload);
+		mosquitto__FREE(stored->payload);
 		stored->payload = event_data.payload;
 		stored->payloadlen = event_data.payloadlen;
 	}

@@ -62,7 +62,7 @@ int send__subscribe(struct mosquitto *mosq, int *mid, int topic_count, char *con
 
 	rc = packet__alloc(&packet, CMD_SUBSCRIBE | 2, packetlen);
 	if(rc){
-		mosquitto__free(packet);
+		mosquitto__FREE(packet);
 		return rc;
 	}
 

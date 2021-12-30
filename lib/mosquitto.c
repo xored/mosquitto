@@ -280,35 +280,24 @@ void mosquitto__destroy(struct mosquitto *mosq)
 	if(mosq->ssl_ctx){
 		SSL_CTX_free(mosq->ssl_ctx);
 	}
-	mosquitto__free(mosq->tls_cafile);
-	mosquitto__free(mosq->tls_capath);
-	mosquitto__free(mosq->tls_certfile);
-	mosquitto__free(mosq->tls_keyfile);
+	mosquitto__FREE(mosq->tls_cafile);
+	mosquitto__FREE(mosq->tls_capath);
+	mosquitto__FREE(mosq->tls_certfile);
+	mosquitto__FREE(mosq->tls_keyfile);
 	if(mosq->tls_pw_callback) mosq->tls_pw_callback = NULL;
-	mosquitto__free(mosq->tls_version);
-	mosquitto__free(mosq->tls_ciphers);
-	mosquitto__free(mosq->tls_psk);
-	mosquitto__free(mosq->tls_psk_identity);
-	mosquitto__free(mosq->tls_alpn);
+	mosquitto__FREE(mosq->tls_version);
+	mosquitto__FREE(mosq->tls_ciphers);
+	mosquitto__FREE(mosq->tls_psk);
+	mosquitto__FREE(mosq->tls_psk_identity);
+	mosquitto__FREE(mosq->tls_alpn);
 #endif
 
-	mosquitto__free(mosq->address);
-	mosq->address = NULL;
-
-	mosquitto__free(mosq->id);
-	mosq->id = NULL;
-
-	mosquitto__free(mosq->username);
-	mosq->username = NULL;
-
-	mosquitto__free(mosq->password);
-	mosq->password = NULL;
-
-	mosquitto__free(mosq->host);
-	mosq->host = NULL;
-
-	mosquitto__free(mosq->bind_address);
-	mosq->bind_address = NULL;
+	mosquitto__FREE(mosq->address);
+	mosquitto__FREE(mosq->id);
+	mosquitto__FREE(mosq->username);
+	mosquitto__FREE(mosq->password);
+	mosquitto__FREE(mosq->host);
+	mosquitto__FREE(mosq->bind_address);
 
 	mosquitto_property_free_all(&mosq->connect_properties);
 
@@ -330,7 +319,7 @@ void mosquitto_destroy(struct mosquitto *mosq)
 	if(!mosq) return;
 
 	mosquitto__destroy(mosq);
-	mosquitto__free(mosq);
+	mosquitto__FREE(mosq);
 }
 
 int mosquitto_socket(struct mosquitto *mosq)
@@ -394,9 +383,9 @@ int mosquitto_sub_topic_tokenise(const char *subtopic, char ***topics, int *coun
 				(*topics)[hier] = mosquitto__calloc(tlen, sizeof(char));
 				if(!(*topics)[hier]){
 					for(j=0; j<hier; j++){
-						mosquitto__free((*topics)[j]);
+						mosquitto__FREE((*topics)[j]);
 					}
-					mosquitto__free((*topics));
+					mosquitto__FREE((*topics));
 					return MOSQ_ERR_NOMEM;
 				}
 				for(j=start; j<stop; j++){
@@ -420,9 +409,9 @@ int mosquitto_sub_topic_tokens_free(char ***topics, int count)
 	if(!topics || !(*topics) || count<1) return MOSQ_ERR_INVAL;
 
 	for(i=0; i<count; i++){
-		mosquitto__free((*topics)[i]);
+		mosquitto__FREE((*topics)[i]);
 	}
-	mosquitto__free(*topics);
+	mosquitto__FREE(*topics);
 
 	return MOSQ_ERR_SUCCESS;
 }

@@ -237,8 +237,7 @@ int mux_poll__handle(struct mosquitto__listener_sock *listensock, int listensock
 
 int mux_poll__cleanup(void)
 {
-	mosquitto__free(pollfds);
-	pollfds = NULL;
+	mosquitto__FREE(pollfds);
 
 	return MOSQ_ERR_SUCCESS;
 }

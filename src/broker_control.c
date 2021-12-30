@@ -33,6 +33,7 @@ Contributors:
 #include "mosquitto_broker_internal.h"
 #include "mosquitto_broker.h"
 #include "mosquitto_plugin.h"
+#include "memory_mosq.h"
 #include "mqtt_protocol.h"
 
 static mosquitto_plugin_id_t plg_id;
@@ -72,7 +73,7 @@ static void send_response(cJSON *tree)
 
 	payload_len = strlen(payload);
 	if(payload_len > MQTT_MAX_PAYLOAD){
-		free(payload);
+		SAFE_FREE(payload);
 		return;
 	}
 	mosquitto_broker_publish(NULL, "$CONTROL/broker/v1/response",

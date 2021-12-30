@@ -130,8 +130,7 @@ int packet__read_string(struct mosquitto__packet_in *packet, char **str, uint16_
 	if(*length == 0) return MOSQ_ERR_SUCCESS;
 
 	if(mosquitto_validate_utf8(*str, *length)){
-		mosquitto__free(*str);
-		*str = NULL;
+		mosquitto__FREE(*str);
 		*length = 0;
 		return MOSQ_ERR_MALFORMED_UTF8;
 	}

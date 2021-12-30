@@ -80,11 +80,8 @@ int mosquitto_username_pw_set(struct mosquitto *mosq, const char *username, cons
 		}
 	}
 
-	mosquitto__free(mosq->username);
-	mosq->username = NULL;
-
-	mosquitto__free(mosq->password);
-	mosq->password = NULL;
+	mosquitto__FREE(mosq->username);
+	mosquitto__FREE(mosq->password);
 
 	if(username){
 		slen = strlen(username);
@@ -101,8 +98,7 @@ int mosquitto_username_pw_set(struct mosquitto *mosq, const char *username, cons
 	if(password){
 		mosq->password = mosquitto__strdup(password);
 		if(!mosq->password){
-			mosquitto__free(mosq->username);
-			mosq->username = NULL;
+			mosquitto__FREE(mosq->username);
 			return MOSQ_ERR_NOMEM;
 		}
 	}
@@ -131,8 +127,7 @@ int mosquitto_tls_set(struct mosquitto *mosq, const char *cafile, const char *ca
 
 	if(!mosq || (!cafile && !capath) || (certfile && !keyfile) || (!certfile && keyfile)) return MOSQ_ERR_INVAL;
 
-	mosquitto__free(mosq->tls_cafile);
-	mosq->tls_cafile = NULL;
+	mosquitto__FREE(mosq->tls_cafile);
 	if(cafile){
 		fptr = mosquitto__fopen(cafile, "rt", false);
 		if(fptr){
@@ -147,8 +142,7 @@ int mosquitto_tls_set(struct mosquitto *mosq, const char *cafile, const char *ca
 		}
 	}
 
-	mosquitto__free(mosq->tls_capath);
-	mosq->tls_capath = NULL;
+	mosquitto__FREE(mosq->tls_capath);
 	if(capath){
 		mosq->tls_capath = mosquitto__strdup(capath);
 		if(!mosq->tls_capath){
@@ -156,18 +150,14 @@ int mosquitto_tls_set(struct mosquitto *mosq, const char *cafile, const char *ca
 		}
 	}
 
-	mosquitto__free(mosq->tls_certfile);
-	mosq->tls_certfile = NULL;
+	mosquitto__FREE(mosq->tls_certfile);
 	if(certfile){
 		fptr = mosquitto__fopen(certfile, "rt", false);
 		if(fptr){
 			fclose(fptr);
 		}else{
-			mosquitto__free(mosq->tls_cafile);
-			mosq->tls_cafile = NULL;
-
-			mosquitto__free(mosq->tls_capath);
-			mosq->tls_capath = NULL;
+			mosquitto__FREE(mosq->tls_cafile);
+			mosquitto__FREE(mosq->tls_capath);
 			return MOSQ_ERR_INVAL;
 		}
 		mosq->tls_certfile = mosquitto__strdup(certfile);
@@ -176,21 +166,15 @@ int mosquitto_tls_set(struct mosquitto *mosq, const char *cafile, const char *ca
 		}
 	}
 
-	mosquitto__free(mosq->tls_keyfile);
-	mosq->tls_keyfile = NULL;
+	mosquitto__FREE(mosq->tls_keyfile);
 	if(keyfile){
 		fptr = mosquitto__fopen(keyfile, "rt", false);
 		if(fptr){
 			fclose(fptr);
 		}else{
-			mosquitto__free(mosq->tls_cafile);
-			mosq->tls_cafile = NULL;
-
-			mosquitto__free(mosq->tls_capath);
-			mosq->tls_capath = NULL;
-
-			mosquitto__free(mosq->tls_certfile);
-			mosq->tls_certfile = NULL;
+			mosquitto__FREE(mosq->tls_cafile);
+			mosquitto__FREE(mosq->tls_capath);
+			mosquitto__FREE(mosq->tls_certfile);
 			return MOSQ_ERR_INVAL;
 		}
 		mosq->tls_keyfile = mosquitto__strdup(keyfile);
@@ -347,7 +331,7 @@ int mosquitto_string_option(struct mosquitto *mosq, enum mosq_opt_t option, cons
 			break;
 
 		case MOSQ_OPT_BIND_ADDRESS:
-			mosquitto__free(mosq->bind_address);
+			mosquitto__FREE(mosq->bind_address);
 			if(value){
 				mosq->bind_address = mosquitto__strdup(value);
 				if(mosq->bind_address){
@@ -361,7 +345,7 @@ int mosquitto_string_option(struct mosquitto *mosq, enum mosq_opt_t option, cons
 
 		case MOSQ_OPT_HTTP_PATH:
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_BUILTIN
-			mosquitto__free(mosq->wsd.http_path);
+			mosquitto__FREE(mosq->wsd.http_path);
 			if(value){
 				mosq->wsd.http_path = mosquitto__strdup(value);
 				if(mosq->wsd.http_path){
@@ -396,7 +380,7 @@ int mosquitto_tls_psk_set(struct mosquitto *mosq, const char *psk, const char *i
 
 	mosq->tls_psk_identity = mosquitto__strdup(identity);
 	if(!mosq->tls_psk_identity){
-		mosquitto__free(mosq->tls_psk);
+		mosquitto__FREE(mosq->tls_psk);
 		return MOSQ_ERR_NOMEM;
 	}
 	if(ciphers){

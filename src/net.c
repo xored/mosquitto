@@ -301,25 +301,25 @@ static unsigned int psk_server_callback(SSL *ssl, const char *identity, unsigned
 	if(!psk_key) return 0;
 
 	if(mosquitto_psk_key_get(context, psk_hint, identity, psk_key, (int)max_psk_len*2) != MOSQ_ERR_SUCCESS){
-		mosquitto__free(psk_key);
+		mosquitto__FREE(psk_key);
 		return 0;
 	}
 
 	len = mosquitto__hex2bin(psk_key, psk, (int)max_psk_len);
 	if (len < 0){
-		mosquitto__free(psk_key);
+		mosquitto__FREE(psk_key);
 		return 0;
 	}
 
 	if(listener->use_identity_as_username){
 		context->username = mosquitto__strdup(identity);
 		if(!context->username){
-			mosquitto__free(psk_key);
+			mosquitto__FREE(psk_key);
 			return 0;
 		}
 	}
 
-	mosquitto__free(psk_key);
+	mosquitto__FREE(psk_key);
 	return (unsigned int)len;
 }
 #endif
@@ -349,6 +349,7 @@ int net__tls_server_ctx(struct mosquitto__listener *listener)
 
 	if(listener->ssl_ctx){
 		SSL_CTX_free(listener->ssl_ctx);
+		listener->ssl_ctx = NULL;
 	}
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
@@ -786,7 +787,7 @@ static int net__socket_listen_tcp(struct mosquitto__listener *listener)
 
 		if(net__socket_nonblock(&sock)){
 			freeaddrinfo(ainfo);
-			mosquitto__free(listener->socks);
+			mosquitto__FREE(listener->socks);
 			return 1;
 		}
 
@@ -813,7 +814,7 @@ static int net__socket_listen_tcp(struct mosquitto__listener *listener)
 			net__print_error(MOSQ_LOG_ERR, "Error: %s");
 			COMPAT_CLOSE(sock);
 			freeaddrinfo(ainfo);
-			mosquitto__free(listener->socks);
+			mosquitto__FREE(listener->socks);
 			return 1;
 		}
 
@@ -821,7 +822,7 @@ static int net__socket_listen_tcp(struct mosquitto__listener *listener)
 			net__print_error(MOSQ_LOG_ERR, "Error: %s");
 			freeaddrinfo(ainfo);
 			COMPAT_CLOSE(sock);
-			mosquitto__free(listener->socks);
+			mosquitto__FREE(listener->socks);
 			return 1;
 		}
 	}
@@ -829,7 +830,7 @@ static int net__socket_listen_tcp(struct mosquitto__listener *listener)
 
 #ifndef WIN32
 	if(listener->bind_interface && !interface_bound){
-		mosquitto__free(listener->socks);
+		mosquitto__FREE(listener->socks);
 		return 1;
 	}
 #endif

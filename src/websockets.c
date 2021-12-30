@@ -144,7 +144,7 @@ static int callback_mqtt(
 				p = lws_get_protocol(wsi);
 				mosq->listener = p->user;
 				if(!mosq->listener){
-					mosquitto__free(mosq);
+					mosquitto__FREE(mosq);
 					return -1;
 				}
 				mosq->wsi = wsi;
@@ -163,7 +163,7 @@ static int callback_mqtt(
 			easy_address(lws_get_socket_fd(wsi), mosq);
 			if(!mosq->address){
 				/* getpeername and inet_ntop failed and not a bridge */
-				mosquitto__free(mosq);
+				mosquitto__FREE(mosq);
 				u->mosq = NULL;
 				return -1;
 			}
@@ -173,8 +173,8 @@ static int callback_mqtt(
 				if(db.config->connection_messages == true){
 					log__printf(NULL, MOSQ_LOG_NOTICE, "Client connection from %s denied: max_connections exceeded.", mosq->address);
 				}
-				mosquitto__free(mosq->address);
-				mosquitto__free(mosq);
+				mosquitto__FREE(mosq->address);
+				mosquitto__FREE(mosq);
 				u->mosq = NULL;
 				return -1;
 			}
@@ -263,7 +263,7 @@ static int callback_mqtt(
 #endif
 
 				packet__get_next_out(mosq);
-				mosquitto__free(packet);
+				mosquitto__FREE(packet);
 
 				mosq->next_msg_out = db.now_s + mosq->keepalive;
 			}
@@ -402,14 +402,14 @@ static char *http__canonical_filename(
 	/* Get canonical path and check it is within our http_dir */
 #ifdef WIN32
 	filename_canonical = _fullpath(NULL, filename, 0);
-	mosquitto__free(filename);
+	mosquitto__FREE(filename);
 	if(!filename_canonical){
 		lws_return_http_status(wsi, HTTP_STATUS_INTERNAL_SERVER_ERROR, NULL);
 		return NULL;
 	}
 #else
 	filename_canonical = realpath(filename, NULL);
-	mosquitto__free(filename);
+	mosquitto__FREE(filename);
 	if(!filename_canonical){
 		if(errno == EACCES){
 			lws_return_http_status(wsi, HTTP_STATUS_FORBIDDEN, NULL);
@@ -425,7 +425,7 @@ static char *http__canonical_filename(
 #endif
 	if(strncmp(http_dir, filename_canonical, strlen(http_dir))){
 		/* Requested file isn't within http_dir, deny access. */
-		free(filename_canonical);
+		SAFE_FREE(filename_canonical);
 		lws_return_http_status(wsi, HTTP_STATUS_FORBIDDEN, NULL);
 		return NULL;
 	}
@@ -485,12 +485,12 @@ static int callback_http(
 
 			u->fptr = fopen(filename_canonical, "rb");
 			if(!u->fptr){
-				free(filename_canonical);
+				SAFE_FREE(filename_canonical);
 				lws_return_http_status(wsi, HTTP_STATUS_NOT_FOUND, NULL);
 				return -1;
 			}
 			if(fstat(fileno(u->fptr), &filestat) < 0){
-				free(filename_canonical);
+				SAFE_FREE(filename_canonical);
 				lws_return_http_status(wsi, HTTP_STATUS_INTERNAL_SERVER_ERROR, NULL);
 				fclose(u->fptr);
 				u->fptr = NULL;
@@ -501,7 +501,7 @@ static int callback_http(
 			if((filestat.st_mode & S_IFDIR) == S_IFDIR){
 				fclose(u->fptr);
 				u->fptr = NULL;
-				free(filename_canonical);
+				SAFE_FREE(filename_canonical);
 
 				/* FIXME - use header functions from lws 2.x */
 				buflen = (size_t)snprintf((char *)buf, 4096, "HTTP/1.0 302 OK\r\n"
@@ -514,12 +514,12 @@ static int callback_http(
 				lws_return_http_status(wsi, HTTP_STATUS_FORBIDDEN, NULL);
 				fclose(u->fptr);
 				u->fptr = NULL;
-				free(filename_canonical);
+				SAFE_FREE(filename_canonical);
 				return -1;
 			}
 
 			log__printf(NULL, MOSQ_LOG_DEBUG, "http serving file \"%s\".", filename_canonical);
-			free(filename_canonical);
+			SAFE_FREE(filename_canonical);
 			/* FIXME - use header functions from lws 2.x */
 			buflen = (size_t)snprintf((char *)buf, 4096, "HTTP/1.0 200 OK\r\n"
 												"Server: mosquitto\r\n"
@@ -718,7 +718,7 @@ void mosq_websockets_init(struct mosquitto__listener *listener, const struct mos
 
 	user = mosquitto__calloc(1, sizeof(struct libws_mqtt_hack));
 	if(!user){
-		mosquitto__free(p);
+		mosquitto__FREE(p);
 		log__printf(NULL, MOSQ_LOG_ERR, "Out of memory.");
 		return;
 	}
@@ -730,8 +730,8 @@ void mosq_websockets_init(struct mosquitto__listener *listener, const struct mos
 		user->http_dir = realpath(listener->http_dir, NULL);
 #endif
 		if(!user->http_dir){
-			mosquitto__free(user);
-			mosquitto__free(p);
+			mosquitto__FREE(user);
+			mosquitto__FREE(p);
 			log__printf(NULL, MOSQ_LOG_ERR, "Error: Unable to open http dir \"%s\".", listener->http_dir);
 			return;
 		}

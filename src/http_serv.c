@@ -50,8 +50,7 @@ int http__context_init(struct mosquitto *context)
 
 int http__context_cleanup(struct mosquitto *context)
 {
-	mosquitto__free(context->http_request);
-	context->http_request = NULL;
+	mosquitto__FREE(context->http_request);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -171,8 +170,7 @@ int http__read(struct mosquitto *mosq)
 	}
 
 	if(strncmp(http_method, "GET", http_method_len) && strncmp(http_method, "HEAD", http_method_len)){
-		mosquitto__free(mosq->http_request);
-		mosq->http_request = NULL;
+		mosquitto__FREE(mosq->http_request);
 		/* FIXME Not supported - send 501 response */
 		return MOSQ_ERR_UNKNOWN;
 	}
@@ -257,7 +255,7 @@ int http__read(struct mosquitto *mosq)
 			"Sec-WebSocket-Accept: %s\r\n"
 			"Sec-WebSocket-Protocol: %.*s\r\n"
 			"\r\n", accept_key, subprotocol_len, subprotocol) + WS_PACKET_OFFSET;
-	free(accept_key);
+	SAFE_FREE(accept_key);
 	packet->to_process = packet->packet_length;
 
 	mosq->http_request[0] = '\0';

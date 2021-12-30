@@ -221,7 +221,7 @@ int handle__publish(struct mosquitto *context)
 		snprintf(topic_mount, len, "%s%s", context->listener->mount_point, msg->topic);
 		topic_mount[len] = '\0';
 
-		mosquitto__free(msg->topic);
+		mosquitto__FREE(msg->topic);
 		msg->topic = topic_mount;
 	}
 

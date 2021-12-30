@@ -64,8 +64,7 @@ int control__process(struct mosquitto *context, struct mosquitto_msg_store *stor
 				mosquitto_property_add_string(&properties, MQTT_PROP_REASON_STRING, event_data.reason_string);
 			}
 		}
-		free(event_data.reason_string);
-		event_data.reason_string = NULL;
+		SAFE_FREE(event_data.reason_string);
 	}
 
 	if(stored->qos == 1){
@@ -106,7 +105,7 @@ int control__register_callback(mosquitto_plugin_id_t *pid, MOSQ_FUNC_generic_cal
 	}
 	cb_new->data = mosquitto__strdup(topic);
 	if(cb_new->data == NULL){
-		mosquitto__free(cb_new);
+		mosquitto__FREE(cb_new);
 		return MOSQ_ERR_NOMEM;
 	}
 	cb_new->cb = cb_func;
@@ -150,13 +149,13 @@ int control__unregister_callback(mosquitto_plugin_id_t *identifier, MOSQ_FUNC_ge
 	HASH_FIND(hh, opts->plugin_callbacks.control, topic, topic_len, cb_found);
 	if(cb_found && cb_found->cb == cb_func){
 		HASH_DELETE(hh, opts->plugin_callbacks.control, cb_found);
-		mosquitto__free(cb_found->data);
-		mosquitto__free(cb_found);
+		mosquitto__FREE(cb_found->data);
+		mosquitto__FREE(cb_found);
 
 		DL_FOREACH(identifier->control_endpoints, ep){
 			if(!strcmp(topic, ep->topic)){
 				DL_DELETE(identifier->control_endpoints, ep);
-				mosquitto__free(ep);
+				mosquitto__FREE(ep);
 				break;
 			}
 		}
@@ -182,11 +181,11 @@ void control__unregister_all_callbacks(mosquitto_plugin_id_t *identifier)
 		HASH_FIND(hh, opts->plugin_callbacks.control, ep->topic, strlen(ep->topic), cb_found);
 		if(cb_found){
 			HASH_DELETE(hh, opts->plugin_callbacks.control, cb_found);
-			mosquitto__free(cb_found->data);
-			mosquitto__free(cb_found);
+			mosquitto__FREE(cb_found->data);
+			mosquitto__FREE(cb_found);
 		}
 
 		DL_DELETE(identifier->control_endpoints, ep);
-		mosquitto__free(ep);
+		mosquitto__FREE(ep);
 	}
 }

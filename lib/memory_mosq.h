@@ -42,4 +42,7 @@ char *mosquitto__strdup(const char *s);
 void memory__set_limit(size_t lim);
 #endif
 
+#define mosquitto__FREE(A) do { mosquitto__free(A); (A) = NULL;} while(0)
+#define SAFE_FREE(A) do { free(A); (A) = NULL;} while(0)
+
 #endif

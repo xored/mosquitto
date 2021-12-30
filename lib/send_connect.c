@@ -132,7 +132,7 @@ int send__connect(struct mosquitto *mosq, uint16_t keepalive, bool clean_session
 
 	rc = packet__alloc(&packet, CMD_CONNECT, headerlen + payloadlen);
 	if(rc){
-		mosquitto__free(packet);
+		mosquitto__FREE(packet);
 		return rc;
 	}
 

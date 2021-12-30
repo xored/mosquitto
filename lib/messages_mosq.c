@@ -39,10 +39,10 @@ void message__cleanup(struct mosquitto_message_all **message)
 
 	msg = *message;
 
-	mosquitto__free(msg->msg.topic);
-	mosquitto__free(msg->msg.payload);
+	mosquitto__FREE(msg->msg.topic);
+	mosquitto__FREE(msg->msg.payload);
 	mosquitto_property_free_all(&msg->properties);
-	mosquitto__free(msg);
+	mosquitto__FREE(msg);
 }
 
 void message__cleanup_all(struct mosquitto *mosq)
@@ -73,7 +73,7 @@ int mosquitto_message_copy(struct mosquitto_message *dst, const struct mosquitto
 	if(src->payloadlen){
 		dst->payload = mosquitto__calloc((unsigned int)src->payloadlen+1, sizeof(uint8_t));
 		if(!dst->payload){
-			mosquitto__free(dst->topic);
+			mosquitto__FREE(dst->topic);
 			return MOSQ_ERR_NOMEM;
 		}
 		memcpy(dst->payload, src->payload, (unsigned int)src->payloadlen);
@@ -106,17 +106,17 @@ void mosquitto_message_free(struct mosquitto_message **message)
 
 	msg = *message;
 
-	mosquitto__free(msg->topic);
-	mosquitto__free(msg->payload);
-	mosquitto__free(msg);
+	mosquitto__FREE(msg->topic);
+	mosquitto__FREE(msg->payload);
+	mosquitto__FREE(msg);
 }
 
 void mosquitto_message_free_contents(struct mosquitto_message *message)
 {
 	if(!message) return;
 
-	mosquitto__free(message->topic);
-	mosquitto__free(message->payload);
+	mosquitto__FREE(message->topic);
+	mosquitto__FREE(message->payload);
 }
 
 int message__queue(struct mosquitto *mosq, struct mosquitto_message_all *message, enum mosquitto_msg_direction dir)

@@ -220,12 +220,12 @@ int bridge__add_topic(struct mosquitto__bridge *bridge, const char *topic, enum 
 	return MOSQ_ERR_SUCCESS;
 
 error:
-	mosquitto__free(cur_topic->local_prefix);
-	mosquitto__free(cur_topic->remote_prefix);
-	mosquitto__free(cur_topic->local_topic);
-	mosquitto__free(cur_topic->remote_topic);
-	mosquitto__free(cur_topic->topic);
-	mosquitto__free(cur_topic);
+	mosquitto__FREE(cur_topic->local_prefix);
+	mosquitto__FREE(cur_topic->remote_prefix);
+	mosquitto__FREE(cur_topic->local_topic);
+	mosquitto__FREE(cur_topic->remote_topic);
+	mosquitto__FREE(cur_topic->topic);
+	mosquitto__FREE(cur_topic);
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: Out of memory.");
 	return MOSQ_ERR_NOMEM;
 }
@@ -248,7 +248,7 @@ int bridge__remap_topic_in(struct mosquitto *context, char **topic)
 
 				rc = mosquitto_topic_matches_sub(cur_topic->remote_topic, *topic, &match);
 				if(rc){
-					mosquitto__free(*topic);
+					mosquitto__FREE(*topic);
 					return rc;
 				}
 				if(match){
@@ -257,10 +257,10 @@ int bridge__remap_topic_in(struct mosquitto *context, char **topic)
 						if(!strncmp(cur_topic->remote_prefix, *topic, strlen(cur_topic->remote_prefix))){
 							topic_temp = mosquitto__strdup((*topic)+strlen(cur_topic->remote_prefix));
 							if(!topic_temp){
-								mosquitto__free(*topic);
+								mosquitto__FREE(*topic);
 								return MOSQ_ERR_NOMEM;
 							}
-							mosquitto__free(*topic);
+							mosquitto__FREE(*topic);
 							*topic = topic_temp;
 						}
 					}
@@ -270,13 +270,13 @@ int bridge__remap_topic_in(struct mosquitto *context, char **topic)
 						len = strlen(*topic) + strlen(cur_topic->local_prefix)+1;
 						topic_temp = mosquitto__malloc(len+1);
 						if(!topic_temp){
-							mosquitto__free(*topic);
+							mosquitto__FREE(*topic);
 							return MOSQ_ERR_NOMEM;
 						}
 						snprintf(topic_temp, len, "%s%s", cur_topic->local_prefix, *topic);
 						topic_temp[len] = '\0';
 
-						mosquitto__free(*topic);
+						mosquitto__FREE(*topic);
 						*topic = topic_temp;
 					}
 					break;

@@ -225,14 +225,14 @@ static void subhier_clean(struct mosquitto__subhier **subhier)
 		leaf = peer->subs;
 		while(leaf){
 			nextleaf = leaf->next;
-			mosquitto__free(leaf);
+			mosquitto__FREE(leaf);
 			leaf = nextleaf;
 		}
 		subhier_clean(&peer->children);
-		mosquitto__free(peer->topic);
+		mosquitto__FREE(peer->topic);
 
 		HASH_DELETE(hh, *subhier, peer);
-		mosquitto__free(peer);
+		mosquitto__FREE(peer);
 	}
 }
 
@@ -261,18 +261,18 @@ void db__msg_store_free(struct mosquitto_msg_store *store)
 {
 	int i;
 
-	mosquitto__free(store->source_id);
-	mosquitto__free(store->source_username);
+	mosquitto__FREE(store->source_id);
+	mosquitto__FREE(store->source_username);
 	if(store->dest_ids){
 		for(i=0; i<store->dest_id_count; i++){
-			mosquitto__free(store->dest_ids[i]);
+			mosquitto__FREE(store->dest_ids[i]);
 		}
-		mosquitto__free(store->dest_ids);
+		mosquitto__FREE(store->dest_ids);
 	}
-	mosquitto__free(store->topic);
+	mosquitto__FREE(store->topic);
 	mosquitto_property_free_all(&store->properties);
-	mosquitto__free(store->payload);
-	mosquitto__free(store);
+	mosquitto__FREE(store->payload);
+	mosquitto__FREE(store);
 }
 
 void db__msg_store_remove(struct mosquitto_msg_store *store, bool notify)
@@ -338,7 +338,7 @@ static void db__message_remove(struct mosquitto *context, struct mosquitto_msg_d
 		db__msg_store_ref_dec(&item->store);
 	}
 
-	mosquitto__free(item);
+	mosquitto__FREE(item);
 }
 
 
@@ -698,7 +698,7 @@ static void db__messages_delete_list(struct mosquitto_client_msg **head)
 	DL_FOREACH_SAFE(*head, tail, tmp){
 		DL_DELETE(*head, tail);
 		db__msg_store_ref_dec(&tail->store);
-		mosquitto__free(tail);
+		mosquitto__FREE(tail);
 	}
 	*head = NULL;
 }

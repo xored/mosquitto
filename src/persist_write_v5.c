@@ -128,14 +128,14 @@ int persist__chunk_client_msg_write_v6(FILE *db_fptr, struct P_client_msg *chunk
 			}
 
 			write_e(db_fptr, prop_packet->payload, proplen);
-			mosquitto__free(prop_packet);
+			mosquitto__FREE(prop_packet);
 		}
 	}
 
 	return MOSQ_ERR_SUCCESS;
 error:
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", strerror(errno));
-	mosquitto__free(prop_packet);
+	mosquitto__FREE(prop_packet);
 	return 1;
 }
 
@@ -193,14 +193,14 @@ int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_msg_store *chu
 			}
 
 			write_e(db_fptr, prop_packet->payload, proplen);
-			mosquitto__free(prop_packet);
+			mosquitto__FREE(prop_packet);
 		}
 	}
 
 	return MOSQ_ERR_SUCCESS;
 error:
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", strerror(errno));
-	mosquitto__free(prop_packet);
+	mosquitto__FREE(prop_packet);
 	return 1;
 }
 

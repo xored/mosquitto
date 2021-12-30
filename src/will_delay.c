@@ -70,7 +70,7 @@ void will_delay__send_all(void)
 		item->context->will_delay_interval = 0;
 		item->context->will_delay_entry = NULL;
 		context__send_will(item->context);
-		mosquitto__free(item);
+		mosquitto__FREE(item);
 	}
 }
 
@@ -96,7 +96,7 @@ void will_delay__check(void)
 			if(item->context->session_expiry_interval == 0){
 				context__add_to_disused(item->context);
 			}
-			mosquitto__free(item);
+			mosquitto__FREE(item);
 		}else{
 			loop__update_next_event((item->context->will_delay_time - db.now_real_s)*1000);
 			return;
@@ -109,8 +109,7 @@ void will_delay__remove(struct mosquitto *mosq)
 {
 	if(mosq->will_delay_entry != NULL){
 		DL_DELETE(delay_list, mosq->will_delay_entry);
-		mosquitto__free(mosq->will_delay_entry);
-		mosq->will_delay_entry = NULL;
+		mosquitto__FREE(mosq->will_delay_entry);
 	}
 }
 

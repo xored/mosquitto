@@ -136,14 +136,9 @@ void context__cleanup(struct mosquitto *context, bool force_free)
 	alias__free_all(context);
 	keepalive__remove(context);
 
-	mosquitto__free(context->auth_method);
-	context->auth_method = NULL;
-
-	mosquitto__free(context->username);
-	context->username = NULL;
-
-	mosquitto__free(context->password);
-	context->password = NULL;
+	mosquitto__FREE(context->auth_method);
+	mosquitto__FREE(context->username);
+	mosquitto__FREE(context->password);
 
 	net__socket_close(context);
 	if(force_free){
@@ -151,37 +146,34 @@ void context__cleanup(struct mosquitto *context, bool force_free)
 	}
 	db__messages_delete(context, force_free);
 
-	mosquitto__free(context->address);
-	context->address = NULL;
+	mosquitto__FREE(context->address);
 
 	context__send_will(context);
 
 	if(context->id){
 		context__remove_from_by_id(context);
-		mosquitto__free(context->id);
-		context->id = NULL;
+		mosquitto__FREE(context->id);
 	}
 	packet__cleanup(&(context->in_packet));
 	while(context->out_packet){
 		packet = context->out_packet;
 		context->out_packet = context->out_packet->next;
-		mosquitto__free(packet);
+		mosquitto__FREE(packet);
 	}
 	context->out_packet_count = 0;
 #if defined(WITH_BROKER) && defined(__GLIBC__) && defined(WITH_ADNS)
 	if(context->adns){
 		gai_cancel(context->adns);
-		mosquitto__free((struct addrinfo *)context->adns->ar_request);
-		mosquitto__free(context->adns);
+		mosquitto__FREE((struct addrinfo *)context->adns->ar_request);
+		mosquitto__FREE(context->adns);
 	}
 #endif
 
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_BUILTIN
-	mosquitto__free(context->http_request);
-	context->http_request = NULL;
+	mosquitto__FREE(context->http_request);
 #endif
 	if(force_free){
-		mosquitto__free(context);
+		mosquitto__FREE(context);
 	}
 }
 

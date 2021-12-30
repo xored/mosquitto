@@ -233,7 +233,7 @@ static int persist__subs_save(FILE *db_fptr, struct mosquitto__subhier *node, co
 
 			rc = persist__chunk_sub_write_v6(db_fptr, &sub_chunk);
 			if(rc){
-				mosquitto__free(thistopic);
+				mosquitto__FREE(thistopic);
 				return rc;
 			}
 		}
@@ -243,7 +243,7 @@ static int persist__subs_save(FILE *db_fptr, struct mosquitto__subhier *node, co
 	HASH_ITER(hh, node->children, subhier, subhier_tmp){
 		persist__subs_save(db_fptr, subhier, thistopic, level+1);
 	}
-	mosquitto__free(thistopic);
+	mosquitto__FREE(thistopic);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -417,11 +417,10 @@ int persist__backup(bool shutdown)
 	if(rename(outfile, db.config->persistence_filepath) != 0){
 		goto error;
 	}
-	mosquitto__free(outfile);
-	outfile = NULL;
+	mosquitto__FREE(outfile);
 	return rc;
 error:
-	mosquitto__free(outfile);
+	mosquitto__FREE(outfile);
 	err = strerror(errno);
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", err);
 	if(db_fptr) fclose(db_fptr);

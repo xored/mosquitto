@@ -129,7 +129,7 @@ static int property__read(struct mosquitto__packet_in *packet, uint32_t *len, mo
 
 			rc = packet__read_string(packet, &str2, &slen2);
 			if(rc){
-				mosquitto__free(str1);
+				mosquitto__FREE(str1);
 				return rc;
 			}
 			*len = (*len) - 2 - slen2; /* uint16, string len */
@@ -171,7 +171,7 @@ int property__read_all(int command, struct mosquitto__packet_in *packet, mosquit
 
 		rc = property__read(packet, &proplen, p);
 		if(rc){
-			mosquitto__free(p);
+			mosquitto__FREE(p);
 			mosquitto_property_free_all(properties);
 			return rc;
 		}
@@ -206,17 +206,17 @@ void property__free(mosquitto_property **property)
 		case MQTT_PROP_RESPONSE_INFORMATION:
 		case MQTT_PROP_SERVER_REFERENCE:
 		case MQTT_PROP_REASON_STRING:
-			mosquitto__free((*property)->value.s.v);
+			mosquitto__FREE((*property)->value.s.v);
 			break;
 
 		case MQTT_PROP_AUTHENTICATION_DATA:
 		case MQTT_PROP_CORRELATION_DATA:
-			mosquitto__free((*property)->value.bin.v);
+			mosquitto__FREE((*property)->value.bin.v);
 			break;
 
 		case MQTT_PROP_USER_PROPERTY:
-			mosquitto__free((*property)->name.v);
-			mosquitto__free((*property)->value.s.v);
+			mosquitto__FREE((*property)->name.v);
+			mosquitto__FREE((*property)->value.s.v);
 			break;
 
 		case MQTT_PROP_PAYLOAD_FORMAT_INDICATOR:
@@ -240,8 +240,7 @@ void property__free(mosquitto_property **property)
 			break;
 	}
 
-	free(*property);
-	*property = NULL;
+	SAFE_FREE(*property);
 }
 
 
@@ -826,7 +825,7 @@ int mosquitto_property_add_binary(mosquitto_property **proplist, int identifier,
 	if(len){
 		prop->value.bin.v = mosquitto__malloc(len);
 		if(!prop->value.bin.v){
-			mosquitto__free(prop);
+			mosquitto__FREE(prop);
 			return MOSQ_ERR_NOMEM;
 		}
 
@@ -869,7 +868,7 @@ int mosquitto_property_add_string(mosquitto_property **proplist, int identifier,
 	if(value && slen > 0){
 		prop->value.s.v = mosquitto__strdup(value);
 		if(!prop->value.s.v){
-			mosquitto__free(prop);
+			mosquitto__FREE(prop);
 			return MOSQ_ERR_NOMEM;
 		}
 		prop->value.s.len = (uint16_t)slen;
@@ -904,7 +903,7 @@ int mosquitto_property_add_string_pair(mosquitto_property **proplist, int identi
 	if(name){
 		prop->name.v = mosquitto__strdup(name);
 		if(!prop->name.v){
-			mosquitto__free(prop);
+			mosquitto__FREE(prop);
 			return MOSQ_ERR_NOMEM;
 		}
 		prop->name.len = (uint16_t)strlen(name);
@@ -913,8 +912,8 @@ int mosquitto_property_add_string_pair(mosquitto_property **proplist, int identi
 	if(value){
 		prop->value.s.v = mosquitto__strdup(value);
 		if(!prop->value.s.v){
-			mosquitto__free(prop->name.v);
-			mosquitto__free(prop);
+			mosquitto__FREE(prop->name.v);
+			mosquitto__FREE(prop);
 			return MOSQ_ERR_NOMEM;
 		}
 		prop->value.s.len = (uint16_t)strlen(value);
@@ -1174,8 +1173,7 @@ const mosquitto_property *mosquitto_property_read_string_pair(const mosquitto_pr
 		*value = calloc(1, (size_t)p->value.s.len+1);
 		if(!(*value)){
 			if(name){
-				free(*name);
-				*name = NULL;
+				SAFE_FREE(*name);
 			}
 			return NULL;
 		}

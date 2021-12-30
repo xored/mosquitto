@@ -90,7 +90,7 @@ int handle__unsubscribe(struct mosquitto *context)
 	while(context->in_packet.pos < context->in_packet.remaining_length){
 		sub = NULL;
 		if(packet__read_string(&context->in_packet, &sub, &slen)){
-			mosquitto__free(reason_codes);
+			mosquitto__FREE(reason_codes);
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 
@@ -98,16 +98,16 @@ int handle__unsubscribe(struct mosquitto *context)
 			log__printf(NULL, MOSQ_LOG_INFO,
 					"Empty unsubscription string from %s, disconnecting.",
 					context->id);
-			mosquitto__free(sub);
-			mosquitto__free(reason_codes);
+			mosquitto__FREE(sub);
+			mosquitto__FREE(reason_codes);
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 		if(mosquitto_sub_topic_check(sub)){
 			log__printf(NULL, MOSQ_LOG_INFO,
 					"Invalid unsubscription string from %s, disconnecting.",
 					context->id);
-			mosquitto__free(sub);
-			mosquitto__free(reason_codes);
+			mosquitto__FREE(sub);
+			mosquitto__FREE(reason_codes);
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 
@@ -122,8 +122,8 @@ int handle__unsubscribe(struct mosquitto *context)
 				reason = MQTT_RC_NOT_AUTHORIZED;
 				break;
 			default:
-				mosquitto__free(sub);
-				mosquitto__free(reason_codes);
+				mosquitto__FREE(sub);
+				mosquitto__FREE(reason_codes);
 				return rc;
 		}
 
@@ -135,9 +135,9 @@ int handle__unsubscribe(struct mosquitto *context)
 			rc = MOSQ_ERR_SUCCESS;
 		}
 		log__printf(NULL, MOSQ_LOG_UNSUBSCRIBE, "%s %s", context->id, sub);
-		mosquitto__free(sub);
+		mosquitto__FREE(sub);
 		if(rc){
-			mosquitto__free(reason_codes);
+			mosquitto__FREE(reason_codes);
 			return rc;
 		}
 
@@ -146,7 +146,7 @@ int handle__unsubscribe(struct mosquitto *context)
 		if(reason_code_count == reason_code_max){
 			reason_tmp = mosquitto__realloc(reason_codes, (size_t)(reason_code_max*2));
 			if(!reason_tmp){
-				mosquitto__free(reason_codes);
+				mosquitto__FREE(reason_codes);
 				return MOSQ_ERR_NOMEM;
 			}
 			reason_codes = reason_tmp;
@@ -161,6 +161,6 @@ int handle__unsubscribe(struct mosquitto *context)
 
 	/* We don't use Reason String or User Property yet. */
 	rc = send__unsuback(context, mid, reason_code_count, reason_codes, NULL);
-	mosquitto__free(reason_codes);
+	mosquitto__FREE(reason_codes);
 	return rc;
 }

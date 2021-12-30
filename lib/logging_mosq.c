@@ -53,7 +53,7 @@ int log__printf(struct mosquitto *mosq, unsigned int priority, const char *fmt, 
 
 		mosq->on_log(mosq, mosq->userdata, (int)priority, s);
 
-		mosquitto__free(s);
+		mosquitto__FREE(s);
 	}
 	pthread_mutex_unlock(&mosq->log_callback_mutex);
 

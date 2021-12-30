@@ -88,7 +88,7 @@ int send__publish(struct mosquitto *mosq, uint16_t mid, const char *topic, uint3
 						/* This prefix needs removing. */
 						if(!strncmp(cur_topic->local_prefix, mapped_topic, strlen(cur_topic->local_prefix))){
 							topic_temp = mosquitto__strdup(mapped_topic+strlen(cur_topic->local_prefix));
-							mosquitto__free(mapped_topic);
+							mosquitto__FREE(mapped_topic);
 							if(!topic_temp){
 								return MOSQ_ERR_NOMEM;
 							}
@@ -101,18 +101,18 @@ int send__publish(struct mosquitto *mosq, uint16_t mid, const char *topic, uint3
 						len = strlen(mapped_topic) + strlen(cur_topic->remote_prefix)+1;
 						topic_temp = mosquitto__malloc(len+1);
 						if(!topic_temp){
-							mosquitto__free(mapped_topic);
+							mosquitto__FREE(mapped_topic);
 							return MOSQ_ERR_NOMEM;
 						}
 						snprintf(topic_temp, len, "%s%s", cur_topic->remote_prefix, mapped_topic);
 						topic_temp[len] = '\0';
-						mosquitto__free(mapped_topic);
+						mosquitto__FREE(mapped_topic);
 						mapped_topic = topic_temp;
 					}
 					log__printf(NULL, MOSQ_LOG_DEBUG, "Sending PUBLISH to %s (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))", SAFE_PRINT(mosq->id), dup, qos, retain, mid, mapped_topic, (long)payloadlen);
 					G_PUB_BYTES_SENT_INC(payloadlen);
 					rc =  send__real_publish(mosq, mid, mapped_topic, payloadlen, payload, qos, retain, dup, subscription_identifier, store_props, expiry_interval);
-					mosquitto__free(mapped_topic);
+					mosquitto__FREE(mapped_topic);
 					return rc;
 				}
 			}

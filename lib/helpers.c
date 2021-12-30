@@ -23,6 +23,7 @@ Contributors:
 
 #include "mosquitto.h"
 #include "mosquitto_internal.h"
+#include "memory_mosq.h"
 
 struct userdata__callback {
 	const char *topic;
@@ -137,8 +138,7 @@ libmosq_EXPORT int mosquitto_subscribe_simple(
 		for(i=0; i<msg_count; i++){
 			mosquitto_message_free_contents(&userdata.messages[i]);
 		}
-		free(userdata.messages);
-		userdata.messages = NULL;
+		SAFE_FREE(userdata.messages);
 		return rc;
 	}
 }

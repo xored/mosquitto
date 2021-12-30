@@ -134,14 +134,14 @@ static int remove_callback(mosquitto_plugin_id_t *identifier, int event, struct 
 	DL_FOREACH_SAFE(*cb_base, tail, tmp){
 		if(tail->cb == cb_func){
 			DL_DELETE(*cb_base, tail);
-			mosquitto__free(tail);
+			mosquitto__FREE(tail);
 			break;
 		}
 	}
 	DL_FOREACH_SAFE(identifier->own_callbacks, own, own_tmp){
 		if(own->cb_func == cb_func && own->event == event){
 			DL_DELETE(identifier->own_callbacks, own);
-			mosquitto__free(own);
+			mosquitto__FREE(own);
 			return MOSQ_ERR_SUCCESS;
 		}
 	}
@@ -187,7 +187,7 @@ int mosquitto_callback_register(
 	}
 	own_callback = mosquitto__calloc(1, sizeof(struct plugin_own_callback));
 	if(own_callback == NULL){
-		mosquitto__free(cb_new);
+		mosquitto__FREE(cb_new);
 		return MOSQ_ERR_NOMEM;
 	}
 	own_callback->event = event;

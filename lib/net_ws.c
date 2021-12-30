@@ -294,15 +294,13 @@ ssize_t net__read_ws(struct mosquitto *mosq, void *buf, size_t count)
 
 	if(mosq->wsd.pos == (ssize_t)mosq->wsd.payloadlen){
 		if(mosq->wsd.opcode == WS_CLOSE){
-			mosquitto__free(mosq->wsd.out_packet);
-			mosq->wsd.out_packet = NULL;
+			mosquitto__FREE(mosq->wsd.out_packet);
 
 			/* Testing or PING - so we haven't read any data for the application yet. */
 			len = -1;
 			errno = EAGAIN;
 		}else if(mosq->wsd.opcode == WS_PONG){
-			mosquitto__free(mosq->wsd.out_packet);
-			mosq->wsd.out_packet = NULL;
+			mosquitto__FREE(mosq->wsd.out_packet);
 			/* Testing or PING - so we haven't read any data for the application yet. */
 			len = -1;
 			errno = EAGAIN;

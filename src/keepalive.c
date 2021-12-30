@@ -101,7 +101,7 @@ int keepalive__init(void)
 void keepalive__cleanup(void)
 {
 #ifndef WITH_OLD_KEEPALIVE
-	mosquitto__free(keepalive_list);
+	mosquitto__FREE(keepalive_list);
 	keepalive_list_max = 0;
 #endif
 }

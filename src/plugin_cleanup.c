@@ -68,14 +68,13 @@ static void security__module_cleanup_single(struct mosquitto__security_options *
 
 		plugin__callback_unregister_all(conf->plugin.identifier);
 		if(conf->plugin.identifier){
-			mosquitto__free(conf->plugin.identifier->plugin_name);
-			mosquitto__free(conf->plugin.identifier->plugin_version);
+			mosquitto__FREE(conf->plugin.identifier->plugin_name);
+			mosquitto__FREE(conf->plugin.identifier->plugin_version);
 			DL_FOREACH_SAFE(conf->plugin.identifier->control_endpoints, ep, tmp){
 				DL_DELETE(conf->plugin.identifier->control_endpoints, ep);
-				mosquitto__free(ep);
+				mosquitto__FREE(ep);
 			}
-			mosquitto__free(conf->plugin.identifier);
-			conf->plugin.identifier = NULL;
+			mosquitto__FREE(conf->plugin.identifier);
 		}
 
 		if(conf->plugin.lib){

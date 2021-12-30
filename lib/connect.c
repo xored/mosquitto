@@ -69,7 +69,7 @@ static int mosquitto__connect_init(struct mosquitto *mosq, const char *host, int
 		}
 	}
 
-	mosquitto__free(mosq->host);
+	mosquitto__FREE(mosq->host);
 	mosq->host = mosquitto__strdup(host);
 	if(!mosq->host) return MOSQ_ERR_NOMEM;
 	mosq->port = (uint16_t)port;

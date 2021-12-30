@@ -90,7 +90,7 @@ int persist__chunk_client_read_v234(FILE *db_fptr, struct P_client *chunk, uint3
 	return MOSQ_ERR_SUCCESS;
 error:
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", strerror(errno));
-	mosquitto__free(chunk->client_id);
+	mosquitto__FREE(chunk->client_id);
 	return 1;
 }
 
@@ -124,7 +124,7 @@ int persist__chunk_client_msg_read_v234(FILE *db_fptr, struct P_client_msg *chun
 error:
 	err = strerror(errno);
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", err);
-	mosquitto__free(chunk->client_id);
+	mosquitto__FREE(chunk->client_id);
 	return 1;
 }
 
@@ -145,7 +145,7 @@ int persist__chunk_msg_store_read_v234(FILE *db_fptr, struct P_msg_store *chunk,
 	if(db_version == 4){
 		rc = persist__read_string(db_fptr, &chunk->source.username);
 		if(rc){
-			mosquitto__free(chunk->source.id);
+			mosquitto__FREE(chunk->source.id);
 			return rc;
 		}
 		read_e(db_fptr, &i16temp, sizeof(uint16_t));
@@ -160,8 +160,8 @@ int persist__chunk_msg_store_read_v234(FILE *db_fptr, struct P_msg_store *chunk,
 
 	rc = persist__read_string(db_fptr, &chunk->topic);
 	if(rc){
-		mosquitto__free(chunk->source.id);
-		mosquitto__free(chunk->source.username);
+		mosquitto__FREE(chunk->source.id);
+		mosquitto__FREE(chunk->source.username);
 		return rc;
 	}
 
@@ -174,9 +174,9 @@ int persist__chunk_msg_store_read_v234(FILE *db_fptr, struct P_msg_store *chunk,
 	if(chunk->F.payloadlen){
 		chunk->payload = mosquitto_malloc(chunk->F.payloadlen+1);
 		if(chunk->payload == NULL){
-			mosquitto__free(chunk->source.id);
-			mosquitto__free(chunk->source.username);
-			mosquitto__free(chunk->topic);
+			mosquitto__FREE(chunk->source.id);
+			mosquitto__FREE(chunk->source.username);
+			mosquitto__FREE(chunk->topic);
 			log__printf(NULL, MOSQ_LOG_ERR, "Error: Out of memory.");
 			return MOSQ_ERR_NOMEM;
 		}
@@ -189,8 +189,8 @@ int persist__chunk_msg_store_read_v234(FILE *db_fptr, struct P_msg_store *chunk,
 error:
 	err = strerror(errno);
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", err);
-	mosquitto__free(chunk->source.id);
-	mosquitto__free(chunk->source.username);
+	mosquitto__FREE(chunk->source.id);
+	mosquitto__FREE(chunk->source.username);
 	return 1;
 }
 
@@ -223,7 +223,7 @@ int persist__chunk_sub_read_v234(FILE *db_fptr, struct P_sub *chunk)
 
 	rc = persist__read_string(db_fptr, &chunk->topic);
 	if(rc){
-		mosquitto__free(chunk->client_id);
+		mosquitto__FREE(chunk->client_id);
 		return rc;
 	}
 
@@ -233,8 +233,8 @@ int persist__chunk_sub_read_v234(FILE *db_fptr, struct P_sub *chunk)
 error:
 	err = strerror(errno);
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", err);
-	mosquitto__free(chunk->client_id);
-	mosquitto__free(chunk->topic);
+	mosquitto__FREE(chunk->client_id);
+	mosquitto__FREE(chunk->topic);
 	return 1;
 }
 

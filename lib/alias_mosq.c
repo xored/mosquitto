@@ -61,7 +61,7 @@ int alias__add_r2l(struct mosquitto *mosq, const char *topic, uint16_t alias)
 
 	for(i=0; i<mosq->alias_count_r2l; i++){
 		if(mosq->aliases_r2l[i].alias == alias){
-			mosquitto__free(mosq->aliases_r2l[i].topic);
+			mosquitto__FREE(mosq->aliases_r2l[i].topic);
 			mosq->aliases_r2l[i].topic = mosquitto__strdup(topic);
 			if(mosq->aliases_r2l[i].topic){
 				return MOSQ_ERR_SUCCESS;
@@ -145,10 +145,9 @@ static void alias__free_r2l(struct mosquitto *mosq)
 	int i;
 
 	for(i=0; i<mosq->alias_count_r2l; i++){
-		mosquitto__free(mosq->aliases_r2l[i].topic);
+		mosquitto__FREE(mosq->aliases_r2l[i].topic);
 	}
-	mosquitto__free(mosq->aliases_r2l);
-	mosq->aliases_r2l = NULL;
+	mosquitto__FREE(mosq->aliases_r2l);
 	mosq->alias_count_r2l = 0;
 }
 
@@ -158,10 +157,9 @@ static void alias__free_l2r(struct mosquitto *mosq)
 	int i;
 
 	for(i=0; i<mosq->alias_count_l2r; i++){
-		mosquitto__free(mosq->aliases_l2r[i].topic);
+		mosquitto__FREE(mosq->aliases_l2r[i].topic);
 	}
-	mosquitto__free(mosq->aliases_l2r);
-	mosq->aliases_l2r = NULL;
+	mosquitto__FREE(mosq->aliases_l2r);
 	mosq->alias_count_l2r = 0;
 }
 

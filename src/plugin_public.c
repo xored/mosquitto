@@ -208,7 +208,7 @@ int mosquitto_broker_publish(
 	if(clientid){
 		msg->clientid = mosquitto__strdup(clientid);
 		if(msg->clientid == NULL){
-			mosquitto__free(msg);
+			mosquitto__FREE(msg);
 			return MOSQ_ERR_NOMEM;
 		}
 	}else{
@@ -216,8 +216,8 @@ int mosquitto_broker_publish(
 	}
 	msg->topic = mosquitto__strdup(topic);
 	if(msg->topic == NULL){
-		mosquitto__free(msg->clientid);
-		mosquitto__free(msg);
+		mosquitto__FREE(msg->clientid);
+		mosquitto__FREE(msg);
 		return MOSQ_ERR_NOMEM;
 	}
 	msg->payloadlen = payloadlen;
@@ -268,7 +268,7 @@ int mosquitto_broker_publish_copy(
 			properties);
 
 	if(rc){
-		free(payload_out);
+		SAFE_FREE(payload_out);
 	}
 	return rc;
 }
@@ -295,10 +295,10 @@ int mosquitto_set_username(struct mosquitto *client, const char *username)
 	rc = acl__find_acls(client);
 	if(rc){
 		client->username = old;
-		mosquitto__free(u_dup);
+		mosquitto__FREE(u_dup);
 		return rc;
 	}else{
-		mosquitto__free(old);
+		mosquitto__FREE(old);
 		return MOSQ_ERR_SUCCESS;
 	}
 }
@@ -443,9 +443,9 @@ int mosquitto_persist_client_add(struct mosquitto_evt_persist_client *client)
 
 	return MOSQ_ERR_SUCCESS;
 error:
-	free(client->plugin_client_id);
-	free(client->plugin_username);
-	free(client->plugin_auth_method);
+	SAFE_FREE(client->plugin_client_id);
+	SAFE_FREE(client->plugin_username);
+	SAFE_FREE(client->plugin_auth_method);
 	return rc;
 }
 
@@ -496,7 +496,7 @@ int mosquitto_persist_client_update(struct mosquitto_evt_persist_client *client)
 
 	return MOSQ_ERR_SUCCESS;
 error:
-	free(client->plugin_username);
+	SAFE_FREE(client->plugin_username);
 	return rc;
 }
 

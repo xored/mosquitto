@@ -96,7 +96,7 @@ int handle__subscribe(struct mosquitto *context)
 	while(context->in_packet.pos < context->in_packet.remaining_length){
 		sub = NULL;
 		if(packet__read_string(&context->in_packet, &sub, &slen)){
-			mosquitto__free(payload);
+			mosquitto__FREE(payload);
 			return MOSQ_ERR_MALFORMED_PACKET;
 		}
 
@@ -105,27 +105,27 @@ int handle__subscribe(struct mosquitto *context)
 				log__printf(NULL, MOSQ_LOG_INFO,
 						"Empty subscription string from %s, disconnecting.",
 						context->address);
-				mosquitto__free(sub);
-				mosquitto__free(payload);
+				mosquitto__FREE(sub);
+				mosquitto__FREE(payload);
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 			if(mosquitto_sub_topic_check(sub)){
 				log__printf(NULL, MOSQ_LOG_INFO,
 						"Invalid subscription string from %s, disconnecting.",
 						context->address);
-				mosquitto__free(sub);
-				mosquitto__free(payload);
+				mosquitto__FREE(sub);
+				mosquitto__FREE(payload);
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 
 			if(packet__read_byte(&context->in_packet, &subscription_options)){
-				mosquitto__free(sub);
-				mosquitto__free(payload);
+				mosquitto__FREE(sub);
+				mosquitto__FREE(payload);
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 			if(subscription_options & MQTT_SUB_OPT_NO_LOCAL && !strncmp(sub, "$share/", strlen("$share/"))){
-				mosquitto__free(sub);
-				mosquitto__free(payload);
+				mosquitto__FREE(sub);
+				mosquitto__FREE(payload);
 				return MOSQ_ERR_PROTOCOL;
 			}
 
@@ -140,8 +140,8 @@ int handle__subscribe(struct mosquitto *context)
 
 				retain_handling = (subscription_options & 0x30);
 				if(retain_handling == 0x30 || (subscription_options & 0xC0) != 0){
-					mosquitto__free(sub);
-					mosquitto__free(payload);
+					mosquitto__FREE(sub);
+					mosquitto__FREE(payload);
 					return MOSQ_ERR_MALFORMED_PACKET;
 				}
 			}
@@ -149,8 +149,8 @@ int handle__subscribe(struct mosquitto *context)
 				log__printf(NULL, MOSQ_LOG_INFO,
 						"Invalid QoS in subscription command from %s, disconnecting.",
 						context->address);
-				mosquitto__free(sub);
-				mosquitto__free(payload);
+				mosquitto__FREE(sub);
+				mosquitto__FREE(payload);
 				return MOSQ_ERR_MALFORMED_PACKET;
 			}
 			if(qos > context->max_qos){
@@ -162,14 +162,14 @@ int handle__subscribe(struct mosquitto *context)
 				len = strlen(context->listener->mount_point) + slen + 1;
 				sub_mount = mosquitto__malloc(len+1);
 				if(!sub_mount){
-					mosquitto__free(sub);
-					mosquitto__free(payload);
+					mosquitto__FREE(sub);
+					mosquitto__FREE(payload);
 					return MOSQ_ERR_NOMEM;
 				}
 				snprintf(sub_mount, len, "%s%s", context->listener->mount_point, sub);
 				sub_mount[len] = '\0';
 
-				mosquitto__free(sub);
+				mosquitto__FREE(sub);
 				sub = sub_mount;
 
 			}
@@ -189,14 +189,14 @@ int handle__subscribe(struct mosquitto *context)
 					}
 					break;
 				default:
-					mosquitto__free(sub);
+					mosquitto__FREE(sub);
 					return rc2;
 			}
 
 			if(allowed){
 				rc2 = sub__add(context, sub, qos, subscription_identifier, subscription_options, &db.subs);
 				if(rc2 > 0){
-					mosquitto__free(sub);
+					mosquitto__FREE(sub);
 					return rc2;
 				}
 				if(context->protocol == mosq_p_mqtt311 || context->protocol == mosq_p_mqtt31){
@@ -217,7 +217,7 @@ int handle__subscribe(struct mosquitto *context)
 					plugin_persist__handle_subscription_add(context, sub, qos | subscription_options, subscription_identifier);
 				}
 			}
-			mosquitto__free(sub);
+			mosquitto__FREE(sub);
 
 			tmp_payload = mosquitto__realloc(payload, payloadlen + 1);
 			if(tmp_payload){
@@ -225,7 +225,7 @@ int handle__subscribe(struct mosquitto *context)
 				payload[payloadlen] = qos;
 				payloadlen++;
 			}else{
-				mosquitto__free(payload);
+				mosquitto__FREE(payload);
 
 				return MOSQ_ERR_NOMEM;
 			}
@@ -239,7 +239,7 @@ int handle__subscribe(struct mosquitto *context)
 		}
 	}
 	if(send__suback(context, mid, payloadlen, payload)) rc = 1;
-	mosquitto__free(payload);
+	mosquitto__FREE(payload);
 
 #ifdef WITH_PERSISTENCE
 	db.persistence_changes++;

@@ -74,7 +74,7 @@ int http_c__context_init(struct mosquitto *context)
         "Sec-WebSocket-Protocol: mqtt\r\n"
         "Sec-WebSocket-Version: 13\r\n"
 		"\r\n", path, context->host, key);
-	free(key);
+	SAFE_FREE(key);
 	packet->packet_length += WS_PACKET_OFFSET;
 	packet->to_process = packet->packet_length;
 	context->http_request[0] = '\0';
@@ -84,8 +84,7 @@ int http_c__context_init(struct mosquitto *context)
 
 int http_c__context_cleanup(struct mosquitto *context)
 {
-	mosquitto__free(context->http_request);
-	context->http_request = NULL;
+	mosquitto__FREE(context->http_request);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -159,8 +158,7 @@ int http_c__read(struct mosquitto *mosq)
 	}
 
 	if(http_status != 101){
-		mosquitto__free(mosq->http_request);
-		mosq->http_request = NULL;
+		mosquitto__FREE(mosq->http_request);
 		/* FIXME Not supported - send 501 response */
 		return MOSQ_ERR_UNKNOWN;
 	}

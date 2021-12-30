@@ -88,8 +88,7 @@ void session_expiry__remove(struct mosquitto *context)
 {
 	if(context->expiry_list_item){
 		DL_DELETE(expiry_list, context->expiry_list_item);
-		mosquitto__free(context->expiry_list_item);
-		context->expiry_list_item = NULL;
+		mosquitto__FREE(context->expiry_list_item);
 	}
 }
 

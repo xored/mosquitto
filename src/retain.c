@@ -45,7 +45,7 @@ static struct mosquitto__retainhier *retain__add_hier_entry(struct mosquitto__re
 	child->topic = mosquitto__malloc((size_t)len+1);
 	if(!child->topic){
 		child->topic_len = 0;
-		mosquitto__free(child);
+		mosquitto__FREE(child);
 		log__printf(NULL, MOSQ_LOG_ERR, "Error: Out of memory.");
 		return NULL;
 	}else{
@@ -85,8 +85,8 @@ int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *msg)
 		if(sub__topic_tokenise(msg->plugin_topic, &local_topic, &split_topics, NULL)) return MOSQ_ERR_NOMEM;
 
 		rc = retain__store(msg->plugin_topic, stored, split_topics, false);
-		mosquitto__free(split_topics);
-		mosquitto__free(local_topic);
+		mosquitto__FREE(split_topics);
+		mosquitto__FREE(local_topic);
 	}
 
 	return rc;
@@ -110,8 +110,8 @@ int mosquitto_persist_retain_delete(const char *topic)
 
 	/* With stored->payloadlen == 0, this means the message will be removed */
 	rc = retain__store(topic, &stored, split_topics, false);
-	mosquitto__free(split_topics);
-	mosquitto__free(local_topic);
+	mosquitto__FREE(split_topics);
+	mosquitto__FREE(local_topic);
 
 	return rc;
 }
@@ -328,8 +328,8 @@ int retain__queue(struct mosquitto *context, const char *sub, uint8_t sub_qos, u
 	if(retainhier){
 		retain__search(retainhier, split_topics, context, sub, sub_qos, subscription_identifier, 0);
 	}
-	mosquitto__free(local_sub);
-	mosquitto__free(split_topics);
+	mosquitto__FREE(local_sub);
+	mosquitto__FREE(split_topics);
 
 	return MOSQ_ERR_SUCCESS;
 }
@@ -344,10 +344,10 @@ void retain__clean(struct mosquitto__retainhier **retainhier)
 			db__msg_store_ref_dec(&peer->retained);
 		}
 		retain__clean(&peer->children);
-		mosquitto__free(peer->topic);
+		mosquitto__FREE(peer->topic);
 
 		HASH_DELETE(hh, *retainhier, peer);
-		mosquitto__free(peer);
+		mosquitto__FREE(peer);
 	}
 }
 

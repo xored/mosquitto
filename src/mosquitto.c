@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
 	keepalive__cleanup();
 
 #ifdef WITH_TLS
-	mosquitto__free(db.tls_keylog);
+	mosquitto__FREE(db.tls_keylog);
 #endif
 	db__close();
 
@@ -431,7 +431,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		token = strtok_r(NULL, " ", &saveptr);
 	}
 	rc = main(argc, argv);
-	mosquitto__free(argv);
+	mosquitto__FREE(argv);
 	return rc;
 }
 #endif

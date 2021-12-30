@@ -138,8 +138,7 @@ static int listeners__add_local(const char *host, uint16_t port)
 		return MOSQ_ERR_NOMEM;
 	}
 	if(listeners__start_single_mqtt(&listeners[db.config->listener_count])){
-		mosquitto__free(listeners[db.config->listener_count].host);
-		listeners[db.config->listener_count].host = NULL;
+		mosquitto__FREE(listeners[db.config->listener_count].host);
 		return MOSQ_ERR_UNKNOWN;
 	}
 	db.config->listener_count++;
@@ -248,7 +247,7 @@ void listeners__stop(void)
 		if(db.config->listeners[i].ws_context){
 			lws_context_destroy(db.config->listeners[i].ws_context);
 		}
-		mosquitto__free(db.config->listeners[i].ws_protocol);
+		mosquitto__FREE(db.config->listeners[i].ws_protocol);
 #endif
 #ifdef WITH_UNIX_SOCKETS
 		if(db.config->listeners[i].unix_socket_path != NULL){
@@ -262,6 +261,5 @@ void listeners__stop(void)
 			COMPAT_CLOSE(g_listensock[i].sock);
 		}
 	}
-	mosquitto__free(g_listensock);
-	g_listensock = NULL;
+	mosquitto__FREE(g_listensock);
 }

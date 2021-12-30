@@ -111,7 +111,7 @@ int handle__publish(struct mosquitto *mosq)
 				}
 			}else{
 				/* Retrieve an existing topic alias */
-				mosquitto__free(message->msg.topic);
+				mosquitto__FREE(message->msg.topic);
 				if(alias__find_by_alias(mosq, ALIAS_DIR_R2L, topic_alias, &message->msg.topic)){
 					message__cleanup(&message);
 					mosquitto_property_free_all(&properties);

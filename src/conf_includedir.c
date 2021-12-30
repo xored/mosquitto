@@ -105,9 +105,9 @@ int config__get_dir_files(const char *include_dir, char ***files, int *file_coun
 		files_tmp = mosquitto__realloc(l_files, l_file_count*sizeof(char *));
 		if(!files_tmp){
 			for(i=0; i<l_file_count-1; i++){
-				mosquitto__free(l_files[i]);
+				mosquitto__FREE(l_files[i]);
 			}
-			mosquitto__free(l_files);
+			mosquitto__FREE(l_files);
 			FindClose(fh);
 			return MOSQ_ERR_NOMEM;
 		}
@@ -116,9 +116,9 @@ int config__get_dir_files(const char *include_dir, char ***files, int *file_coun
 		l_files[l_file_count-1] = mosquitto__malloc(len+1);
 		if(!l_files[l_file_count-1]){
 			for(i=0; i<l_file_count-1; i++){
-				mosquitto__free(l_files[i]);
+				mosquitto__FREE(l_files[i]);
 			}
-			mosquitto__free(l_files);
+			mosquitto__FREE(l_files);
 			FindClose(fh);
 			return MOSQ_ERR_NOMEM;
 		}
@@ -166,9 +166,9 @@ int config__get_dir_files(const char *include_dir, char ***files, int *file_coun
 				files_tmp = mosquitto__realloc(l_files, (size_t)l_file_count*sizeof(char *));
 				if(!files_tmp){
 					for(i=0; i<l_file_count-1; i++){
-						mosquitto__free(l_files[i]);
+						mosquitto__FREE(l_files[i]);
 					}
-					mosquitto__free(l_files);
+					mosquitto__FREE(l_files);
 					closedir(dh);
 					return MOSQ_ERR_NOMEM;
 				}
@@ -177,9 +177,9 @@ int config__get_dir_files(const char *include_dir, char ***files, int *file_coun
 				l_files[l_file_count-1] = mosquitto__malloc(len+1);
 				if(!l_files[l_file_count-1]){
 					for(i=0; i<l_file_count-1; i++){
-						mosquitto__free(l_files[i]);
+						mosquitto__FREE(l_files[i]);
 					}
-					mosquitto__free(l_files);
+					mosquitto__FREE(l_files);
 					closedir(dh);
 					return MOSQ_ERR_NOMEM;
 				}
