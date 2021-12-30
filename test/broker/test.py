@@ -217,6 +217,8 @@ tests = [
     #(1, './15-persist-client-v3-1-1.py'),
     #(1, './15-persist-retain-v3-1-1.py'),
     #(1, './15-persist-subscription-v3-1-1.py'),
+
+    (1, './16-config-includedir.py'),
     ]
 
 ptest.run_tests(tests)

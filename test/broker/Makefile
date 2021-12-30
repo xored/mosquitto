@@ -17,7 +17,7 @@ test-compile :
 ptest : test-compile msg_sequence_test
 	./test.py
 
-test : test-compile msg_sequence_test 01 02 03 04 05 06 07 08 09 10 11 12 13 14
+test : test-compile msg_sequence_test 01 02 03 04 05 06 07 08 09 10 11 12 13 14 16
 
 msg_sequence_test:
 	./msg_sequence_test.py
@@ -257,3 +257,6 @@ endif
 	./15-persist-retain-v3-1-1.py
 	./15-persist-client-msg-in-v3-1-1.py
 	./15-persist-client-msg-out-v3-1-1.py
+
+16 :
+	./16-config-includedir.py
