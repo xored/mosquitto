@@ -260,3 +260,4 @@ endif
 
 16 :
 	./16-config-includedir.py
+	./16-config-parse-errors.py
