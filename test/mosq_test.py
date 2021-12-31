@@ -181,8 +181,20 @@ def client_connect_only(hostname="localhost", port=1888, timeout=10):
     sock.connect((hostname, port))
     return sock
 
+def client_connect_only_unix(path, timeout=10):
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    sock.connect(path)
+    return sock
+
 def do_client_connect(connect_packet, connack_packet, hostname="localhost", port=1888, timeout=10, connack_error="connack"):
     sock = client_connect_only(hostname, port, timeout)
+
+    return do_send_receive(sock, connect_packet, connack_packet, connack_error)
+
+
+def do_client_connect_unix(connect_packet, connack_packet, path, timeout=10, connack_error="connack"):
+    sock = client_connect_only_unix(path, timeout)
 
     return do_send_receive(sock, connect_packet, connack_packet, connack_error)
 
