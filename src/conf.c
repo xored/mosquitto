@@ -2172,6 +2172,9 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 							}
 						}
 					}
+					cur_bridge->restart_timeout *= 1000; /* backoff is tracked in ms */
+					cur_bridge->backoff_base *= 1000;
+					cur_bridge->backoff_cap *= 1000;
 #else
 					log__printf(NULL, MOSQ_LOG_WARNING, "Warning: Bridge support not available.");
 #endif

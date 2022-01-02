@@ -1005,15 +1005,15 @@ void bridge_check(void)
 			/* Want to try to restart the bridge connection */
 			if(!context->bridge->restart_t){
 				bridge__update_backoff(context->bridge);
-				context->bridge->restart_t = db.now_s+context->bridge->restart_timeout;
+				context->bridge->restart_t = 1000*db.now_s+context->bridge->restart_timeout;
 				context->bridge->cur_address++;
 				if(context->bridge->cur_address == context->bridge->address_count){
 					context->bridge->cur_address = 0;
 				}
-				loop__update_next_event(context->bridge->restart_timeout*1000);
+				loop__update_next_event(context->bridge->restart_timeout);
 			}else{
 				if((context->bridge->start_type == bst_lazy && context->bridge->lazy_reconnect)
-						|| (context->bridge->start_type == bst_automatic && db.now_s >= context->bridge->restart_t)){
+						|| (context->bridge->start_type == bst_automatic && 1000*db.now_s >= context->bridge->restart_t)){
 
 #if defined(__GLIBC__) && defined(WITH_ADNS)
 					if(context->adns){
