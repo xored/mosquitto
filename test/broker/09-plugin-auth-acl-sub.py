@@ -25,7 +25,10 @@ def do_test(plugin_ver):
 
     mid_fail = 54
     subscribe_packet_fail = mosq_test.gen_subscribe(mid_fail, "#", 0)
-    suback_packet_fail = mosq_test.gen_suback(mid_fail, 0x80)
+    if plugin_ver == 2:
+        suback_packet_fail = mosq_test.gen_suback(mid_fail, 0)
+    else:
+        suback_packet_fail = mosq_test.gen_suback(mid_fail, 0x80)
 
     broker = mosq_test.start_broker(filename=os.path.basename(__file__), use_conf=True, port=port)
 
@@ -49,5 +52,7 @@ def do_test(plugin_ver):
             print(stde.decode('utf-8'))
             exit(rc)
 
+do_test(2)
+do_test(3)
 do_test(4)
 do_test(5)

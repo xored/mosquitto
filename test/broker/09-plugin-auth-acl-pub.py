@@ -64,5 +64,7 @@ def do_test(plugin_ver):
             print(stde.decode('utf-8'))
             exit(rc)
 
+do_test(2)
+do_test(3)
 do_test(4)
 do_test(5)
