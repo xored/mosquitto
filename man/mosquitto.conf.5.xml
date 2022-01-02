@@ -2058,7 +2058,7 @@ openssl dhparam -out dhparam.pem 2048</programlisting>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><option>restart_timeout</option> <replaceable>base cap</replaceable></term>
+				<term><option>restart_timeout</option> <replaceable>base cap [stable]</replaceable></term>
 				<term><option>restart_timeout</option> <replaceable>constant</replaceable></term>
 				<listitem>
 					<para>Set the amount of time a bridge using the automatic
@@ -2067,14 +2067,22 @@ openssl dhparam -out dhparam.pem 2048</programlisting>
 						time in seconds, or to use a backoff mechanism based on
 						"Decorrelated Jitter", which adds a degree of
 						randomness to when the restart occurs, starting at the
-						base and increasing up to the cap. Set a constant
-						timeout of 20 seconds:</para>
+						base and increasing up to the cap. The backoff time will be reset to
+						<replaceable>base</replaceable> after a successful connection.
+						When <replaceable>stable</replaceable> is specified, the backoff time
+						will be reset only if the connection remains open for at least
+						<replaceable>stable</replaceable> seconds.
+					<para>Set a constant timeout of 20 seconds:</para>
 						<programlisting language="config">
 restart_timeout 20</programlisting>
 					<para>Set backoff with a base (start value) of 10 seconds and a cap (upper
 						limit) of 60 seconds:</para>
 						<programlisting language="config">
-restart_timeout 10 30</programlisting>
+restart_timeout 10 60</programlisting>
+					<para>Same as previous example, but wait for the connection to be stable for
+					at least 30 seconds before resetting the backoff:</para>
+						<programlisting language="config">
+restart_timeout 10 60 30</programlisting>
 					<para>Defaults to jitter with a base of 5 seconds and cap
 						of 30 seconds.</para>
 				</listitem>
