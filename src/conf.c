@@ -2102,6 +2102,7 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 						}
 					}else{
 						log__printf(NULL, MOSQ_LOG_ERR, "Error: Empty protocol value in configuration.");
+						return MOSQ_ERR_INVAL;
 					}
 				}else if(!strcmp(token, "psk_file")){
 #ifdef FINAL_WITH_TLS_PSK
