@@ -260,5 +260,6 @@ endif
 	./15-persist-client-msg-out-v3-1-1.py
 
 16 :
+	./16-cmd-args.py
 	./16-config-includedir.py
 	./16-config-parse-errors.py

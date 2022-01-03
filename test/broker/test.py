@@ -219,6 +219,7 @@ tests = [
     #(1, './15-persist-retain-v3-1-1.py'),
     #(1, './15-persist-subscription-v3-1-1.py'),
 
+    (1, './16-cmd-args.py'),
     (1, './16-config-includedir.py'),
     (1, './16-config-parse-errors.py'),
     ]

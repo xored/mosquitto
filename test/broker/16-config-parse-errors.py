@@ -5,10 +5,7 @@
 from mosq_test_helper import *
 
 def start_broker(filename):
-    if filename is not None:
-        cmd = ['../../src/mosquitto', '-v', '-c', filename]
-    else:
-        cmd = ['../../src/mosquitto', '-h']
+    cmd = ['../../src/mosquitto', '-v', '-c', filename]
 
     if os.environ.get('MOSQ_USE_VALGRIND') is not None:
         logfile = filename+'.'+str(vg_index)+'.vglog'
@@ -31,11 +28,8 @@ def do_test(config_str, rc_expected):
     rc = 1
     port = mosq_test.get_port()
 
-    if config_str is not None:
-        conf_file = os.path.basename(__file__).replace('.py', '.conf')
-        write_config(conf_file, port, config_str)
-    else:
-        conf_file = None
+    conf_file = os.path.basename(__file__).replace('.py', '.conf')
+    write_config(conf_file, port, config_str)
 
     try:
         broker = start_broker(conf_file)
@@ -50,16 +44,13 @@ def do_test(config_str, rc_expected):
     except Exception as e:
         print(e)
     finally:
-        if conf_file is not None:
-            os.remove(conf_file)
+        os.remove(conf_file)
         (stdo, stde) = broker.communicate()
         if rc:
             print(stde.decode('utf-8'))
             print(config_str)
             exit(rc)
 
-
-do_test(None, 3) # Print usage
 
 do_test("unknown_option unknown\n", 3)
 
