@@ -55,6 +55,7 @@ def do_test(config_str, rc_expected):
         (stdo, stde) = broker.communicate()
         if rc:
             print(stde.decode('utf-8'))
+            print(config_str)
             exit(rc)
 
 
@@ -74,6 +75,12 @@ do_test("allow_anonymous falst\n", 3) # Invalid bool
 
 do_test("autosave_interval\n", 3) # Empty int
 #do_test("autosave_interval string\n", 3) # Invalid int
+
+do_test("listener\n", 3) # Empty listener
+do_test("mount_point test/\n", 3) # Missing listener config
+do_test("listener 1888\nmount_point test/+/\n", 3) # Wildcard in mount point.
+do_test("listener 1888\nprotocol\n", 3) # Empty proto
+do_test("listener 1888\nprotocol test\n", 3) # Invalid proto
 
 do_test("plugin_opt_inval string\n", 3) # plugin_opt_ without plugin
 do_test("plugin c/auth_plugin.so\nplugin_opt_ string\n", 3) # Incomplete plugin_opt_
@@ -102,5 +109,42 @@ do_test("bridge_session_expiry_interval 10000\n", 3) # Missing bridge config
 do_test("bridge_tcp_keepalive 10000\n", 3) # Missing bridge config
 do_test("bridge_tcp_user_timeout 10000\n", 3) # Missing bridge config
 do_test("bridge_tls_version string\n", 3) # Missing bridge config
+do_test("local_clientid str\n", 3) # Missing bridge config
+do_test("local_password str\n", 3) # Missing bridge config
+do_test("local_username str\n", 3) # Missing bridge config
+do_test("notifications true\n", 3) # Missing bridge config
+do_test("notifications_local_only true\n", 3) # Missing bridge config
+do_test("notification_topic true\n", 3) # Missing bridge config
+do_test("password pw\n", 3) # Missing bridge config
+do_test("remote_password pw\n", 3) # Missing bridge config
+do_test("restart_timeout 10\n", 3) # Missing bridge config
+do_test("round_robin true\n", 3) # Missing bridge config
+do_test("start_type lazy\n", 3) # Missing bridge config
+do_test("threshold 10\n", 3) # Missing bridge config
+do_test("topic topic/10\n", 3) # Missing bridge config
+do_test("try_private true\n", 3) # Missing bridge config
+do_test("username un\n", 3) # Missing bridge config
+
+do_test("maximum_qos 3\n", 3) # Invalid maximum qos
+do_test("maximum_qos -1\n", 3) # Invalid maximum qos
+
+do_test("max_inflight_messages 65536\n", 3) # Invalid value
+
+do_test("max_keepalive 65536\n", 3) # Invalid value
+do_test("max_keepalive -1\n", 3) # Invalid value
+
+do_test("max_topic_alias 65536\n", 3) # Invalid value
+do_test("max_topic_alias -1\n", 3) # Invalid value
+
+do_test("max_topic_alias_broker 65536\n", 3) # Invalid value
+do_test("max_topic_alias_broker -1\n", 3) # Invalid value
+
+do_test("websockets_headers_size 65536\n", 3) # Invalid value
+do_test("websockets_headers_size -1\n", 3) # Invalid value
+
+do_test("memory_limit -1\n", 3) # Invalid value
+
+do_test("sys_interval -1\n", 3) # Invalid value
+do_test("sys_interval 65536\n", 3) # Invalid value
 
 exit(0)
