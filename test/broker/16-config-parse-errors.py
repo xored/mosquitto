@@ -70,6 +70,9 @@ do_test("pid_file /tmp/pid\npid_file /tmp/pid\n", 3) # Duplicate string
 
 do_test("memory_limit\n", 3) # Empty ssize_t
 
+do_test("accept_protocol_versions 3\n", 3) # Missing listener
+do_test("listener 1888\naccept_protocol_versions\n", 3) # Empty value
+
 do_test("allow_anonymous\n", 3) # Empty bool
 do_test("allow_anonymous falst\n", 3) # Invalid bool
 
@@ -146,5 +149,22 @@ do_test("memory_limit -1\n", 3) # Invalid value
 
 do_test("sys_interval -1\n", 3) # Invalid value
 do_test("sys_interval 65536\n", 3) # Invalid value
+
+do_test("listener 1888\ncertfile\n", 3) # empty certfile
+do_test("listener 1888\nkeyfile\n", 3) # empty keyfile
+
+do_test("listener 1888\ncertfile ./16-config-parse-errors.py\nkeyfile ../ssl/server.key\n", 1) # invalid certfile
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ./16-config-parse-errors.py\n", 1) # invalid keyfile
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/client.key\n", 1) # mismatched certfile / keyfile
+
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/server.key\ntls_version invalid\n", 1) # invalid tls_version
+
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/server.key\ncrlfile invalid\n", 1) # missing crl file
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/server.key\ndhparamfile invalid\n", 1) # missing dh param file
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/server.key\ndhparamfile ./16-config-parse-errors.py\n", 1) # invalid dh param file
+
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/server.key\nciphers invalid\n", 1) # invalid ciphers
+do_test("listener 1888\ncertfile ../ssl/server.crt\nkeyfile ../ssl/server.key\nciphers_tls1.3 invalid\n", 1) # invalid ciphers_tls1.3
+
 
 exit(0)

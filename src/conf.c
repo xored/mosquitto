@@ -836,6 +836,10 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 						return MOSQ_ERR_INVAL;
 					}
 					token = strtok_r(saveptr, ", \t", &saveptr);
+					if(!token){
+						log__printf(NULL, MOSQ_LOG_ERR, "Error: Empty %s value in configuration.", "accept_protocol_versions");
+						return MOSQ_ERR_INVAL;
+					}
 					while(token){
 						if(!strcmp(token, "3")){
 							cur_listener->disable_protocol_v3 = false;
