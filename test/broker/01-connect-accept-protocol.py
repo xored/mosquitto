@@ -8,7 +8,7 @@ def write_config(filename, port, accept):
     with open(filename, 'w') as f:
         f.write("listener %s\n" % (port))
         f.write("allow_anonymous true\n")
-        f.write("accept_protocol_version %s\n" % (accept))
+        f.write("accept_protocol_versions %s\n" % (accept))
 
 def do_test(accept, expect_success):
     port = mosq_test.get_port()

@@ -823,16 +823,16 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 			}
 			token = strtok_r((*buf), " ", &saveptr);
 			if(token){
-				if(!strcmp(token, "accept_protocol_version")){
+				if(!strcmp(token, "accept_protocol_versions")){
 					if(cur_listener == &config->default_listener){
-						log__printf(NULL, MOSQ_LOG_ERR, "Error: You must define a listener before using the %s option.", "accept_protocol_version");
+						log__printf(NULL, MOSQ_LOG_ERR, "Error: You must define a listener before using the %s option.", "accept_protocol_versions");
 						return MOSQ_ERR_INVAL;
 					}
 					cur_listener->disable_protocol_v3 = true;
 					cur_listener->disable_protocol_v4 = true;
 					cur_listener->disable_protocol_v5 = true;
 					if(saveptr == NULL){
-						log__printf(NULL, MOSQ_LOG_ERR, "Error: Empty %s value in configuration.", "accept_protocol_version");
+						log__printf(NULL, MOSQ_LOG_ERR, "Error: Empty %s value in configuration.", "accept_protocol_versions");
 						return MOSQ_ERR_INVAL;
 					}
 					token = strtok_r(saveptr, ", \t", &saveptr);
