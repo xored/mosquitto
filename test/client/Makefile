@@ -6,5 +6,6 @@ check : test
 ptest : test
 test :
 	./test.sh
+	#./test-ws.sh
 
 clean:
