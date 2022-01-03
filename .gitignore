@@ -8,6 +8,7 @@
 *.so
 *.vglog
 callgrind.out.*
+coverage.info
 dhat.out.*
 massif.out.*
 vglog*
