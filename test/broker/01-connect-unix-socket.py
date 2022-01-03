@@ -33,9 +33,10 @@ def do_test():
     port = mosq_test.get_port()
     conf_file = os.path.basename(__file__).replace('.py', '.conf')
     write_config(conf_file, port)
-    broker = start_broker(filename=os.path.basename(__file__))
+    broker = start_broker(filename=conf_file)
 
     try:
+        time.sleep(0.1)
         sock = mosq_test.do_client_connect_unix(connect_packet, connack_packet, path=f"{port}.sock")
         sock.close()
 
@@ -48,7 +49,10 @@ def do_test():
         broker.terminate()
         broker.wait()
         os.remove(conf_file)
-        os.remove(f"{port}.sock")
+        try:
+            os.remove(f"{port}.sock")
+        except FileNotFoundError:
+            pass
         (stdo, stde) = broker.communicate()
         if rc:
             print(stde.decode('utf-8'))
