@@ -74,6 +74,9 @@ static struct mosquitto *bridge__new(struct mosquitto__bridge *bridge)
 	assert(bridge);
 
 	local_id = mosquitto__strdup(bridge->local_clientid);
+	if(!local_id){
+		return NULL;
+	}
 
 	HASH_FIND(hh_id, db.contexts_by_id, local_id, strlen(local_id), new_context);
 	if(new_context){
@@ -152,6 +155,10 @@ void bridge__start_all(void)
 		int ret;
 
 		context = bridge__new(db.config->bridges[i]);
+		if(!context){
+			log__printf(NULL, MOSQ_LOG_ERR, "Error: Out of memory.");
+			return;
+		}
 		assert(context);
 
 #if defined(__GLIBC__) && defined(WITH_ADNS)
