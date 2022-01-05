@@ -131,7 +131,7 @@ int alias__find_by_topic(struct mosquitto *mosq, int direction, const char *topi
 	}
 
 	for(i=0; i<alias_count; i++){
-		if(!strcmp(aliases[i].topic, topic)){
+		if(aliases[i].topic && !strcmp(aliases[i].topic, topic)){
 			*alias = aliases[i].alias;
 			return MOSQ_ERR_SUCCESS;
 		}

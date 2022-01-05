@@ -31,6 +31,10 @@ static void TEST_single_client(void)
 
 	db.now_s = 1000;
 	db.config = calloc(1, sizeof(struct mosquitto__config));
+	CU_ASSERT_PTR_NOT_NULL(db.config);
+	if(db.config == NULL){
+		return;
+	}
 	db.config->max_keepalive = 2000;
 
 	context.id = strdup("clientid1");
@@ -39,6 +43,9 @@ static void TEST_single_client(void)
 
 	rc = keepalive__init();
 	CU_ASSERT_EQUAL(rc, MOSQ_ERR_SUCCESS);
+	if(rc != MOSQ_ERR_SUCCESS){
+		return;
+	}
 	CU_ASSERT_EQUAL(keepalive_list_max, 3001);
 	CU_ASSERT_PTR_NOT_NULL(keepalive_list);
 
@@ -75,6 +82,10 @@ static void TEST_single_client_update(void)
 
 	db.now_s = 1000;
 	db.config = calloc(1, sizeof(struct mosquitto__config));
+	CU_ASSERT_PTR_NOT_NULL(db.config);
+	if(db.config == NULL){
+		return;
+	}
 	db.config->max_keepalive = 2000;
 
 	context.id = strdup("clientid1");
@@ -83,6 +94,9 @@ static void TEST_single_client_update(void)
 
 	rc = keepalive__init();
 	CU_ASSERT_EQUAL(rc, MOSQ_ERR_SUCCESS);
+	if(rc != MOSQ_ERR_SUCCESS){
+		return;
+	}
 	CU_ASSERT_EQUAL(keepalive_list_max, 3001);
 	CU_ASSERT_PTR_NOT_NULL(keepalive_list);
 
@@ -117,6 +131,10 @@ static void TEST_over_max_keepalive(void)
 
 	db.now_s = 1000;
 	db.config = calloc(1, sizeof(struct mosquitto__config));
+	CU_ASSERT_PTR_NOT_NULL(db.config);
+	if(db.config == NULL){
+		return;
+	}
 	db.config->max_keepalive = 2000;
 
 	context.id = strdup("clientid1");
@@ -128,6 +146,9 @@ static void TEST_over_max_keepalive(void)
 
 	rc = keepalive__init();
 	CU_ASSERT_EQUAL(rc, MOSQ_ERR_SUCCESS);
+	if(rc != MOSQ_ERR_SUCCESS){
+		return;
+	}
 	CU_ASSERT_EQUAL(keepalive_list_max, 3001);
 	CU_ASSERT_PTR_NOT_NULL(keepalive_list);
 
@@ -158,6 +179,10 @@ static void TEST_100k_random_clients(void)
 	contexts = calloc(client_count, sizeof(struct mosquitto));
 	db.now_s = 1000;
 	db.config = calloc(1, sizeof(struct mosquitto__config));
+	if(db.config == NULL){
+		return;
+	}
+	CU_ASSERT_PTR_NOT_NULL(db.config);
 	db.config->max_keepalive = 0;
 
 	for(int i=0; i<client_count; i++){
@@ -168,6 +193,9 @@ static void TEST_100k_random_clients(void)
 
 	rc = keepalive__init();
 	CU_ASSERT_EQUAL(rc, MOSQ_ERR_SUCCESS);
+	if(rc != MOSQ_ERR_SUCCESS){
+		return;
+	}
 	CU_ASSERT_EQUAL(keepalive_list_max, 98303);
 	CU_ASSERT_PTR_NOT_NULL(keepalive_list);
 
