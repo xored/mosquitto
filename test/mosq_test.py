@@ -45,6 +45,8 @@ def start_broker(filename, cmd=None, port=0, use_conf=False, expect_fail=False, 
             cmd = ['valgrind', '-q', '--tool=callgrind', '--log-file='+logfile] + cmd
         elif os.environ.get('MOSQ_USE_VALGRIND') == 'massif':
             cmd = ['valgrind', '-q', '--tool=massif', '--log-file='+logfile] + cmd
+        elif os.environ.get('MOSQ_USE_VALGRIND') == 'failgrind':
+            cmd = ['fg-helper'] + cmd
         else:
             cmd = ['valgrind', '-q', '--trace-children=yes', '--leak-check=full', '--show-leak-kinds=all', '--log-file='+logfile] + cmd
         vg_logfiles.append(logfile)
