@@ -90,6 +90,9 @@ void plugin_persist__handle_client_update(struct mosquitto *context)
 	if(db.shutdown) return;
 
 	UNUSED(will); /* FIXME */
+
+	if(db.shutdown) return;
+
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
 	event_data.client_id = context->id;

@@ -539,9 +539,13 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 	struct mosquitto *context;
 	struct mosquitto_msg_store *stored;
 
-	if(client_msg == NULL || client_msg->plugin_client_id == NULL) return MOSQ_ERR_INVAL;
+	if(client_msg == NULL || client_msg->plugin_client_id == NULL){
+		free(client_msg->plugin_client_id);
+		return MOSQ_ERR_INVAL;
+	}
 
 	HASH_FIND(hh_id, db.contexts_by_id, client_msg->plugin_client_id, strlen(client_msg->plugin_client_id), context);
+	free(client_msg->plugin_client_id);
 	if(context == NULL){
 		return MOSQ_ERR_NOT_FOUND;
 	}

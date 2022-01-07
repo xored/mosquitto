@@ -213,11 +213,17 @@ tests = [
     (1, './14-dynsec-role.py'),
     (1, './14-dynsec-role-invalid.py'),
 
-    #(1, './15-persist-client-msg-in-v3-1-1.py'),
+    #(1, './15-persist-client-msg-in-v5-0.py'),
+    #(1, './15-persist-client-msg-out-queue-v3-1-1.py'),
     #(1, './15-persist-client-msg-out-v3-1-1.py'),
+    #(1, './15-persist-client-msg-out-v5-0.py'),
     #(1, './15-persist-client-v3-1-1.py'),
+    #(1, './15-persist-client-v5.0.py'),
+    #(1, './15-persist-publish-properties-v5-0.py'),
     #(1, './15-persist-retain-v3-1-1.py'),
+    #(1, './15-persist-retain-v5-0.py'),
     #(1, './15-persist-subscription-v3-1-1.py'),
+    #(1, './15-persist-subscription-v5-0.py'),
 
     (1, './16-cmd-args.py'),
     (1, './16-config-includedir.py'),

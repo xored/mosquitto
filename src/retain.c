@@ -71,22 +71,22 @@ int retain__init(void)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *msg)
+int mosquitto_persist_retain_add(const char *topic, uint64_t store_id)
 {
 	struct mosquitto_msg_store *stored;
 	int rc = MOSQ_ERR_UNKNOWN;
 	char **split_topics = NULL;
 	char *local_topic = NULL;
 
-	if(msg == NULL || msg->plugin_topic == NULL) return MOSQ_ERR_INVAL;
+	if(topic == NULL) return MOSQ_ERR_INVAL;
 
-	HASH_FIND(hh, db.msg_store, &msg->store_id, sizeof(msg->store_id), stored);
+	HASH_FIND(hh, db.msg_store, &store_id, sizeof(store_id), stored);
 	if(stored){
-		if(sub__topic_tokenise(msg->plugin_topic, &local_topic, &split_topics, NULL)) return MOSQ_ERR_NOMEM;
+		if(sub__topic_tokenise(topic, &local_topic, &split_topics, NULL)) return MOSQ_ERR_NOMEM;
 
-		rc = retain__store(msg->plugin_topic, stored, split_topics, false);
-		mosquitto__FREE(split_topics);
-		mosquitto__FREE(local_topic);
+		rc = retain__store(topic, stored, split_topics, false);
+		mosquitto__free(split_topics);
+		mosquitto__free(local_topic);
 	}
 
 	return rc;

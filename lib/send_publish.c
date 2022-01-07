@@ -248,7 +248,7 @@ int send__real_publish(struct mosquitto *mosq, uint16_t mid, const char *topic, 
 	}
 
 	/* Payload */
-	if(payloadlen){
+	if(payloadlen && payload){
 		packet__write_bytes(packet, payload, payloadlen);
 	}
 

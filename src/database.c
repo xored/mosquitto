@@ -281,8 +281,8 @@ void db__msg_store_remove(struct mosquitto_msg_store *store, bool notify)
 	HASH_DELETE(hh, db.msg_store, store);
 	db.msg_store_count--;
 	db.msg_store_bytes -= store->payloadlen;
-	if(db.shutdown == false || notify == true){
-		plugin_persist__handle_msg_delete(store);
+	if(notify == true){
+		plugin_persist__handle_msg_remove(store);
 	}
 	db__msg_store_free(store);
 }

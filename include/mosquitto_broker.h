@@ -1045,10 +1045,8 @@ int mosquitto_subscription_delete(const char *client_id, const char *topic);
  * message for an existing topic first.
  *
  * Parameters:
- *   msg->plugin_topic - the topic that the message references
- *          The broker will *not* modify this string and it remains the
- *          property of the plugin.
- *   msg->store_id - the store id of the stored message that is to be retained
+ *   topic - the topic that the message references
+ *   store_id - the store id of the stored message that is to be retained
  *
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success
@@ -1056,7 +1054,7 @@ int mosquitto_subscription_delete(const char *client_id, const char *topic);
  *   MOSQ_ERR_NOT_FOUND - the referenced stored message was not found
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *retain);
+int mosquitto_persist_retain_add(const char *topic, uint64_t store_id);
 
 
 /* Function: mosquitto_persist_retain_delete
@@ -1064,9 +1062,7 @@ int mosquitto_persist_retain_add(struct mosquitto_evt_persist_retain *retain);
  * Use to delete a retained message.
  *
  * Parameters:
- *   msg->plugin_topic - the topic that the message references
- *          The broker will *not* modify this string and it remains the
- *          property of the plugin.
+ *   topic - the topic that the message references
  *
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success

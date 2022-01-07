@@ -54,6 +54,7 @@
 	mosquitto_realloc;
 	mosquitto_set_username;
 	mosquitto_strdup;
+	mosquitto_string_to_property_info;
 	mosquitto_sub_matches_acl;
 	mosquitto_sub_matches_acl_with_pattern;
 	mosquitto_sub_topic_check;
