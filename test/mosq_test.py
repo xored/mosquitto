@@ -88,6 +88,17 @@ def start_client(filename, cmd, env, port=1888):
     cmd = cmd + [str(port)]
     return subprocess.Popen(cmd, env=env)
 
+def sub_helper(port, topic='#', qos=0, proto_ver=4):
+    connect_packet = gen_connect("sub-helper", proto_ver=proto_ver)
+    connack_packet = gen_connack(rc=0, proto_ver=proto_ver)
+
+    mid = 1
+    subscribe_packet = gen_subscribe(mid=mid, topic=topic, qos=qos, proto_ver=proto_ver)
+    suback_packet = gen_suback(mid=mid, qos=qos, proto_ver=proto_ver)
+    sock = do_client_connect(connect_packet, connack_packet, port=port)
+    do_send_receive(sock, subscribe_packet, suback_packet, "sub helper suback")
+    return sock
+
 
 def expect_packet(sock, name, expected):
     if len(expected) > 0:
