@@ -17,18 +17,28 @@ Contributors:
 */
 
 /*
- * This is an example plugin showing how to carry out delayed authentication.
- * The "authentication" in this example makes no checks whatsoever, but delays
- * the response by 5 seconds, and randomly chooses whether it should succeed.
+ * This is an example plugin that denies subscriptions to the '#' topic filter,
+ * but with special behaviour for clients that connect with the username
+ * `wildcard`.
+ *
+ * The first time per session that clients with this username attempt to
+ * subscribe to the '#' topic filter, it will succeed. They will then have 20
+ * seconds of access to that subscription, subject to any other access controls
+ * that are in place, after which the subscription will be automatically
+ * removed.
+ *
+ * The intention is to allow temporary access to the '#' topic filter so that
+ * topic discovery can be done on public servers such as test.mosquitto.org,
+ * but also to limit bandwidth use.
  *
  * Compile with:
- *   gcc -I<path to mosquitto-repo/include> -fPIC -shared mosquitto_delayed_auth.c -o mosquitto_delayed_auth.so
+ *   gcc -I<path to mosquitto-repo/include> -fPIC -shared mosquitto_wildcard_temp.c -o mosquitto_wildcard_temp.so
  *
  * Use in config with:
  *
- *   plugin /path/to/mosquitto_delayed_auth.so
+ *   plugin /path/to/mosquitto_wildcard_temp.so
  *
- * Note that this only works on Mosquitto 2.0 or later.
+ * Note that this only works on Mosquitto 2.1 or later.
  */
 
 
@@ -47,6 +57,9 @@ Contributors:
 
 #define PLUGIN_NAME "wildcard-temp"
 #define PLUGIN_VERSION "1.0"
+
+/* How long the client has '#' access for, in seconds */
+#define ACCESS_PERIOD 20
 
 #ifndef UNUSED
 #  define UNUSED(A) (void)(A)
@@ -138,7 +151,7 @@ static int acl_check_callback(int event, void *event_data, void *userdata)
 		HASH_FIND(hh, clients, id, strlen(id), client);
 		if(client && client->sub_status == 0){
 			client->sub_status = 1;
-			client->sub_end = time(NULL) + 20;
+			client->sub_end = time(NULL) + ACCESS_PERIOD;
 			DL_APPEND(active_subs, client);
 			return MOSQ_ERR_SUCCESS;
 		}else{
