@@ -21,6 +21,8 @@ Contributors:
 #include <stdlib.h>
 #include <string.h>
 
+#include "memory_mosq.h"
+
 #ifdef REAL_WITH_MEMORY_TRACKING
 #  if defined(__APPLE__)
 #    include <malloc/malloc.h>
@@ -31,8 +33,6 @@ Contributors:
 #    include <malloc.h>
 #  endif
 #endif
-
-#include "memory_mosq.h"
 
 #ifdef REAL_WITH_MEMORY_TRACKING
 static unsigned long memcount = 0;
