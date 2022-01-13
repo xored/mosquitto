@@ -517,6 +517,12 @@ int mosquitto_int_option(struct mosquitto *mosq, enum mosq_opt_t option, int val
 
 		case MOSQ_OPT_HTTP_HEADER_SIZE:
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == LWS_IS_BUILTIN
+			if(value < 100){ /* arbitrary limit */
+				return MOSQ_ERR_INVAL;
+			}else if(mosq->http_request){
+				/* Don't want to resize if part way through the handshake */
+				return MOSQ_ERR_INVAL;
+			}
 			mosq->wsd.http_header_size = value;
 #else
 			return MOSQ_ERR_NOT_SUPPORTED;

@@ -1597,7 +1597,10 @@ libmosq_EXPORT int mosquitto_opts_set(struct mosquitto *mosq, enum mosq_opt_t op
  *
  *	MOSQ_OPT_HTTP_HEADER_SIZE - Size the size of buffer that will be allocated
  *	          to store the incoming HTTP header when using Websocket transport.
- *	          Defaults to 4096.
+ *	          Defaults to 4096. Setting to below 100 will result in a return
+*	          value of MOSQ_ERR_INVAL. This should be set before starting the
+*	          connection. If you try to set this when the initial http request
+*	          is underway then it will return MOSQ_ERR_INVAL.
  */
 libmosq_EXPORT int mosquitto_int_option(struct mosquitto *mosq, enum mosq_opt_t option, int value);
 

@@ -162,6 +162,7 @@ int mosquitto_reinitialise(struct mosquitto *mosq, const char *id, bool clean_st
 	mosq->wsd.mask = UINT8_MAX;
 	mosq->wsd.disconnect_reason = 0xE8;
 	mosq->wsd.is_client = true;
+	mosq->wsd.http_header_size = 4096;
 #endif
 	mosq->transport = mosq_t_tcp;
 	mosq->protocol = mosq_p_mqtt311;

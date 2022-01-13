@@ -51,7 +51,7 @@ int http_c__context_init(struct mosquitto *context)
 	const char *path;
 
 	context->transport = mosq_t_http;
-	context->http_request = mosquitto__calloc(1, 4096); // FIXME - 4096 should be an option
+	context->http_request = mosquitto__calloc(1, (size_t)context->wsd.http_header_size);
 	if(context->http_request == NULL){
 		return MOSQ_ERR_NOMEM;
 	}
@@ -122,7 +122,7 @@ int http_c__read(struct mosquitto *mosq)
 	}
 
 	hlen = strlen(mosq->http_request);
-	read_length = net__read(mosq, &mosq->http_request[hlen], 4096-hlen);
+	read_length = net__read(mosq, &mosq->http_request[hlen], (size_t)mosq->wsd.http_header_size-hlen);
 	if(read_length <= 0){
 		if(read_length == 0){
 			return MOSQ_ERR_CONN_LOST; /* EOF */
