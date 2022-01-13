@@ -59,6 +59,9 @@ int http_c__context_init(struct mosquitto *context)
 	if(create_request_key(&key)){
 		return MOSQ_ERR_UNKNOWN;
 	}
+	if(ws__create_accept_key(key, strlen(key), &context->wsd.accept_key)){
+		return MOSQ_ERR_UNKNOWN;
+	}
 
 	packet = mosquitto__calloc(1, sizeof(struct mosquitto__packet) + 1024 + WS_PACKET_OFFSET);
 	if(!packet) return MOSQ_ERR_NOMEM;
@@ -84,6 +87,7 @@ int http_c__context_init(struct mosquitto *context)
 
 int http_c__context_cleanup(struct mosquitto *context)
 {
+	SAFE_FREE(context->wsd.accept_key);
 	mosquitto__FREE(context->http_request);
 	return MOSQ_ERR_SUCCESS;
 }
@@ -102,7 +106,6 @@ int http_c__read(struct mosquitto *mosq)
 	struct phr_header http_headers[100];
 	const char *client_key = NULL;
 	size_t client_key_len = 0;
-	char *accept_key;
 	size_t i;
 	bool header_have_upgrade;
 	bool header_have_connection;
@@ -221,7 +224,10 @@ int http_c__read(struct mosquitto *mosq)
 		// FIXME - 404
 		return MOSQ_ERR_UNKNOWN;
 	}
-	/* FIXME - check key */
+	if(strncmp(mosq->wsd.accept_key, client_key, client_key_len)){
+		// FIXME - 50x
+		return MOSQ_ERR_UNKNOWN;
+	}
 
 	http_c__context_cleanup(mosq);
 	ws__context_init(mosq);

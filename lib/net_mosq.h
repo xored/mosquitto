@@ -91,6 +91,7 @@ UI_METHOD *net__get_ui_method(void);
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_BUILTIN
 void ws__context_init(struct mosquitto *mosq);
 void ws__prepare_packet(struct mosquitto *mosq, struct mosquitto__packet *packet);
+int ws__create_accept_key(const char *client_key, size_t client_key_len, char **encoded);
 #endif
 
 #endif

@@ -247,6 +247,7 @@ struct mosquitto_msg_data{
 struct ws_data{
 	struct mosquitto__packet *out_packet;
 	char *http_path;
+	char *accept_key;
 	uint64_t payloadlen;
 	ssize_t pos;
 	int http_header_size;
