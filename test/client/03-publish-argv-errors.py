@@ -68,6 +68,14 @@ if __name__ == '__main__':
     do_test(['--will-topic'], "Error: --will-topic argument given but no will topic specified.\n\n" + helps, 1)
     do_test(['-x'], "Error: -x argument given but no session expiry interval specified.\n\n" + helps, 1)
 
+    do_test(['-V', '5', '-D'], "Error: --property argument given but not enough arguments specified.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect'], "Error: --property argument given but not enough arguments specified.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'receive-maximum'], "Error: --property argument given but not enough arguments specified.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'invalid', 'receive-maximum', '1'], "Error: Invalid command given in --property argument.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'invalid', '1'], "Error: Invalid property name given in --property argument.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'will-delay-interval', '1'], "Error: will-delay-interval property not allowed for connect in --property argument.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'user-property', 'key'], "Error: --property argument given but not enough arguments specified.\n\n" + helps, 1)
+
     # Invalid combinations
     do_test(['-i', 'id', '-I', 'id-prefix'], "Error: -i and -I argument cannot be used together.\n\n" + helps, 1)
     do_test(['-I', 'id-prefix', '-i', 'id'], "Error: -i and -I argument cannot be used together.\n\n" + helps, 1)
@@ -101,6 +109,12 @@ if __name__ == '__main__':
     do_test(['-q', '3'], "Error: Invalid QoS given: 3\n" + helps, 1)
     do_test(['-t', 'topic/+'], "Error: Invalid publish topic 'topic/+', does it contain '+' or '#'?\n" + helps, 1)
     do_test(['-t', 'topic/#'], "Error: Invalid publish topic 'topic/#', does it contain '+' or '#'?\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'request-problem-information', '-1'], "Error: Property value (-1) out of range for property request-problem-information.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'request-problem-information', '256'], "Error: Property value (256) out of range for property request-problem-information.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'receive-maximum', '-1'], "Error: Property value (-1) out of range for property receive-maximum.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'receive-maximum', '65536'], "Error: Property value (65536) out of range for property receive-maximum.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'session-expiry-interval', '-1'], "Error: Property value (-1) out of range for property session-expiry-interval.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'connect', 'session-expiry-interval', '4294967296'], "Error: Property value (4294967296) out of range for property session-expiry-interval.\n\n" + helps, 1)
 
     # Unknown options
     do_test(['--unknown'], "Error: Unknown option '--unknown'.\n" + helps, 1)

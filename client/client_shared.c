@@ -792,7 +792,7 @@ int client_config_line_proc(struct mosq_config *cfg, int pub_or_sub, int argc, c
 					return 1;
 #endif
 				} else {
-					fprintf(stderr, "Error: unsupported URL scheme.\n\n");
+					fprintf(stderr, "Error: Unsupported URL scheme.\n\n");
 					return 1;
 				}
 				topic = strchr(url, '/');

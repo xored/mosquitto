@@ -88,6 +88,14 @@ def start_client(filename, cmd, env, port=1888):
     cmd = cmd + [str(port)]
     return subprocess.Popen(cmd, env=env)
 
+def pub_helper(port, proto_ver=4):
+    connect_packet = gen_connect("pub-helper", proto_ver=proto_ver)
+    connack_packet = gen_connack(rc=0, proto_ver=proto_ver)
+
+    sock = do_client_connect(connect_packet, connack_packet, port=port, connack_error="pub helper connack")
+    return sock
+
+
 def sub_helper(port, topic='#', qos=0, proto_ver=4):
     connect_packet = gen_connect("sub-helper", proto_ver=proto_ver)
     connack_packet = gen_connack(rc=0, proto_ver=proto_ver)
