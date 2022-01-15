@@ -112,6 +112,8 @@ Client library:
 Clients:
 - Add `-W` timeout support to Windows.
 - The `--insecure` option now disables all server certificate verification.
+- Fix incorrect output formatting in mosquitto_sub when using field widths
+  with `%x` and `%X` for printing the payload in hex.
 
 
 2.0.14 - 2021-11-17

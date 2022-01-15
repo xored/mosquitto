@@ -117,7 +117,6 @@ static void write_payload(const unsigned char *payload, int payloadlen, int hex,
 			payloadlen = field_width;
 		}
 		if(hex > 0){
-			payloadlen /= 2;
 			padlen = field_width - payloadlen*2;
 		}else{
 			padlen = field_width - payloadlen;

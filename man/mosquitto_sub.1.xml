@@ -1098,6 +1098,7 @@ mosquitto_sub -t 'bbc/#' -T bbc/bbc1 --remove-retained</programlisting>
 		<refsect2>
 			<title>Subscribe</title>
 			<itemizedlist>
+				<listitem><para><option>subscription-identifier</option> (Variable byte integer)</para></listitem>
 				<listitem><para><option>user-property</option> (UTF-8 string pair)</para></listitem>
 			</itemizedlist>
 		</refsect2>

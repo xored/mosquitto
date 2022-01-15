@@ -3,7 +3,6 @@
 all :
 
 check : test
-ptest : test
 test : 02 03
 	./test.sh
 	#./test-ws.sh
@@ -11,11 +10,19 @@ test : 02 03
 02 :
 	./02-subscribe-argv-errors.py
 	./02-subscribe-qos1.py
+	./02-subscribe-format.py
+	./02-subscribe-null.py
+	./02-subscribe-verbose.py
 
 03 :
 	./03-publish-argv-errors.py
 	./03-publish-qos0-empty.py
 	./03-publish-qos1-properties.py
 	./03-publish-qos1.py
+
+ptest :
+	./test.sh
+	#./test-ws.sh
+	./test.py
 
 clean:

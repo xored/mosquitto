@@ -100,6 +100,7 @@ if __name__ == '__main__':
     do_test(['-l', '-s'], "Error: Only one type of message can be sent at once.\n\n" + helps, 1)
 
     # Invalid values
+    do_test(['-t', 'topic', '-f', 'missing'], "Error: Unable to open file \"missing\".\nError loading input file \"missing\".\n", 1)
     do_test(['-k', '-1'], "Error: Invalid keepalive given, it must be between 5 and 65535 inclusive.\n\n" + helps, 1)
     do_test(['-k', '65536'], "Error: Invalid keepalive given, it must be between 5 and 65535 inclusive.\n\n" + helps, 1)
     do_test(['-M', '0'], "Error: Maximum inflight messages must be greater than 0.\n\n" + helps, 1)
@@ -115,6 +116,7 @@ if __name__ == '__main__':
     do_test(['-V', '5', '-D', 'connect', 'receive-maximum', '65536'], "Error: Property value (65536) out of range for property receive-maximum.\n\n" + helps, 1)
     do_test(['-V', '5', '-D', 'connect', 'session-expiry-interval', '-1'], "Error: Property value (-1) out of range for property session-expiry-interval.\n\n" + helps, 1)
     do_test(['-V', '5', '-D', 'connect', 'session-expiry-interval', '4294967296'], "Error: Property value (4294967296) out of range for property session-expiry-interval.\n\n" + helps, 1)
+    do_test(['-V', '5', '-D', 'publish', 'subscription-identifier', '1'], "Error: subscription-identifier property not supported for publish in --property argument.\n\n" + helps, 1)
 
     # Unknown options
     do_test(['--unknown'], "Error: Unknown option '--unknown'.\n" + helps, 1)

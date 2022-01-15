@@ -23,14 +23,16 @@ def do_test(proto_ver):
     cmd = ['../../client/mosquitto_sub',
             '-p', str(port),
             '-q', '1',
-            '-t', '02/sub/qos1/test',
+            '-t', '02/sub/null/test',
             '-V', V,
-            '-C', '1'
+            '-C', '1',
+            '-v'
             ]
 
-    payload = "message"
-    publish_packet_s = mosq_test.gen_publish("02/sub/qos1/test", qos=1, mid=1, payload=payload, proto_ver=proto_ver)
-    publish_packet_r = mosq_test.gen_publish("02/sub/qos1/test", qos=1, mid=2, payload=payload, proto_ver=proto_ver)
+    topic = "02/sub/null/test"
+    payload = ""
+    publish_packet_s = mosq_test.gen_publish(topic, qos=1, mid=1, payload=payload, proto_ver=proto_ver)
+    publish_packet_r = mosq_test.gen_publish(topic, qos=1, mid=2, payload=payload, proto_ver=proto_ver)
     puback_packet_s = mosq_test.gen_puback(1, proto_ver=proto_ver)
     puback_packet_r = mosq_test.gen_puback(2, proto_ver=proto_ver)
 
@@ -45,8 +47,12 @@ def do_test(proto_ver):
         mosq_test.expect_packet(sock, "puback", puback_packet_s)
         sub.wait()
         (stdo, stde) = sub.communicate()
-        if stdo.decode('utf-8') == payload + '\n':
+        expected_output = topic + ' (null)\n'
+        if stdo.decode('utf-8') == expected_output:
             rc = 0
+        else:
+            print("expected: %s" % expected_output)
+            print("actual:   %s"  % stdo.decode('utf-8'))
         sock.close()
     except mosq_test.TestError:
         pass
