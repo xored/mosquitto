@@ -19,6 +19,7 @@ test : 02 03
 	./03-publish-qos0-empty.py
 	./03-publish-qos1-properties.py
 	./03-publish-qos1.py
+	./03-publish-socks.py
 
 ptest :
 	./test.sh
