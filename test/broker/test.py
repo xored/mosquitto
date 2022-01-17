@@ -236,6 +236,7 @@ tests = [
     (1, './15-sqlite-client-v5-0.py'),
     (1, './15-sqlite-client-v5.0.py'),
     (1, './15-sqlite-publish-properties-v5-0.py'),
+    (1, './15-sqlite-retain-clear-v5-0.py'),
     (1, './15-sqlite-retain-v3-1-1.py'),
     (1, './15-sqlite-retain-v5-0.py'),
     (1, './15-sqlite-subscription-v3-1-1.py'),
