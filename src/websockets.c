@@ -218,17 +218,6 @@ static int callback_mqtt(
 
 			while(mosq->out_packet && !lws_send_pipe_choked(mosq->wsi)){
 				packet = mosq->out_packet;
-
-				if(packet->pos == 0 && packet->to_process == packet->packet_length){
-					/* First time this packet has been dealt with.
-					 * libwebsockets requires that the payload has
-					 * LWS_PRE space available before the
-					 * actual data.
-					 * We've already made the payload big enough to allow this,
-					 * but need to move it into position here. */
-					memmove(&packet->payload[LWS_PRE], packet->payload, packet->packet_length);
-					packet->pos += LWS_PRE;
-				}
 				count = lws_write(wsi, &packet->payload[packet->pos], packet->to_process, LWS_WRITE_BINARY);
 				if(count < 0){
 					if (mosq->state == mosq_cs_disconnect_ws

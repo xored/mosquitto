@@ -148,10 +148,10 @@ int packet__queue(struct mosquitto *mosq, struct mosquitto__packet *packet)
 
 #if defined(WITH_BROKER) && defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_LWS
 	if(mosq->wsi){
-		packet->pos = 0;
-		packet->to_process = packet->packet_length;
-
 		packet->next = NULL;
+		packet->pos = WS_PACKET_OFFSET;
+		packet->to_process = packet->packet_length - WS_PACKET_OFFSET;
+
 		pthread_mutex_lock(&mosq->out_packet_mutex);
 		if(mosq->out_packet){
 			mosq->out_packet_last->next = packet;
