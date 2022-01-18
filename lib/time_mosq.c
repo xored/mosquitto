@@ -68,7 +68,7 @@ void mosquitto_time_ns(time_t *s, long *ns)
 #ifdef WIN32
 	SYSTEMTIME st;
 	GetLocalTime(&st);
-	*s = st.wSecond;
+	*s = time(NULL);
 	*ns = st.wMilliseconds*1000000L;
 #elif _POSIX_TIMERS>0 && defined(_POSIX_MONOTONIC_CLOCK)
 	struct timespec tp;
