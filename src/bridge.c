@@ -228,7 +228,6 @@ static int bridge__connect_step1(struct mosquitto *context)
 	size_t notification_topic_len;
 	uint8_t notification_payload;
 	struct mosquitto__bridge_topic *cur_topic;
-	int i;
 	uint8_t qos;
 
 	if(!context || !context->bridge) return MOSQ_ERR_INVAL;

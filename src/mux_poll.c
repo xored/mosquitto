@@ -180,9 +180,6 @@ int mux_poll__handle(struct mosquitto__listener_sock *listensock, int listensock
 	struct mosquitto *context;
 	int i;
 	int fdcount;
-#ifndef WIN32
-	sigset_t origsig;
-#endif
 	int timeout;
 
 #ifdef WITH_WEBSOCKETS

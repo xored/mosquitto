@@ -569,7 +569,9 @@ int config__parse_args(struct mosquitto__config *config, int argc, char *argv[])
 
 static void config__copy(struct mosquitto__config *src, struct mosquitto__config *dest)
 {
+#ifdef WITH_BRIDGE
 	int i;
+#endif
 
 	mosquitto__FREE(dest->security_options.acl_file);
 	dest->security_options.acl_file = src->security_options.acl_file;

@@ -297,10 +297,13 @@ int net__try_connect_step1(struct mosquitto *mosq, const char *host)
 	int s;
 	void *sevp = NULL;
 	struct addrinfo *hints;
+	struct addrinfo *ar_request;
 
 	if(mosq->adns){
 		gai_cancel(mosq->adns);
-		mosquitto__FREE((struct addrinfo *)mosq->adns->ar_request);
+
+		ar_request = (struct addrinfo *)mosq->adns->ar_request;
+		mosquitto__FREE(ar_request);
 		mosquitto__FREE(mosq->adns);
 	}
 	mosq->adns = mosquitto__calloc(1, sizeof(struct gaicb));
@@ -324,7 +327,8 @@ int net__try_connect_step1(struct mosquitto *mosq, const char *host)
 	if(s){
 		errno = s;
 		if(mosq->adns){
-			mosquitto__FREE((struct addrinfo *)mosq->adns->ar_request);
+			ar_request = (struct addrinfo *)mosq->adns->ar_request;
+			mosquitto__FREE(ar_request);
 			mosquitto__FREE(mosq->adns);
 		}
 		return MOSQ_ERR_EAI;
@@ -337,6 +341,7 @@ int net__try_connect_step1(struct mosquitto *mosq, const char *host)
 int net__try_connect_step2(struct mosquitto *mosq, uint16_t port, mosq_sock_t *sock)
 {
 	struct addrinfo *ainfo, *rp;
+	struct addrinfo *ar_request;
 	int rc;
 
 	ainfo = mosq->adns->ar_result;
@@ -382,7 +387,8 @@ int net__try_connect_step2(struct mosquitto *mosq, uint16_t port, mosq_sock_t *s
 	freeaddrinfo(mosq->adns->ar_result);
 	mosq->adns->ar_result = NULL;
 
-	mosquitto__FREE((struct addrinfo *)mosq->adns->ar_request);
+	ar_request = (struct addrinfo *)mosq->adns->ar_request;
+	mosquitto__FREE(ar_request);
 	mosquitto__FREE(mosq->adns);
 
 	if(!rp){

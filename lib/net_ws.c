@@ -19,6 +19,9 @@ Contributors:
 #include "config.h"
 
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_BUILTIN
+#ifndef WITH_TLS
+#  error "Builtin websockets support requires WITH_TLS=yes and openssl to be available"
+#endif
 
 #include <errno.h>
 #include <stddef.h>

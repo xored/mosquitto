@@ -164,7 +164,8 @@ void context__cleanup(struct mosquitto *context, bool force_free)
 #if defined(WITH_BROKER) && defined(__GLIBC__) && defined(WITH_ADNS)
 	if(context->adns){
 		gai_cancel(context->adns);
-		mosquitto__FREE((struct addrinfo *)context->adns->ar_request);
+		struct addrinfo *ar_request = (struct addrinfo *)context->adns->ar_request;
+		mosquitto__FREE(ar_request);
 		mosquitto__FREE(context->adns);
 	}
 #endif
