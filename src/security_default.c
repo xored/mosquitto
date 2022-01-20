@@ -935,24 +935,6 @@ static int psk__file_parse(struct mosquitto__unpwd **psk_id, const char *psk_fil
 }
 
 
-#ifdef WITH_TLS
-static int mosquitto__memcmp_const(const void *a, const void *b, size_t len)
-{
-	size_t i;
-	int rc = 0;
-
-	if(!a || !b) return 1;
-
-	for(i=0; i<len; i++){
-		if( ((char *)a)[i] != ((char *)b)[i] ){
-			rc = 1;
-		}
-	}
-	return rc;
-}
-#endif
-
-
 static int mosquitto_unpwd_check_default(int event, void *event_data, void *userdata)
 {
 	struct mosquitto_evt_basic_auth *ed = event_data;
@@ -986,7 +968,7 @@ static int mosquitto_unpwd_check_default(int event, void *event_data, void *user
 #ifdef WITH_TLS
 				rc = pw__digest(ed->client->password, u->salt, u->salt_len, hash, &hash_len, u->hashtype, u->iterations);
 				if(rc == MOSQ_ERR_SUCCESS){
-					if(hash_len == u->password_len && !mosquitto__memcmp_const(u->password, hash, hash_len)){
+					if(hash_len == u->password_len && !pw__memcmp_const(u->password, hash, hash_len)){
 						return MOSQ_ERR_SUCCESS;
 					}else{
 						return MOSQ_ERR_AUTH;
