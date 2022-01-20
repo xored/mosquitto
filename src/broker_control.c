@@ -112,7 +112,7 @@ static int add_plugin_info(cJSON *j_plugins, mosquitto_plugin_id_t *pid)
 		}
 		cJSON_AddItemToArray(j_eps, j_ep);
 	}
-		
+
 	cJSON_AddItemToArray(j_plugins, j_plugin);
 	return MOSQ_ERR_SUCCESS;
 }
@@ -169,6 +169,101 @@ static int broker__process_get_plugin_info(cJSON *j_responses, struct mosquitto 
 internal_error:
 	cJSON_Delete(tree);
 	broker__command_reply(j_responses, context, "getPluginInfo", "Internal error", correlation_data);
+	return MOSQ_ERR_NOMEM;
+}
+
+
+static int add_listener(cJSON *j_listeners, struct mosquitto__listener *listener)
+{
+	cJSON *j_listener;
+	const char *protocol = NULL;
+
+	j_listener = cJSON_CreateObject();
+	if(j_listener == NULL){
+		return MOSQ_ERR_NOMEM;
+	}
+	cJSON_AddItemToArray(j_listeners, j_listener);
+
+	if(listener->protocol == mp_mqtt){
+		protocol = "mqtt";
+	}else if(listener->protocol == mp_websockets){
+		protocol = "mqtt+websockets";
+	}
+
+	if(cJSON_AddNumberToObject(j_listener, "port", listener->port) == NULL
+			|| (protocol && cJSON_AddStringToObject(j_listener, "protocol", protocol) == NULL)
+			|| (listener->host && cJSON_AddStringToObject(j_listener, "bind-address", listener->host) == NULL)
+#ifdef WITH_UNIX_SOCKETS
+			|| (listener->unix_socket_path && cJSON_AddStringToObject(j_listener, "socket-path", listener->unix_socket_path) == NULL)
+#endif
+			){
+
+		return MOSQ_ERR_NOMEM;
+	}
+
+#ifdef WITH_TLS
+	if(cJSON_AddBoolToObject(j_listener, "tls", listener->ssl_ctx != NULL) == NULL
+			){
+
+		return MOSQ_ERR_NOMEM;
+	}
+#endif
+
+	return MOSQ_ERR_SUCCESS;
+}
+
+
+static int broker__process_list_listeners(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+{
+	cJSON *tree, *jtmp, *j_data, *j_listeners;
+	const char *admin_clientid, *admin_username;
+	int i;
+
+	UNUSED(command);
+
+	tree = cJSON_CreateObject();
+	if(tree == NULL){
+		broker__command_reply(j_responses, context, "listListeners", "Internal error", correlation_data);
+		return MOSQ_ERR_NOMEM;
+	}
+
+	admin_clientid = mosquitto_client_id(context);
+	admin_username = mosquitto_client_username(context);
+	mosquitto_log_printf(MOSQ_LOG_INFO, "Broker: %s/%s | listListeners",
+			admin_clientid, admin_username);
+
+	if(cJSON_AddStringToObject(tree, "command", "listListeners") == NULL
+		|| ((j_data = cJSON_AddObjectToObject(tree, "data")) == NULL)
+
+			){
+		goto internal_error;
+	}
+
+	j_listeners = cJSON_AddArrayToObject(j_data, "listeners");
+	if(j_listeners == NULL){
+		goto internal_error;
+	}
+
+	for(i=0; i<db.config->listener_count; i++){
+		if(add_listener(j_listeners, &db.config->listeners[i])){
+			goto internal_error;
+		}
+	}
+
+	cJSON_AddItemToArray(j_responses, tree);
+
+	if(correlation_data){
+		jtmp = cJSON_AddStringToObject(tree, "correlationData", correlation_data);
+		if(jtmp == NULL){
+			goto internal_error;
+		}
+	}
+
+	return MOSQ_ERR_SUCCESS;
+
+internal_error:
+	cJSON_Delete(tree);
+	broker__command_reply(j_responses, context, "listListeners", "Internal error", correlation_data);
 	return MOSQ_ERR_NOMEM;
 }
 
@@ -273,6 +368,8 @@ static int broker__handle_control(cJSON *j_responses, struct mosquitto *context,
 
 				if(!strcasecmp(command, "getPluginInfo")){
 					rc = broker__process_get_plugin_info(j_responses, context, aiter, correlation_data);
+				}else if(!strcasecmp(command, "listListeners")){
+					rc = broker__process_list_listeners(j_responses, context, aiter, correlation_data);
 
 				/* Unknown */
 				}else{

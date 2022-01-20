@@ -31,6 +31,7 @@ void broker__print_usage(void)
 	printf("=======================\n");
 
 	printf("Get plugin information:          getPluginInfo\n");
+	printf("List listeners        :          listListeners\n");
 }
 
 /* ################################################################
@@ -38,6 +39,53 @@ void broker__print_usage(void)
  * # Payload callback
  * #
  * ################################################################ */
+
+static void print_listeners(cJSON *j_response)
+{
+	cJSON *j_data, *j_listeners, *j_listener, *jtmp;
+	int i=1;
+
+	j_data = cJSON_GetObjectItem(j_response, "data");
+	if(j_data == NULL || !cJSON_IsObject(j_data)){
+		fprintf(stderr, "Error: Invalid response from server.\n");
+		return;
+	}
+
+	j_listeners = cJSON_GetObjectItem(j_data, "listeners");
+	if(j_listeners == NULL || !cJSON_IsArray(j_listeners)){
+		fprintf(stderr, "Error: Invalid response from server.\n");
+		return;
+	}
+
+	cJSON_ArrayForEach(j_listener, j_listeners){
+		printf("Listener %d:\n", i);
+
+		jtmp = cJSON_GetObjectItem(j_listener, "port");
+		if(jtmp && cJSON_IsNumber(jtmp)){
+			printf("  Port:              %d\n", jtmp->valueint);
+		}
+
+		jtmp = cJSON_GetObjectItem(j_listener, "protocol");
+		if(jtmp && cJSON_IsString(jtmp)){
+			printf("  Protocol:          %s\n", jtmp->valuestring);
+		}
+
+		jtmp = cJSON_GetObjectItem(j_listener, "socket-path");
+		if(jtmp && cJSON_IsString(jtmp)){
+			printf("  Socket path:       %s\n", jtmp->valuestring);
+		}
+
+		jtmp = cJSON_GetObjectItem(j_listener, "bind-address");
+		if(jtmp && cJSON_IsString(jtmp)){
+			printf("  Bind address:      %s\n", jtmp->valuestring);
+		}
+
+		jtmp = cJSON_GetObjectItem(j_listener, "tls");
+		printf("  TLS:               %s\n", jtmp && cJSON_IsBool(jtmp) && cJSON_IsTrue(jtmp)?"true":"false");
+		printf("\n");
+	}
+}
+
 
 static void print_plugin_info(cJSON *j_response)
 {
@@ -131,6 +179,8 @@ static void broker__payload_callback(struct mosq_ctrl *ctrl, long payloadlen, co
 	}else{
 		if(!strcasecmp(j_command->valuestring, "getPluginInfo")){
 			print_plugin_info(j_response);
+		}else if(!strcasecmp(j_command->valuestring, "listListeners")){
+			print_listeners(j_response);
 		}else{
 			/* fprintf(stderr, "%s: Success\n", j_command->valuestring); */
 		}
@@ -144,6 +194,20 @@ static int broker__get_plugin_info(int argc, char *argv[], cJSON *j_command)
 	UNUSED(argv);
 
 	if(cJSON_AddStringToObject(j_command, "command", "getPluginInfo") == NULL
+			){
+
+		return MOSQ_ERR_NOMEM;
+	}
+
+	return MOSQ_ERR_SUCCESS;
+}
+
+static int broker__list_listeners(int argc, char *argv[], cJSON *j_command)
+{
+	UNUSED(argc);
+	UNUSED(argv);
+
+	if(cJSON_AddStringToObject(j_command, "command", "listListeners") == NULL
 			){
 
 		return MOSQ_ERR_NOMEM;
@@ -195,6 +259,8 @@ int broker__main(int argc, char *argv[], struct mosq_ctrl *ctrl)
 
 	if(!strcasecmp(argv[0], "getPluginInfo")){
 		rc = broker__get_plugin_info(argc-1, &argv[1], j_command);
+	}else if(!strcasecmp(argv[0], "listListeners")){
+		rc = broker__list_listeners(argc-1, &argv[1], j_command);
 
 	}else{
 		fprintf(stderr, "Command '%s' not recognised.\n", argv[0]);

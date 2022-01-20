@@ -245,6 +245,8 @@ tests = [
     (1, './16-cmd-args.py'),
     (1, './16-config-includedir.py'),
     (1, './16-config-parse-errors.py'),
+
+	(4, './17-control-list-listeners.py'),
     ]
 
 ptest.run_tests(tests)
