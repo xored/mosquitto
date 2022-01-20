@@ -288,3 +288,4 @@ endif
 
 17 :
 	./17-control-list-listeners.py
+	./17-control-list-plugins.py

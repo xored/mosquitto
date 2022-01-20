@@ -247,6 +247,7 @@ tests = [
     (1, './16-config-parse-errors.py'),
 
 	(4, './17-control-list-listeners.py'),
+	(1, './17-control-list-plugins.py'),
     ]
 
 ptest.run_tests(tests)

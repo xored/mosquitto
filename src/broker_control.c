@@ -118,7 +118,7 @@ static int add_plugin_info(cJSON *j_plugins, mosquitto_plugin_id_t *pid)
 }
 
 
-static int broker__process_get_plugin_info(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+static int broker__process_list_plugins(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	cJSON *tree, *jtmp, *j_data, *j_plugins;
 	const char *admin_clientid, *admin_username;
@@ -128,16 +128,16 @@ static int broker__process_get_plugin_info(cJSON *j_responses, struct mosquitto 
 
 	tree = cJSON_CreateObject();
 	if(tree == NULL){
-		broker__command_reply(j_responses, context, "getPluginInfo", "Internal error", correlation_data);
+		broker__command_reply(j_responses, context, "listPlugins", "Internal error", correlation_data);
 		return MOSQ_ERR_NOMEM;
 	}
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
-	mosquitto_log_printf(MOSQ_LOG_INFO, "Broker: %s/%s | getPluginInfo",
+	mosquitto_log_printf(MOSQ_LOG_INFO, "Broker: %s/%s | listPlugins",
 			admin_clientid, admin_username);
 
-	if(cJSON_AddStringToObject(tree, "command", "getPluginInfo") == NULL
+	if(cJSON_AddStringToObject(tree, "command", "listPlugins") == NULL
 		|| ((j_data = cJSON_AddObjectToObject(tree, "data")) == NULL)
 
 			){
@@ -168,7 +168,7 @@ static int broker__process_get_plugin_info(cJSON *j_responses, struct mosquitto 
 
 internal_error:
 	cJSON_Delete(tree);
-	broker__command_reply(j_responses, context, "getPluginInfo", "Internal error", correlation_data);
+	broker__command_reply(j_responses, context, "listPlugins", "Internal error", correlation_data);
 	return MOSQ_ERR_NOMEM;
 }
 
@@ -366,8 +366,8 @@ static int broker__handle_control(cJSON *j_responses, struct mosquitto *context,
 					return MOSQ_ERR_INVAL;
 				}
 
-				if(!strcasecmp(command, "getPluginInfo")){
-					rc = broker__process_get_plugin_info(j_responses, context, aiter, correlation_data);
+				if(!strcasecmp(command, "listPlugins")){
+					rc = broker__process_list_plugins(j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "listListeners")){
 					rc = broker__process_list_listeners(j_responses, context, aiter, correlation_data);
 

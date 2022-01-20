@@ -30,8 +30,8 @@ void broker__print_usage(void)
 	printf("\nBroker Control module\n");
 	printf("=======================\n");
 
-	printf("Get plugin information:          getPluginInfo\n");
-	printf("List listeners        :          listListeners\n");
+	printf("List plugins    :          listPlugins\n");
+	printf("List listeners  :          listListeners\n");
 }
 
 /* ################################################################
@@ -177,7 +177,7 @@ static void broker__payload_callback(struct mosq_ctrl *ctrl, long payloadlen, co
 	if(j_error){
 		fprintf(stderr, "%s: Error: %s\n", j_command->valuestring, j_error->valuestring);
 	}else{
-		if(!strcasecmp(j_command->valuestring, "getPluginInfo")){
+		if(!strcasecmp(j_command->valuestring, "listPlugins")){
 			print_plugin_info(j_response);
 		}else if(!strcasecmp(j_command->valuestring, "listListeners")){
 			print_listeners(j_response);
@@ -188,12 +188,12 @@ static void broker__payload_callback(struct mosq_ctrl *ctrl, long payloadlen, co
 	cJSON_Delete(tree);
 }
 
-static int broker__get_plugin_info(int argc, char *argv[], cJSON *j_command)
+static int broker__list_plugins(int argc, char *argv[], cJSON *j_command)
 {
 	UNUSED(argc);
 	UNUSED(argv);
 
-	if(cJSON_AddStringToObject(j_command, "command", "getPluginInfo") == NULL
+	if(cJSON_AddStringToObject(j_command, "command", "listPlugins") == NULL
 			){
 
 		return MOSQ_ERR_NOMEM;
@@ -257,8 +257,8 @@ int broker__main(int argc, char *argv[], struct mosq_ctrl *ctrl)
 	}
 	cJSON_AddItemToArray(j_commands, j_command);
 
-	if(!strcasecmp(argv[0], "getPluginInfo")){
-		rc = broker__get_plugin_info(argc-1, &argv[1], j_command);
+	if(!strcasecmp(argv[0], "listPlugins")){
+		rc = broker__list_plugins(argc-1, &argv[1], j_command);
 	}else if(!strcasecmp(argv[0], "listListeners")){
 		rc = broker__list_listeners(argc-1, &argv[1], j_command);
 
