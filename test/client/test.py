@@ -12,6 +12,7 @@ tests = [
     (1, './02-subscribe-verbose.py'),
 
     (1, './03-publish-argv-errors.py'),
+	(1, './03-publish-options-file.py'),
     (1, './03-publish-qos0-empty.py'),
     (1, './03-publish-qos1-properties.py'),
     (1, './03-publish-qos1.py'),

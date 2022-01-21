@@ -16,6 +16,7 @@ test : 02 03
 
 03 :
 	./03-publish-argv-errors.py
+	./03-publish-options-file.py
 	./03-publish-qos0-empty.py
 	./03-publish-qos1-properties.py
 	./03-publish-qos1.py

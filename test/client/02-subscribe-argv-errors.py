@@ -70,6 +70,8 @@ if __name__ == '__main__':
     do_test(['-U'], "Error: -U argument given but no unsubscribe topic specified.\n\n" + helps, 1)
     do_test(['-W'], "Error: -W argument given but no timeout specified.\n\n" + helps, 1)
     do_test(['--will-payload', 'payload'], "Error: Will payload given, but no will topic given.\n" + helps, 1)
+    # No -t or -U
+    do_test([], "Error: You must specify a topic to subscribe to (-t) or unsubscribe from (-U).\n" + helps, 1)
 
     # Invalid combinations
     do_test(['-i', 'id', '-I', 'id-prefix'], "Error: -i and -I argument cannot be used together.\n\n" + helps, 1)
