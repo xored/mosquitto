@@ -108,6 +108,7 @@ if __name__ == '__main__':
     do_test(['-p', '65536'], "Error: Invalid port given: 65536\n" + helps, 1)
     do_test(['-q', '-1'], "Error: Invalid QoS given: -1\n" + helps, 1)
     do_test(['-q', '3'], "Error: Invalid QoS given: 3\n" + helps, 1)
+    do_test(['--repeat-delay', '-1'], "Error: --repeat-delay argument must be >=0.0.\n\n" + helps, 1)
     do_test(['-t', 'topic/+'], "Error: Invalid publish topic 'topic/+', does it contain '+' or '#'?\n" + helps, 1)
     do_test(['-t', 'topic/#'], "Error: Invalid publish topic 'topic/#', does it contain '+' or '#'?\n" + helps, 1)
     do_test(['-V', '5', '-D', 'connect', 'request-problem-information', '-1'], "Error: Property value (-1) out of range for property request-problem-information.\n\n" + helps, 1)
@@ -117,6 +118,7 @@ if __name__ == '__main__':
     do_test(['-V', '5', '-D', 'connect', 'session-expiry-interval', '-1'], "Error: Property value (-1) out of range for property session-expiry-interval.\n\n" + helps, 1)
     do_test(['-V', '5', '-D', 'connect', 'session-expiry-interval', '4294967296'], "Error: Property value (4294967296) out of range for property session-expiry-interval.\n\n" + helps, 1)
     do_test(['-V', '5', '-D', 'publish', 'subscription-identifier', '1'], "Error: subscription-identifier property not supported for publish in --property argument.\n\n" + helps, 1)
+    do_test(['-t','topic','-m','1', '--cafile', 'missing'], "Error: Problem setting TLS options: File not found.\n", 1)
 
     # Unknown options
     do_test(['--unknown'], "Error: Unknown option '--unknown'.\n" + helps, 1)
