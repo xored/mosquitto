@@ -4,7 +4,7 @@
 
 from mosq_test_helper import *
 
-def do_test(start_broker, proto_ver):
+def do_test(proto_ver):
     rc = 1
 
     port = mosq_test.get_port()
@@ -35,8 +35,7 @@ def do_test(start_broker, proto_ver):
     else:
         puback_packet = mosq_test.gen_puback(mid, proto_ver=proto_ver)
 
-    if start_broker:
-        broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port)
+    broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port)
 
     try:
         sock = mosq_test.sub_helper(port=port, topic="#", qos=0, proto_ver=proto_ver)
@@ -53,29 +52,15 @@ def do_test(start_broker, proto_ver):
     except Exception as e:
         print(e)
     finally:
-        if start_broker:
-            broker.terminate()
-            broker.wait()
-            (stdo, stde) = broker.communicate()
-            if rc:
-                print(stde.decode('utf-8'))
-                print("proto_ver=%d" % (proto_ver))
-                exit(rc)
-        else:
-            return rc
+        broker.terminate()
+        broker.wait()
+        (stdo, stde) = broker.communicate()
+        if rc:
+            print(stde.decode('utf-8'))
+            print("proto_ver=%d" % (proto_ver))
+            exit(rc)
 
 
-def all_tests(start_broker=False):
-    rc = do_test(start_broker, proto_ver=3)
-    if rc:
-        return rc;
-    rc = do_test(start_broker, proto_ver=4)
-    if rc:
-        return rc;
-    rc = do_test(start_broker, proto_ver=5)
-    if rc:
-        return rc;
-    return 0
-
-if __name__ == '__main__':
-    all_tests(True)
+do_test(proto_ver=3)
+do_test(proto_ver=4)
+do_test(proto_ver=5)

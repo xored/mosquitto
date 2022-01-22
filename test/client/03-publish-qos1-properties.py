@@ -4,7 +4,7 @@
 
 from mosq_test_helper import *
 
-def do_test(start_broker, proto_ver):
+def do_test(proto_ver):
     rc = 1
 
     port = mosq_test.get_port()
@@ -45,8 +45,7 @@ def do_test(start_broker, proto_ver):
     publish_packet = mosq_test.gen_publish("03/pub/qos1/test/properties", qos=1, mid=mid, payload="message", proto_ver=proto_ver, properties=props)
     puback_packet = mosq_test.gen_puback(mid, proto_ver=proto_ver, reason_code=mqtt5_rc.MQTT_RC_NO_MATCHING_SUBSCRIBERS)
 
-    if start_broker:
-        broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port)
+    broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port)
 
     try:
         sock = mosq_test.sub_helper(port=port, topic="#", qos=1, proto_ver=5)
@@ -63,20 +62,13 @@ def do_test(start_broker, proto_ver):
     except Exception as e:
         print(e)
     finally:
-        if start_broker:
-            broker.terminate()
-            broker.wait()
-            (stdo, stde) = broker.communicate()
-            if rc:
-                print(stde.decode('utf-8'))
-                print("proto_ver=%d" % (proto_ver))
-                exit(rc)
-        else:
-            return rc
+        broker.terminate()
+        broker.wait()
+        (stdo, stde) = broker.communicate()
+        if rc:
+            print(stde.decode('utf-8'))
+            print("proto_ver=%d" % (proto_ver))
+            exit(rc)
 
 
-def all_tests(start_broker=False):
-    return do_test(start_broker, proto_ver=5)
-
-if __name__ == '__main__':
-    all_tests(True)
+do_test(proto_ver=5)
