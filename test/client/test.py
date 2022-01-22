@@ -17,6 +17,8 @@ tests = [
     (1, './03-publish-qos1-properties.py'),
     (1, './03-publish-qos1.py'),
     (2, './03-publish-socks.py'),
+	(1, './03-publish-stdin-file.py'),
+	(1, './03-publish-stdin-line.py'),
     ]
 
 ptest.run_tests(tests)
