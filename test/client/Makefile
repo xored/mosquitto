@@ -17,6 +17,8 @@ test : 02 03
 
 03 :
 	./03-publish-argv-errors.py
+	./03-publish-file-empty.py
+	./03-publish-file.py
 	./03-publish-options-file.py
 	./03-publish-qos0-empty.py
 	./03-publish-qos1-properties.py
@@ -25,6 +27,7 @@ test : 02 03
 	./03-publish-socks.py
 	./03-publish-stdin-file.py
 	./03-publish-stdin-line.py
+	./03-publish-url.py,
 
 ptest :
 	./test.sh
