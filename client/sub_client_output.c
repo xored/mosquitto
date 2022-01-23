@@ -174,7 +174,7 @@ static int json_print_properties(cJSON *root, const mosquitto_property *properti
 	uint32_t i32value = 0;
 	char *strname = NULL, *strvalue = NULL;
 	char *binvalue = NULL;
-	cJSON *tmp, *prop_json, *user_json = NULL;
+	cJSON *tmp, *prop_json, *user_props = NULL, *user_json;
 	const mosquitto_property *prop = NULL;
 
 	prop_json = cJSON_CreateObject();
@@ -226,13 +226,19 @@ static int json_print_properties(cJSON *root, const mosquitto_property *properti
 				break;
 
 			case MQTT_PROP_USER_PROPERTY:
-				if(user_json == NULL){
-					user_json = cJSON_CreateObject();
-					if(user_json == NULL){
+				if(user_props == NULL){
+					user_props = cJSON_CreateArray();
+					if(user_props == NULL){
 						return MOSQ_ERR_NOMEM;
 					}
-					cJSON_AddItemToObject(prop_json, "user-properties", user_json);
+					cJSON_AddItemToObject(prop_json, "user-properties", user_props);
 				}
+
+				user_json = cJSON_CreateObject();
+				if(user_props == NULL){
+					return MOSQ_ERR_NOMEM;
+				}
+				cJSON_AddItemToArray(user_props, user_json);
 				mosquitto_property_read_string_pair(prop, MQTT_PROP_USER_PROPERTY, &strname, &strvalue, false);
 				if(strname == NULL || strvalue == NULL) return MOSQ_ERR_NOMEM;
 

@@ -10,6 +10,11 @@ test : 02 03
 02 :
 	./02-subscribe-argv-errors.py
 	./02-subscribe-filter-out.py
+	./02-subscribe-format.py
+	./02-subscribe-format-json-qos0.py
+	./02-subscribe-format-json-qos1.py
+	./02-subscribe-format-json-properties.py
+	./02-subscribe-format-json-retain.py
 	./02-subscribe-qos1.py
 	./02-subscribe-format.py
 	./02-subscribe-null.py
