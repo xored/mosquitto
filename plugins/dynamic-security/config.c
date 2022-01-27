@@ -41,30 +41,30 @@ static int dynsec__general_config_load(cJSON *tree)
 	if(j_default_access && cJSON_IsObject(j_default_access)){
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_PUB_C_SEND);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.publish_c_send = cJSON_IsTrue(jtmp);
+			g_dynsec_data.default_access.publish_c_send = cJSON_IsTrue(jtmp);
 		}else{
-			default_access.publish_c_send = false;
+			g_dynsec_data.default_access.publish_c_send = false;
 		}
 
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_PUB_C_RECV);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.publish_c_recv = cJSON_IsTrue(jtmp);
+			g_dynsec_data.default_access.publish_c_recv = cJSON_IsTrue(jtmp);
 		}else{
-			default_access.publish_c_recv = false;
+			g_dynsec_data.default_access.publish_c_recv = false;
 		}
 
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_SUB_GENERIC);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.subscribe = cJSON_IsTrue(jtmp);
+			g_dynsec_data.default_access.subscribe = cJSON_IsTrue(jtmp);
 		}else{
-			default_access.subscribe = false;
+			g_dynsec_data.default_access.subscribe = false;
 		}
 
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_UNSUB_GENERIC);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			default_access.unsubscribe = cJSON_IsTrue(jtmp);
+			g_dynsec_data.default_access.unsubscribe = cJSON_IsTrue(jtmp);
 		}else{
-			default_access.unsubscribe = false;
+			g_dynsec_data.default_access.unsubscribe = false;
 		}
 	}
 	return MOSQ_ERR_SUCCESS;
@@ -80,10 +80,10 @@ static int dynsec__general_config_save(cJSON *tree)
 	}
 	cJSON_AddItemToObject(tree, "defaultACLAccess", j_default_access);
 
-	if(cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_SEND, default_access.publish_c_send) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_RECV, default_access.publish_c_recv) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_SUB_GENERIC, default_access.subscribe) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_UNSUB_GENERIC, default_access.unsubscribe) == NULL
+	if(cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_SEND, g_dynsec_data.default_access.publish_c_send) == NULL
+			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_RECV, g_dynsec_data.default_access.publish_c_recv) == NULL
+			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_SUB_GENERIC, g_dynsec_data.default_access.subscribe) == NULL
+			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_UNSUB_GENERIC, g_dynsec_data.default_access.unsubscribe) == NULL
 			){
 
 		return 1;

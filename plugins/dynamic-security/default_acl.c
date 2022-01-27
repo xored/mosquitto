@@ -33,8 +33,6 @@ Contributors:
 
 #include "dynamic_security.h"
 
-struct dynsec__acl_default_access default_access = {false, false, false, false};
-
 int dynsec__process_set_default_acl_access(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	cJSON *j_actions, *j_action, *j_acltype, *j_allow;
@@ -59,13 +57,13 @@ int dynsec__process_set_default_acl_access(cJSON *j_responses, struct mosquitto 
 			allow = cJSON_IsTrue(j_allow);
 
 			if(!strcasecmp(j_acltype->valuestring, ACL_TYPE_PUB_C_SEND)){
-				default_access.publish_c_send = allow;
+				g_dynsec_data.default_access.publish_c_send = allow;
 			}else if(!strcasecmp(j_acltype->valuestring, ACL_TYPE_PUB_C_RECV)){
-				default_access.publish_c_recv = allow;
+				g_dynsec_data.default_access.publish_c_recv = allow;
 			}else if(!strcasecmp(j_acltype->valuestring, ACL_TYPE_SUB_GENERIC)){
-				default_access.subscribe = allow;
+				g_dynsec_data.default_access.subscribe = allow;
 			}else if(!strcasecmp(j_acltype->valuestring, ACL_TYPE_UNSUB_GENERIC)){
-				default_access.unsubscribe = allow;
+				g_dynsec_data.default_access.unsubscribe = allow;
 			}
 			mosquitto_log_printf(MOSQ_LOG_INFO, "dynsec: %s/%s | setDefaultACLAccess | acltype=%s | allow=%s",
 					admin_clientid, admin_username, j_acltype->valuestring, allow?"true":"false");
@@ -115,7 +113,7 @@ int dynsec__process_get_default_acl_access(cJSON *j_responses, struct mosquitto 
 	}
 	cJSON_AddItemToArray(j_acls, j_acl);
 	if(cJSON_AddStringToObject(j_acl, "acltype", ACL_TYPE_PUB_C_SEND) == NULL
-			|| cJSON_AddBoolToObject(j_acl, "allow", default_access.publish_c_send) == NULL
+			|| cJSON_AddBoolToObject(j_acl, "allow", g_dynsec_data.default_access.publish_c_send) == NULL
 			){
 
 		goto internal_error;
@@ -128,7 +126,7 @@ int dynsec__process_get_default_acl_access(cJSON *j_responses, struct mosquitto 
 	}
 	cJSON_AddItemToArray(j_acls, j_acl);
 	if(cJSON_AddStringToObject(j_acl, "acltype", ACL_TYPE_PUB_C_RECV) == NULL
-			|| cJSON_AddBoolToObject(j_acl, "allow", default_access.publish_c_recv) == NULL
+			|| cJSON_AddBoolToObject(j_acl, "allow", g_dynsec_data.default_access.publish_c_recv) == NULL
 			){
 
 		goto internal_error;
@@ -141,7 +139,7 @@ int dynsec__process_get_default_acl_access(cJSON *j_responses, struct mosquitto 
 	}
 	cJSON_AddItemToArray(j_acls, j_acl);
 	if(cJSON_AddStringToObject(j_acl, "acltype", ACL_TYPE_SUB_GENERIC) == NULL
-			|| cJSON_AddBoolToObject(j_acl, "allow", default_access.subscribe) == NULL
+			|| cJSON_AddBoolToObject(j_acl, "allow", g_dynsec_data.default_access.subscribe) == NULL
 			){
 
 		goto internal_error;
@@ -154,7 +152,7 @@ int dynsec__process_get_default_acl_access(cJSON *j_responses, struct mosquitto 
 	}
 	cJSON_AddItemToArray(j_acls, j_acl);
 	if(cJSON_AddStringToObject(j_acl, "acltype", ACL_TYPE_UNSUB_GENERIC) == NULL
-			|| cJSON_AddBoolToObject(j_acl, "allow", default_access.unsubscribe) == NULL
+			|| cJSON_AddBoolToObject(j_acl, "allow", g_dynsec_data.default_access.unsubscribe) == NULL
 			){
 
 		goto internal_error;

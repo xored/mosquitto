@@ -213,9 +213,9 @@ static int acl_check(struct mosquitto_evt_acl_check *ed, MOSQ_FUNC_acl_check che
 				return rc;
 			}
 		}
-	}else if(dynsec_anonymous_group){
+	}else if(g_dynsec_data.anonymous_group){
 		/* If we have a group for anonymous users, use that for checking. */
-		rc = check(ed, dynsec_anonymous_group->rolelist);
+		rc = check(ed, g_dynsec_data.anonymous_group->rolelist);
 		if(rc != MOSQ_ERR_NOT_FOUND){
 			return rc;
 		}
@@ -260,16 +260,16 @@ int dynsec__acl_check_callback(int event, void *event_data, void *userdata)
 
 	switch(ed->access){
 		case MOSQ_ACL_SUBSCRIBE:
-			return acl_check(event_data, acl_check_subscribe, default_access.subscribe);
+			return acl_check(event_data, acl_check_subscribe, g_dynsec_data.default_access.subscribe);
 			break;
 		case MOSQ_ACL_UNSUBSCRIBE:
-			return acl_check(event_data, acl_check_unsubscribe, default_access.unsubscribe);
+			return acl_check(event_data, acl_check_unsubscribe, g_dynsec_data.default_access.unsubscribe);
 			break;
 		case MOSQ_ACL_WRITE: /* Client to broker */
-			return acl_check(event_data, acl_check_publish_c_send, default_access.publish_c_send);
+			return acl_check(event_data, acl_check_publish_c_send, g_dynsec_data.default_access.publish_c_send);
 			break;
 		case MOSQ_ACL_READ:
-			return acl_check(event_data, acl_check_publish_c_recv, default_access.publish_c_recv);
+			return acl_check(event_data, acl_check_publish_c_recv, g_dynsec_data.default_access.publish_c_recv);
 			break;
 		default:
 			return MOSQ_ERR_PLUGIN_DEFER;

@@ -35,15 +35,6 @@ static void role__remove_all_clients(struct dynsec__role *role);
 
 /* ################################################################
  * #
- * # Local variables
- * #
- * ################################################################ */
-
-static struct dynsec__role *local_roles = NULL;
-
-
-/* ################################################################
- * #
  * # Utility functions
  * #
  * ################################################################ */
@@ -76,7 +67,7 @@ static void role__free_all_acls(struct dynsec__acl **acl)
 static void role__free_item(struct dynsec__role *role, bool remove_from_hash)
 {
 	if(remove_from_hash){
-		HASH_DEL(local_roles, role);
+		HASH_DEL(g_dynsec_data.roles, role);
 	}
 	dynsec_clientlist__cleanup(&role->clientlist);
 	dynsec_grouplist__cleanup(&role->grouplist);
@@ -97,7 +88,7 @@ struct dynsec__role *dynsec_roles__find(const char *rolename)
 	struct dynsec__role *role = NULL;
 
 	if(rolename){
-		HASH_FIND(hh, local_roles, rolename, strlen(rolename), role);
+		HASH_FIND(hh, g_dynsec_data.roles, rolename, strlen(rolename), role);
 	}
 	return role;
 }
@@ -107,7 +98,7 @@ void dynsec_roles__cleanup(void)
 {
 	struct dynsec__role *role, *role_tmp = NULL;
 
-	HASH_ITER(hh, local_roles, role, role_tmp){
+	HASH_ITER(hh, g_dynsec_data.roles, role, role_tmp){
 		role__free_item(role, true);
 	}
 }
@@ -120,7 +111,7 @@ static void role__kick_all(struct dynsec__role *role)
 	dynsec_clientlist__kick_all(role->clientlist);
 
 	HASH_ITER(hh, role->grouplist, grouplist, grouplist_tmp){
-		if(grouplist->group == dynsec_anonymous_group){
+		if(grouplist->group == g_dynsec_data.anonymous_group){
 			mosquitto_kick_client_by_username(NULL, false);
 		}
 		dynsec_clientlist__kick_all(grouplist->group->clientlist);
@@ -191,7 +182,7 @@ int dynsec_roles__config_save(cJSON *tree)
 		return 1;
 	}
 
-	HASH_ITER(hh, local_roles, role, role_tmp){
+	HASH_ITER(hh, g_dynsec_data.roles, role, role_tmp){
 		j_role = add_role_to_json(role, true);
 		if(j_role == NULL){
 			return 1;
@@ -330,10 +321,10 @@ int dynsec_roles__config_load(cJSON *tree)
 				}
 			}
 
-			HASH_ADD_KEYPTR(hh, local_roles, role->rolename, strlen(role->rolename), role);
+			HASH_ADD_KEYPTR(hh, g_dynsec_data.roles, role->rolename, strlen(role->rolename), role);
 		}
 	}
-	HASH_SORT(local_roles, role_cmp);
+	HASH_SORT(g_dynsec_data.roles, role_cmp);
 
 	return 0;
 }
@@ -426,7 +417,7 @@ int dynsec_roles__process_create(cJSON *j_responses, struct mosquitto *context, 
 	}
 
 
-	HASH_ADD_KEYPTR_INORDER(hh, local_roles, role->rolename, strlen(role->rolename), role, role_cmp);
+	HASH_ADD_KEYPTR_INORDER(hh, g_dynsec_data.roles, role->rolename, strlen(role->rolename), role, role_cmp);
 
 	dynsec__config_save();
 
@@ -462,7 +453,7 @@ static void role__remove_all_groups(struct dynsec__role *role)
 	struct dynsec__grouplist *grouplist, *grouplist_tmp = NULL;
 
 	HASH_ITER(hh, role->grouplist, grouplist, grouplist_tmp){
-		if(grouplist->group == dynsec_anonymous_group){
+		if(grouplist->group == g_dynsec_data.anonymous_group){
 			mosquitto_kick_client_by_username(NULL, false);
 		}
 		dynsec_clientlist__kick_all(grouplist->group->clientlist);
@@ -559,7 +550,7 @@ int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJ
 
 	if(cJSON_AddStringToObject(tree, "command", "listRoles") == NULL
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
-			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, local_roles)) == NULL
+			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, g_dynsec_data.roles)) == NULL
 			|| (j_roles = cJSON_AddArrayToObject(j_data, "roles")) == NULL
 			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
 			){
@@ -570,7 +561,7 @@ int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJ
 	}
 
 	i = 0;
-	HASH_ITER(hh, local_roles, role, role_tmp){
+	HASH_ITER(hh, g_dynsec_data.roles, role, role_tmp){
 		if(i>=offset){
 			j_role = add_role_to_json(role, verbose);
 			if(j_role == NULL){

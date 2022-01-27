@@ -33,6 +33,7 @@ Contributors:
 
 MOSQUITTO_PLUGIN_DECLARE_VERSION(5);
 
+struct dynsec__data g_dynsec_data;
 static mosquitto_plugin_id_t *plg_id = NULL;
 char *g_config_file = NULL;
 
@@ -41,6 +42,8 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	int i;
 
 	UNUSED(user_data);
+
+	memset(&g_dynsec_data, 0, sizeof(struct dynsec__data));
 
 	for(i=0; i<option_count; i++){
 		if(!strcasecmp(options[i].key, "config_file")){

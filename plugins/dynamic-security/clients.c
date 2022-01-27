@@ -43,9 +43,6 @@ static void client__remove_all_roles(struct dynsec__client *client);
  * #
  * ################################################################ */
 
-static struct dynsec__client *local_clients = NULL;
-
-
 /* ################################################################
  * #
  * # Utility functions
@@ -65,7 +62,7 @@ struct dynsec__client *dynsec_clients__find(const char *username)
 	struct dynsec__client *client = NULL;
 
 	if(username){
-		HASH_FIND(hh, local_clients, username, strlen(username), client);
+		HASH_FIND(hh, g_dynsec_data.clients, username, strlen(username), client);
 	}
 	return client;
 }
@@ -78,7 +75,7 @@ static void client__free_item(struct dynsec__client *client)
 
 	client_found = dynsec_clients__find(client->username);
 	if(client_found){
-		HASH_DEL(local_clients, client_found);
+		HASH_DEL(g_dynsec_data.clients, client_found);
 	}
 	dynsec_rolelist__cleanup(&client->rolelist);
 	dynsec__remove_client_from_all_groups(client->username);
@@ -93,7 +90,7 @@ void dynsec_clients__cleanup(void)
 {
 	struct dynsec__client *client, *client_tmp;
 
-	HASH_ITER(hh, local_clients, client, client_tmp){
+	HASH_ITER(hh, g_dynsec_data.clients, client, client_tmp){
 		client__free_item(client);
 	}
 }
@@ -242,10 +239,10 @@ int dynsec_clients__config_load(cJSON *tree)
 				}
 			}
 
-			HASH_ADD_KEYPTR(hh, local_clients, client->username, strlen(client->username), client);
+			HASH_ADD_KEYPTR(hh, g_dynsec_data.clients, client->username, strlen(client->username), client);
 		}
 	}
-	HASH_SORT(local_clients, client_cmp);
+	HASH_SORT(g_dynsec_data.clients, client_cmp);
 
 	return 0;
 }
@@ -257,7 +254,7 @@ static int dynsec__config_add_clients(cJSON *j_clients)
 	cJSON *j_client, *j_roles, *jtmp;
 	char *buf;
 
-	HASH_ITER(hh, local_clients, client, client_tmp){
+	HASH_ITER(hh, g_dynsec_data.clients, client, client_tmp){
 		j_client = cJSON_CreateObject();
 		if(j_client == NULL) return 1;
 		cJSON_AddItemToArray(j_clients, j_client);
@@ -433,7 +430,7 @@ int dynsec_clients__process_create(cJSON *j_responses, struct mosquitto *context
 	}
 
 	/* Must add user before groups, otherwise adding groups will fail */
-	HASH_ADD_KEYPTR_INORDER(hh, local_clients, client->username, strlen(client->username), client, client_cmp);
+	HASH_ADD_KEYPTR_INORDER(hh, g_dynsec_data.clients, client->username, strlen(client->username), client, client_cmp);
 
 	j_groups = cJSON_GetObjectItem(command, "groups");
 	if(j_groups && cJSON_IsArray(j_groups)){
@@ -983,7 +980,7 @@ int dynsec_clients__process_list(cJSON *j_responses, struct mosquitto *context, 
 
 	if(cJSON_AddStringToObject(tree, "command", "listClients") == NULL
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
-			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, local_clients)) == NULL
+			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, g_dynsec_data.clients)) == NULL
 			|| (j_clients = cJSON_AddArrayToObject(j_data, "clients")) == NULL
 			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
 			){
@@ -994,7 +991,7 @@ int dynsec_clients__process_list(cJSON *j_responses, struct mosquitto *context, 
 	}
 
 	i = 0;
-	HASH_ITER(hh, local_clients, client, client_tmp){
+	HASH_ITER(hh, g_dynsec_data.clients, client, client_tmp){
 		if(i>=offset){
 			j_client = add_client_to_json(client, verbose);
 			if(j_client == NULL){

@@ -34,9 +34,6 @@ Contributors:
  * #
  * ################################################################ */
 
-struct dynsec__group *dynsec_anonymous_group = NULL;
-
-
 /* ################################################################
  * #
  * # Function declarations
@@ -54,9 +51,6 @@ static cJSON *add_group_to_json(struct dynsec__group *group);
  * #
  * ################################################################ */
 
-static struct dynsec__group *local_groups = NULL;
-
-
 /* ################################################################
  * #
  * # Utility functions
@@ -65,7 +59,7 @@ static struct dynsec__group *local_groups = NULL;
 
 static void group__kick_all(struct dynsec__group *group)
 {
-	if(group == dynsec_anonymous_group){
+	if(group == g_dynsec_data.anonymous_group){
 		mosquitto_kick_client_by_username(NULL, false);
 	}
 	dynsec_clientlist__kick_all(group->clientlist);
@@ -86,7 +80,7 @@ struct dynsec__group *dynsec_groups__find(const char *groupname)
 	struct dynsec__group *group = NULL;
 
 	if(groupname){
-		HASH_FIND(hh, local_groups, groupname, strlen(groupname), group);
+		HASH_FIND(hh, g_dynsec_data.groups, groupname, strlen(groupname), group);
 	}
 	return group;
 }
@@ -99,7 +93,7 @@ static void group__free_item(struct dynsec__group *group)
 
 	found_group = dynsec_groups__find(group->groupname);
 	if(found_group){
-		HASH_DEL(local_groups, found_group);
+		HASH_DEL(g_dynsec_data.groups, found_group);
 	}
 	dynsec__remove_all_clients_from_group(group);
 	mosquitto_free(group->text_name);
@@ -180,7 +174,7 @@ void dynsec_groups__cleanup(void)
 {
 	struct dynsec__group *group, *group_tmp = NULL;
 
-	HASH_ITER(hh, local_groups, group, group_tmp){
+	HASH_ITER(hh, g_dynsec_data.groups, group, group_tmp){
 		group__free_item(group);
 	}
 }
@@ -271,7 +265,7 @@ int dynsec_groups__config_load(cJSON *tree)
 			}
 
 			/* This must go before clients are loaded, otherwise the group won't be found */
-			HASH_ADD_KEYPTR(hh, local_groups, group->groupname, strlen(group->groupname), group);
+			HASH_ADD_KEYPTR(hh, g_dynsec_data.groups, group->groupname, strlen(group->groupname), group);
 
 			/* Clients */
 			j_clientlist = cJSON_GetObjectItem(j_group, "clients");
@@ -288,11 +282,11 @@ int dynsec_groups__config_load(cJSON *tree)
 			}
 		}
 	}
-	HASH_SORT(local_groups, group_cmp);
+	HASH_SORT(g_dynsec_data.groups, group_cmp);
 
 	j_group = cJSON_GetObjectItem(tree, "anonymousGroup");
 	if(j_group && cJSON_IsString(j_group)){
-		dynsec_anonymous_group = dynsec_groups__find(j_group->valuestring);
+		g_dynsec_data.anonymous_group = dynsec_groups__find(j_group->valuestring);
 	}
 
 	return 0;
@@ -311,7 +305,7 @@ static int dynsec__config_add_groups(cJSON *j_groups)
 	struct dynsec__group *group, *group_tmp = NULL;
 	cJSON *j_group, *j_clients, *j_roles;
 
-	HASH_ITER(hh, local_groups, group, group_tmp){
+	HASH_ITER(hh, g_dynsec_data.groups, group, group_tmp){
 		j_group = cJSON_CreateObject();
 		if(j_group == NULL) return 1;
 		cJSON_AddItemToArray(j_groups, j_group);
@@ -354,8 +348,8 @@ int dynsec_groups__config_save(cJSON *tree)
 		return 1;
 	}
 
-	if(dynsec_anonymous_group
-			&& cJSON_AddStringToObject(tree, "anonymousGroup", dynsec_anonymous_group->groupname) == NULL){
+	if(g_dynsec_data.anonymous_group
+			&& cJSON_AddStringToObject(tree, "anonymousGroup", g_dynsec_data.anonymous_group->groupname) == NULL){
 
 		return 1;
 	}
@@ -436,7 +430,7 @@ int dynsec_groups__process_create(cJSON *j_responses, struct mosquitto *context,
 		return MOSQ_ERR_INVAL;
 	}
 
-	HASH_ADD_KEYPTR_INORDER(hh, local_groups, group->groupname, strlen(group->groupname), group, group_cmp);
+	HASH_ADD_KEYPTR_INORDER(hh, g_dynsec_data.groups, group->groupname, strlen(group->groupname), group, group_cmp);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -744,7 +738,7 @@ int dynsec_groups__process_list(cJSON *j_responses, struct mosquitto *context, c
 
 	if(cJSON_AddStringToObject(tree, "command", "listGroups") == NULL
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
-			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, local_groups)) == NULL
+			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, g_dynsec_data.groups)) == NULL
 			|| (j_groups = cJSON_AddArrayToObject(j_data, "groups")) == NULL
 			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
 			){
@@ -755,7 +749,7 @@ int dynsec_groups__process_list(cJSON *j_responses, struct mosquitto *context, c
 	}
 
 	i = 0;
-	HASH_ITER(hh, local_groups, group, group_tmp){
+	HASH_ITER(hh, g_dynsec_data.groups, group, group_tmp){
 		if(i>=offset){
 			if(verbose){
 				j_group = add_group_to_json(group);
@@ -1030,7 +1024,7 @@ int dynsec_groups__process_set_anonymous_group(cJSON *j_responses, struct mosqui
 		return MOSQ_ERR_SUCCESS;
 	}
 
-	dynsec_anonymous_group = group;
+	g_dynsec_data.anonymous_group = group;
 
 	dynsec__config_save();
 	dynsec__command_reply(j_responses, context, "setAnonymousGroup", NULL, correlation_data);
@@ -1060,8 +1054,8 @@ int dynsec_groups__process_get_anonymous_group(cJSON *j_responses, struct mosqui
 		return MOSQ_ERR_NOMEM;
 	}
 
-	if(dynsec_anonymous_group){
-		groupname = dynsec_anonymous_group->groupname;
+	if(g_dynsec_data.anonymous_group){
+		groupname = g_dynsec_data.anonymous_group->groupname;
 	}else{
 		groupname = "";
 	}

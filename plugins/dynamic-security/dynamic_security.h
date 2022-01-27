@@ -130,8 +130,15 @@ struct dynsec__acl_default_access{
 	bool unsubscribe;
 };
 
-extern struct dynsec__group *dynsec_anonymous_group;
-extern struct dynsec__acl_default_access default_access;
+struct dynsec__data{
+	struct dynsec__client *clients;
+	struct dynsec__group *groups;
+	struct dynsec__role *roles;
+	struct dynsec__group *anonymous_group;
+	struct dynsec__acl_default_access default_access;
+};
+
+extern struct dynsec__data g_dynsec_data;
 extern char *g_config_file;
 
 /* ################################################################
