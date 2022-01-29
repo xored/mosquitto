@@ -5,6 +5,10 @@ LIBS=../../../lib/libmosquitto.so.1
 
 SRC = \
 	01-con-discon-success.c \
+	01-con-discon-success-v5.c \
+	01-con-discon-will.c \
+	01-con-discon-will-v5.c \
+	01-con-discon-will-clear.c \
 	01-keepalive-pingreq.c \
 	01-no-clean-session.c \
 	01-pre-connect-callback.c \

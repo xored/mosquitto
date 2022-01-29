@@ -5,6 +5,10 @@ import ptest
 
 tests = [
     (1, ['./01-con-discon-success.py', 'c/01-con-discon-success.test']),
+    (1, ['./01-con-discon-success-v5.py', 'c/01-con-discon-success-v5.test']),
+    (1, ['./01-con-discon-will.py', 'c/01-con-discon-will.test']),
+    (1, ['./01-con-discon-will-v5.py', 'c/01-con-discon-will-v5.test']),
+    (1, ['./01-con-discon-will-clear.py', 'c/01-con-discon-will-clear.test']),
     (1, ['./01-keepalive-pingreq.py', 'c/01-keepalive-pingreq.test']),
     (1, ['./01-no-clean-session.py', 'c/01-no-clean-session.test']),
     (1, ['./01-server-keepalive-pingreq.py', 'c/01-server-keepalive-pingreq.test']),

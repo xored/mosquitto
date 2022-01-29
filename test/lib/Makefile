@@ -24,6 +24,10 @@ test-compile-cpp :
 
 c : test-compile
 	./01-con-discon-success.py $@/01-con-discon-success.test
+	./01-con-discon-success-v5.py $@/01-con-discon-success-v5.test
+	./01-con-discon-will.py $@/01-con-discon-will.test
+	./01-con-discon-will-v5.py $@/01-con-discon-will-v5.test
+	./01-con-discon-will-clear.py $@/01-con-discon-will-clear.test
 	./01-keepalive-pingreq.py $@/01-keepalive-pingreq.test
 	./01-no-clean-session.py $@/01-no-clean-session.test
 	./01-server-keepalive-pingreq.py $@/01-server-keepalive-pingreq.test
