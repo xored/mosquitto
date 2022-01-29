@@ -89,10 +89,10 @@ static struct mosquitto *bridge__new(struct mosquitto__bridge *bridge)
 			mosquitto__FREE(local_id);
 			return NULL;
 		}
-		new_context->transport = mosq_t_tcp;
 		new_context->id = local_id;
 		context__add_to_by_id(new_context);
 	}
+	new_context->transport = mosq_t_tcp;
 	new_context->bridge = bridge;
 	new_context->is_bridge = true;
 
