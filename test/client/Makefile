@@ -32,7 +32,7 @@ test : 02 03
 	./03-publish-socks.py
 	./03-publish-stdin-file.py
 	./03-publish-stdin-line.py
-	./03-publish-url.py,
+	./03-publish-url.py
 
 ptest :
 	./test.sh
