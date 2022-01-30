@@ -48,7 +48,6 @@ def len_test(test, puback_packet):
     except mosq_test.TestError:
         pass
     finally:
-        client.terminate()
         client.wait()
         sock.close()
 

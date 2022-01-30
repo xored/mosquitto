@@ -17,6 +17,11 @@ static void on_connect(struct mosquitto *mosq, void *obj, int rc)
 	}
 }
 
+static void on_publish(struct mosquitto *mosq, void *obj, int mid)
+{
+	run = 0;
+}
+
 int main(int argc, char *argv[])
 {
 	int rc;
@@ -35,6 +40,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	mosquitto_connect_callback_set(mosq, on_connect);
+	mosquitto_publish_callback_set(mosq, on_publish);
 
 	rc = mosquitto_connect(mosq, "localhost", port, 60);
 	if(rc != MOSQ_ERR_SUCCESS) return rc;

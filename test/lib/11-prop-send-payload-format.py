@@ -54,7 +54,6 @@ try:
 except mosq_test.TestError:
     pass
 finally:
-    client.terminate()
     client.wait()
     if rc:
         (stdo, stde) = client.communicate()

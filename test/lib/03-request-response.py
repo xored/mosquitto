@@ -59,6 +59,7 @@ try:
     conn2.send(publish1_packet)
 
     mosq_test.expect_packet(conn2, "publish2", publish2_packet)
+    conn1.send(publish2_packet)
     rc = 0
 
     conn1.close()
@@ -66,9 +67,7 @@ try:
 except mosq_test.TestError:
     pass
 finally:
-    client1.terminate()
     client1.wait()
-    client2.terminate()
     client2.wait()
     if rc:
         (stdo, stde) = client1.communicate()

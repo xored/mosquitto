@@ -46,13 +46,13 @@ try:
     conn.send(pingresp_packet)
 
     mosq_test.expect_packet(conn, "pingreq", pingreq_packet)
+    conn.close()
     rc = 0
 
-    conn.close()
 except mosq_test.TestError:
     pass
 finally:
-    client.terminate()
+    #client.terminate()
     client.wait()
     sock.close()
 

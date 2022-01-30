@@ -50,7 +50,6 @@ def len_test(test, pubrec_packet, pubcomp_packet):
     except mosq_test.TestError:
         pass
     finally:
-        client.terminate()
         client.wait()
         sock.close()
 

@@ -44,7 +44,6 @@ try:
 except mosq_test.TestError:
     pass
 finally:
-    client.terminate()
     client.wait()
     sock.close()
 

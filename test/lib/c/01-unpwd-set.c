@@ -5,6 +5,27 @@
 #include <mosquitto.h>
 
 static int run = -1;
+
+static void on_connect(struct mosquitto *mosq, void *obj, int rc)
+{
+	(void)obj;
+
+	printf("conn %d\n", rc);
+	if(rc){
+		exit(1);
+	}else{
+		mosquitto_disconnect(mosq);
+	}
+}
+
+static void on_disconnect(struct mosquitto *mosq, void *obj, int rc)
+{
+	(void)mosq;
+	(void)obj;
+
+	run = rc;
+}
+
 int main(int argc, char *argv[])
 {
 	int rc;
@@ -22,6 +43,8 @@ int main(int argc, char *argv[])
 	if(mosq == NULL){
 		return 1;
 	}
+	mosquitto_connect_callback_set(mosq, on_connect);
+	mosquitto_disconnect_callback_set(mosq, on_disconnect);
 	mosquitto_username_pw_set(mosq, "uname", ";'[08gn=#");
 
 	rc = mosquitto_connect(mosq, "localhost", port, 60);

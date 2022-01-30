@@ -61,11 +61,6 @@ finally:
             break
         time.sleep(0.1)
 
-    try:
-        client.terminate()
-    except OSError:
-        pass
-
     client.wait()
     sock.close()
     if client.returncode != 0:

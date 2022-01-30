@@ -38,10 +38,6 @@ except mosq_test.TestError:
     pass
 finally:
     time.sleep(1.0)
-    try:
-        client.terminate()
-    except OSError:
-        pass
     client.wait()
     ssock.close()
 

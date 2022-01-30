@@ -31,6 +31,7 @@ publish1_packet_outgoing = mosq_test.gen_publish(pub_topic, qos=0, payload="acti
 
 props = mqtt5_props.gen_string_prop(mqtt5_props.PROP_CORRELATION_DATA, "corridor")
 publish2_packet = mosq_test.gen_publish(resp_topic, qos=0, payload="a response", proto_ver=5, properties=props)
+publish2_packet_outgoing = mosq_test.gen_publish(pub_topic, qos=0, payload="action", proto_ver=5, properties=props)
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -66,6 +67,7 @@ try:
     conn2.send(publish1_packet_outgoing)
 
     mosq_test.expect_packet(conn2, "publish2", publish2_packet)
+    conn1.send(publish2_packet_outgoing)
     rc = 0
 
     conn1.close()
@@ -73,9 +75,7 @@ try:
 except mosq_test.TestError:
     pass
 finally:
-    client1.terminate()
     client1.wait()
-    client2.terminate()
     client2.wait()
     if rc:
         (stdo, stde) = client1.communicate()

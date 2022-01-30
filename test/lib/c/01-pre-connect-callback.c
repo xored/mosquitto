@@ -12,6 +12,26 @@ static void on_pre_connect(struct mosquitto *mosq, void *userdata)
 }
 
 static int run = -1;
+
+static void on_connect(struct mosquitto *mosq, void *obj, int rc)
+{
+	(void)obj;
+
+	if(rc){
+		exit(1);
+	}else{
+		mosquitto_disconnect(mosq);
+	}
+}
+
+static void on_disconnect(struct mosquitto *mosq, void *obj, int rc)
+{
+	(void)mosq;
+	(void)obj;
+
+	run = rc;
+}
+
 int main(int argc, char *argv[])
 {
 	int rc;
@@ -30,6 +50,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	mosquitto_pre_connect_callback_set(mosq, on_pre_connect);
+	mosquitto_connect_callback_set(mosq, on_connect);
+	mosquitto_disconnect_callback_set(mosq, on_disconnect);
 
 	rc = mosquitto_connect(mosq, "localhost", port, 60);
 	if(rc != MOSQ_ERR_SUCCESS) return rc;
