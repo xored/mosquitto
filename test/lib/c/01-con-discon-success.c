@@ -4,12 +4,13 @@
 #include <mosquitto.h>
 
 static int run = -1;
+static int mydata = 42;
 
 static void on_connect(struct mosquitto *mosq, void *obj, int rc)
 {
-	(void)obj;
+	int *obj_i = obj;
 
-	if(rc){
+	if(rc || obj_i != &mydata || *obj_i != mydata || obj != mosquitto_userdata(mosq)){
 		exit(1);
 	}else{
 		mosquitto_disconnect(mosq);
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
 	if(mosq == NULL){
 		return 1;
 	}
+	mosquitto_user_data_set(mosq, &mydata);
 	mosquitto_connect_callback_set(mosq, on_connect);
 	mosquitto_disconnect_callback_set(mosq, on_disconnect);
 
