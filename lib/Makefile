@@ -3,7 +3,9 @@ include ../config.mk
 .PHONY : really clean install
 
 MOSQ_OBJS=mosquitto.o \
-		  actions.o \
+		  actions_publish.o \
+		  actions_subscribe.o \
+		  actions_unsubscribe.o \
 		  alias_mosq.o \
 		  callbacks.o \
 		  connect.o \
@@ -110,7 +112,13 @@ libmosquitto.a : ${MOSQ_OBJS}
 mosquitto.o : mosquitto.c ../include/mosquitto.h mosquitto_internal.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
-actions.o : actions.c ../include/mosquitto.h mosquitto_internal.h
+actions_publish.o : actions_publish.c ../include/mosquitto.h mosquitto_internal.h
+	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
+
+actions_subscribe.o : actions_subscribe.c ../include/mosquitto.h mosquitto_internal.h
+	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
+
+actions_unsubscribe.o : actions_unsubscribe.c ../include/mosquitto.h mosquitto_internal.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
 alias_mosq.o : alias_mosq.c alias_mosq.h ../include/mosquitto.h mosquitto_internal.h

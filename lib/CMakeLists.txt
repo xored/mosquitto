@@ -4,7 +4,9 @@ if(WITH_LIB_CPP)
 endif()
 
 set(C_SRC
-	actions.c
+	actions_publish.c
+	actions_subscribe.c
+	actions_unsubscribe.c
 	alias_mosq.c alias_mosq.h
 	callbacks.c
 	connect.c
