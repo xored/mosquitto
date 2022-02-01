@@ -59,7 +59,7 @@ static void TEST_remap_valid(void)
 	map_valid_helper("pattern", "L/", NULL, "pattern", "L/pattern");
 	map_valid_helper("pattern", NULL, "R/", "R/pattern", "pattern");
 	map_valid_helper("pattern", NULL, NULL, "pattern", "pattern");
-	map_valid_helper(NULL, "local", "remote", "local", "remote");
+	map_valid_helper(NULL, "local", "remote", "remote", "local");
 }
 
 static void TEST_remap_invalid(void)
