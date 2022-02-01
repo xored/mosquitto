@@ -19,7 +19,7 @@ class TestError(Exception):
     def __init__(self, message="Mismatched packets"):
         self.message = message
 
-def start_broker(filename, cmd=None, port=0, use_conf=False, expect_fail=False, nolog=False):
+def start_broker(filename, cmd=None, port=0, use_conf=False, expect_fail=False, nolog=False, checkhost="localhost"):
     global vg_index
     global vg_logfiles
 
@@ -63,7 +63,7 @@ def start_broker(filename, cmd=None, port=0, use_conf=False, expect_fail=False, 
         time.sleep(delay)
         c = None
         try:
-            c = socket.create_connection(("localhost", port))
+            c = socket.create_connection((checkhost, port))
         except socket.error as err:
             if err.errno != errno.ECONNREFUSED:
                 raise

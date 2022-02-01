@@ -30,7 +30,7 @@ static void map_valid_helper(const char *topic, const char *local_prefix, const 
 	rc = bridge__remap_topic_in(&mosq, &map_topic);
 	CU_ASSERT_EQUAL(rc, 0);
 	CU_ASSERT_PTR_NOT_NULL(map_topic);
-	if(topic){
+	if(map_topic){
 		CU_ASSERT_STRING_EQUAL(map_topic, expected);
 		free(map_topic);
 	}

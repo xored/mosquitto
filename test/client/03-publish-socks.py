@@ -4,12 +4,17 @@
 
 from mosq_test_helper import *
 
-def do_test(proto_ver):
+def do_test(proto_ver, ipver):
     rc = 1
 
     (port1, port2) = mosq_test.get_port(2)
 
-    cmd = ['microsocks', '-1', '-b', '-i', '127.0.0.1', '-u', 'user', '-P', 'password', '-p', str(port1)]
+    if ipver == 4:
+        host = "localhost"
+    else:
+        host = "ip6-localhost"
+
+    cmd = ['microsocks', '-1', '-b', '-i', host, '-u', 'user', '-P', 'password', '-p', str(port1)]
     try:
         proxy = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except FileNotFoundError:
@@ -28,15 +33,14 @@ def do_test(proto_ver):
             'XDG_CONFIG_HOME':'/tmp/missing'
             }
     cmd = [
-            '/snap/bin/valgrind', '--log-file=vglog',
             '../../client/mosquitto_pub',
-            '-h', '127.0.0.1',
+            '-h', host,
             '-p', str(port2),
             '-q', '1',
             '-t', '03/pub/proxy/test',
             '-m', 'message',
             '-V', V,
-            '--proxy', f'socks5h://user:password@localhost:{port1}'
+            '--proxy', f'socks5h://user:password@{host}:{port1}'
             ]
 
     mid = 1
@@ -46,7 +50,7 @@ def do_test(proto_ver):
     else:
         puback_packet = mosq_test.gen_puback(mid, proto_ver=proto_ver)
 
-    broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port2)
+    broker = mosq_test.start_broker(filename=os.path.basename(__file__), port=port2, checkhost=host)
 
     try:
         sock = mosq_test.sub_helper(port=port2, topic="#", qos=1, proto_ver=proto_ver)
@@ -73,6 +77,7 @@ def do_test(proto_ver):
             exit(rc)
 
 
-do_test(proto_ver=3)
-do_test(proto_ver=4)
-do_test(proto_ver=5)
+do_test(proto_ver=3, ipver=4)
+do_test(proto_ver=4, ipver=4)
+do_test(proto_ver=5, ipver=4)
+do_test(proto_ver=5, ipver=6)
