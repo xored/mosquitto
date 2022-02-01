@@ -60,6 +60,21 @@ const char *mosquitto_client_address(const struct mosquitto *client)
 }
 
 
+struct mosquitto *mosquitto_client(const char *client_id)
+{
+	size_t len;
+	struct mosquitto *context;
+
+	if(!client_id) return NULL;
+	len = strlen(client_id);
+	if(len == 0) return NULL;
+
+	HASH_FIND(hh_id, db.contexts_by_id, client_id, strlen(client_id), context);
+
+	return context;
+}
+
+
 int mosquitto_client_port(const struct mosquitto *client)
 {
 	if(client && client->listener){

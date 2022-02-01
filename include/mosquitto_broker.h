@@ -494,6 +494,14 @@ mosq_EXPORT void mosquitto_log_printf(int level, const char *fmt, ...);
  * ========================================================================= */
 
 /*
+ * Function: mosquitto_client
+ *
+ * Retrieve the struct mosquitto for a client id, or NULL if the client is not connected.
+ */
+mosq_EXPORT struct mosquitto *mosquitto_client(const char *client_id);
+
+
+/*
  * Function: mosquitto_client_address
  *
  * Retrieve the IP address of the client as a string.

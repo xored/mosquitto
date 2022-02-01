@@ -6,11 +6,6 @@ Broker:
   first come first serve basis.
 - Add support for bridges to allow remote brokers to create topic aliases when
   running in MQTT v5 mode.
-- Add MOSQ_EVT_CONNECT, to allow plugins to know when a client has
-  successfully authenticated to the broker.
-- Add connection-state example plugin to demonstrate MOSQ_EVT_CONNECT.
-- Plugins on non-Windows platforms now no longer make their symbols globally
-  available, which means they are self contained.
 - Increase maximum connection count on Windows from 2048 to 8192 where
   supported. Closes #2122.
 - Add kqueue support.
@@ -18,28 +13,14 @@ Broker:
 - Report on what compile time options are enabled. Closes #2193.
 - Add `--tls-keylog` option which can be used to generate a file that can be
   used by wireshark to decrypt TLS traffic for debugging purposes. Closes #1818.
-- Add support for delayed basic authentication in plugins.
-- Plugins using the MOSQ_EVT_MESSAGE callback can now return
-  MOSQ_ERR_QUOTA_EXCEEDED to have the message be rejected. MQTT v5 clients
-  using QoS 1 or 2 will receive the quota-exceeded reason code in the
-  corresponding PUBACK/PUBREC.
-- MOSQ_EVT_TICK is now passed to plugins when `per_listener_settings` is true.
-- The dynamic security plugin now supports `%c` and `%u` patterns for
-  substituting client id and username respectively, in all ACLs except for
-  subscribeLiteral and unsubscribeLiteral.
 - Add `mosquitto_topic_matches_sub_with_pattern()`, which can match against
   subscriptions with `%c` and `%u` patterns for client id / username
   substitution.
-- Add `mosquitto_sub_matches_acl()`, which can match one topic filter (a
-  subscription) against another topic filter (an ACL).
 - Performance: reduce memory allocations when sending packets.
 - The `allow_duplicate_messages` now defaults to `true`.
 - Return protocol error if a client attemps to subscribe to a shared
   subscription and also sets no-local.
 - Log protocol version and ciphers that a client negotiates when connecting.
-- Registration of the MOSQ_EVT_CONTROL plugin event is now handled globally
-  across the broker, so only a single plugin can register for a given $CONTROL
-  topic.
 - Password salts are now 64 bytes long.
 - Add the `global_plugin` option, which gives global plugin loaded regardless
   of `per_listener_settings`.
@@ -49,13 +30,7 @@ Broker:
   when a connection attempts an upgrade to WebSockets.
 - Allow mosquitto_ctrl dynsec module to update passwords in files rather than
   having to connect to a broker.
-- Add `mosquitto_plugin_set_info()` to allow plugins to tell the broker their
-  name and version.
-- Add builtin $CONTROL/broker/v1 control topic with the `getPluginInfo`
-  command. This is disabled by default, but can be enabled with the
-  `enable_control_api` option.
-- Add support for `getPluginInfo` to mosquitto_ctrl.
-- Add `mosquitto_client_port()` function for plugins.
+- Add support for `listPlugins` to mosquitto_ctrl.
 - Add `global_max_clients` option to allow limiting client sessions globally
   on the broker.
 - Add `global_max_connections` option to allow limiting client connections globally
@@ -67,16 +42,6 @@ Broker:
 - Improve idle performance. The broker now calculates when the next event of
   interest is, and uses that as the timeout for e.g. epoll_wait(). This can
   reduce the number of process wakeups by 100x on an idle broker.
-- Plugins no longer need to define mosquitto_plugin_cleanup() if they do not
-  need to do any of their own cleanup. Callbacks will be unregistered
-  automatically.
-- Add MOSQ_ERR_PLUGIN_IGNORE to allow plugins to register basic auth or acl
-  check callbacks, but still act as though they are not registered. A plugin
-  that wanted to act as a blocklist for certain usernames, but wasn't carrying
-  out authentication could return MOSQ_ERR_PLUGIN_IGNORE for usernames not on
-  its blocklist. If no other plugins were configured, the client would be
-  authenticated. Using MOSQ_ERR_PLUGIN_DEFER instead would mean the clients
-  would be denied if no other plugins were configured.
 - Add more efficient keepalive check.
 - Send DISCONNECT With session-takeover return code to MQTT v5 clients when a
   client connects with the same client id. Closes #2340.
@@ -87,6 +52,46 @@ Broker:
 - Add ability to deny wildcard subscriptions for a role to the dynsec plugin.
 - Add bridge_receive_maximum option for MQTT v5.0 bridges.
 - Add bridge_session_expiry_interval option for MQTT v5.0 bridges.
+
+Plugins / plugin interface:
+- Add persist-sqlite plugin.
+- Add mosquitto_client() function for retrieving a client struct if that
+  client is connected.
+- Add MOSQ_ERR_PLUGIN_IGNORE to allow plugins to register basic auth or acl
+  check callbacks, but still act as though they are not registered. A plugin
+  that wanted to act as a blocklist for certain usernames, but wasn't carrying
+  out authentication could return MOSQ_ERR_PLUGIN_IGNORE for usernames not on
+  its blocklist. If no other plugins were configured, the client would be
+  authenticated. Using MOSQ_ERR_PLUGIN_DEFER instead would mean the clients
+  would be denied if no other plugins were configured.
+- Add `mosquitto_client_port()` function for plugins.
+- Add MOSQ_EVT_CONNECT, to allow plugins to know when a client has
+  successfully authenticated to the broker.
+- Add connection-state example plugin to demonstrate MOSQ_EVT_CONNECT.
+- Plugins on non-Windows platforms now no longer make their symbols globally
+  available, which means they are self contained.
+- Add support for delayed basic authentication in plugins.
+- Plugins using the MOSQ_EVT_MESSAGE callback can now return
+  MOSQ_ERR_QUOTA_EXCEEDED to have the message be rejected. MQTT v5 clients
+  using QoS 1 or 2 will receive the quota-exceeded reason code in the
+  corresponding PUBACK/PUBREC.
+- MOSQ_EVT_TICK is now passed to plugins when `per_listener_settings` is true.
+- The dynamic security plugin now supports `%c` and `%u` patterns for
+  substituting client id and username respectively, in all ACLs except for
+  subscribeLiteral and unsubscribeLiteral.
+- Add `mosquitto_sub_matches_acl()`, which can match one topic filter (a
+  subscription) against another topic filter (an ACL).
+- Registration of the MOSQ_EVT_CONTROL plugin event is now handled globally
+  across the broker, so only a single plugin can register for a given $CONTROL
+  topic.
+- Add `mosquitto_plugin_set_info()` to allow plugins to tell the broker their
+  name and version.
+- Add builtin $CONTROL/broker/v1 control topic with the `listPlugins`
+  command. This is disabled by default, but can be enabled with the
+  `enable_control_api` option.
+- Plugins no longer need to define mosquitto_plugin_cleanup() if they do not
+  need to do any of their own cleanup. Callbacks will be unregistered
+  automatically.
 
 Client library:
 - Add MOSQ_OPT_DISABLE_SOCKETPAIR to allow the disabling of the socketpair
