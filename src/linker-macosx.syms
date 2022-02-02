@@ -4,6 +4,7 @@ _mosquitto_broker_publish_copy
 _mosquitto_callback_register
 _mosquitto_callback_unregister
 _mosquitto_calloc
+_mosquitto_client
 _mosquitto_client_address
 _mosquitto_client_certificate
 _mosquitto_client_clean_session

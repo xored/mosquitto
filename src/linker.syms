@@ -5,6 +5,7 @@
 	mosquitto_callback_register;
 	mosquitto_callback_unregister;
 	mosquitto_calloc;
+	mosquitto_client;
 	mosquitto_client_address;
 	mosquitto_client_certificate;
 	mosquitto_client_clean_session;
