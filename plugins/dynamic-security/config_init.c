@@ -259,6 +259,28 @@ static int add_clients(const char *filename, cJSON *j_tree)
 }
 
 
+static int group_add_anon(cJSON *j_groups)
+{
+	cJSON *j_group;
+
+	j_group = cJSON_CreateObject();
+	if(j_group == NULL){
+		return MOSQ_ERR_NOMEM;
+	}
+
+	cJSON_AddItemToArray(j_groups, j_group);
+	if(cJSON_AddStringToObject(j_group, "groupname", "unauthenticated") == NULL
+			|| cJSON_AddStringToObject(j_group, "textname", "Unauthenticated group") == NULL
+			|| cJSON_AddStringToObject(j_group, "textdescription", "If unauthenticated access is allowed, this group can be used to define roles for clients that connect without a password.") == NULL
+			|| cJSON_AddArrayToObject(j_group, "roles") == NULL
+			){
+
+		return MOSQ_ERR_NOMEM;
+	}
+
+	return MOSQ_ERR_SUCCESS;
+}
+
 static int add_groups(cJSON *j_tree)
 {
 	cJSON *j_groups;
@@ -268,7 +290,7 @@ static int add_groups(cJSON *j_tree)
 		return MOSQ_ERR_NOMEM;
 	}
 
-	return MOSQ_ERR_SUCCESS;
+	return group_add_anon(j_groups);
 }
 
 
@@ -501,6 +523,7 @@ int dynsec__config_init(const char *filename)
 			|| add_clients(filename, j_tree) != MOSQ_ERR_SUCCESS
 			|| add_groups(j_tree) != MOSQ_ERR_SUCCESS
 			|| add_roles(j_tree) != MOSQ_ERR_SUCCESS
+			|| cJSON_AddStringToObject(j_tree, "anonymousGroup", "unauthenticated") == NULL
 			){
 
 		cJSON_Delete(j_tree);
