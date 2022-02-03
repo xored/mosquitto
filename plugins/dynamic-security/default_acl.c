@@ -30,18 +30,19 @@ Contributors:
 #include "mosquitto_broker.h"
 #include "mosquitto_plugin.h"
 #include "mqtt_protocol.h"
+#include "plugin_shared.h"
 
 #include "dynamic_security.h"
 
-int dynsec__process_set_default_acl_access(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec__process_set_default_acl_access(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	cJSON *j_actions, *j_action, *j_acltype, *j_allow;
 	bool allow;
 	const char *admin_clientid, *admin_username;
 
-	j_actions = cJSON_GetObjectItem(command, "acls");
+	j_actions = cJSON_GetObjectItem(cmd->j_command, "acls");
 	if(j_actions == NULL || !cJSON_IsArray(j_actions)){
-		dynsec__command_reply(j_responses, context, "setDefaultACLAccess", "Missing/invalid actions array", correlation_data);
+		plugin__command_reply(cmd, "Missing/invalid actions array");
 		return MOSQ_ERR_INVAL;
 	}
 
@@ -71,21 +72,19 @@ int dynsec__process_set_default_acl_access(struct dynsec__data *data, cJSON *j_r
 	}
 
 	dynsec__config_save(data);
-	dynsec__command_reply(j_responses, context, "setDefaultACLAccess", NULL, correlation_data);
+	plugin__command_reply(cmd, NULL);
 	return MOSQ_ERR_SUCCESS;
 }
 
 
-int dynsec__process_get_default_acl_access(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec__process_get_default_acl_access(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	cJSON *tree, *jtmp, *j_data, *j_acls, *j_acl;
 	const char *admin_clientid, *admin_username;
 
-	UNUSED(command);
-
 	tree = cJSON_CreateObject();
 	if(tree == NULL){
-		dynsec__command_reply(j_responses, context, "getDefaultACLAccess", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
@@ -158,10 +157,10 @@ int dynsec__process_get_default_acl_access(struct dynsec__data *data, cJSON *j_r
 		goto internal_error;
 	}
 
-	cJSON_AddItemToArray(j_responses, tree);
+	cJSON_AddItemToArray(cmd->j_responses, tree);
 
-	if(correlation_data){
-		jtmp = cJSON_AddStringToObject(tree, "correlationData", correlation_data);
+	if(cmd->correlation_data){
+		jtmp = cJSON_AddStringToObject(tree, "correlationData", cmd->correlation_data);
 		if(jtmp == NULL){
 			goto internal_error;
 		}
@@ -171,6 +170,6 @@ int dynsec__process_get_default_acl_access(struct dynsec__data *data, cJSON *j_r
 
 internal_error:
 	cJSON_Delete(tree);
-	dynsec__command_reply(j_responses, context, "getDefaultACLAccess", "Internal error", correlation_data);
+	plugin__command_reply(cmd, "Internal error");
 	return MOSQ_ERR_NOMEM;
 }

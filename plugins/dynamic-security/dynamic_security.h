@@ -23,6 +23,7 @@ Contributors:
 #include "mosquitto.h"
 #include "password_mosq.h"
 #include "base64_mosq.h"
+#include "plugin_shared.h"
 
 /* ################################################################
  * #
@@ -148,7 +149,7 @@ struct dynsec__data{
 int dynsec__config_init(const char *filename);
 void dynsec__config_save(struct dynsec__data *data);
 int dynsec__config_load(struct dynsec__data *data);
-int dynsec__handle_control(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *commands);
+int dynsec__handle_control(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context, cJSON *commands);
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data);
 int dynsec_control_callback(int event, void *event_data, void *userdata);
 
@@ -160,8 +161,8 @@ int dynsec_control_callback(int event, void *event_data, void *userdata);
  * ################################################################ */
 
 int dynsec__acl_check_callback(int event, void *event_data, void *userdata);
-int dynsec__process_set_default_acl_access(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec__process_get_default_acl_access(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec__process_set_default_acl_access(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec__process_get_default_acl_access(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
 
 
 /* ################################################################
@@ -183,17 +184,17 @@ int dynsec_auth__basic_auth_callback(int event, void *event_data, void *userdata
 void dynsec_clients__cleanup(struct dynsec__data *data);
 int dynsec_clients__config_load(struct dynsec__data *data, cJSON *tree);
 int dynsec_clients__config_save(struct dynsec__data *data, cJSON *tree);
-int dynsec_clients__process_add_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_disable(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_enable(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_remove_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_set_id(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_set_password(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_add_role(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_create(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_delete(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_disable(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_enable(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_get(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_list(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_remove_role(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_set_id(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_clients__process_set_password(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
 struct dynsec__client *dynsec_clients__find(struct dynsec__data *data, const char *username);
 
 
@@ -220,17 +221,17 @@ void dynsec_groups__cleanup(struct dynsec__data *data);
 int dynsec_groups__config_load(struct dynsec__data *data, cJSON *tree);
 int dynsec_groups__add_client(struct dynsec__data *data, const char *username, const char *groupname, int priority, bool update_config);
 int dynsec_groups__config_save(struct dynsec__data *data, cJSON *tree);
-int dynsec_groups__process_add_client(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_add_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_remove_client(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_remove_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_get_anonymous_group(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_add_client(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_add_role(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_create(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_delete(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_get(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_list(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_modify(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_remove_client(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_remove_role(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_get_anonymous_group(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
 int dynsec_groups__remove_client(struct dynsec__data *data, const char *username, const char *groupname, bool update_config);
 struct dynsec__group *dynsec_groups__find(struct dynsec__data *data, const char *groupname);
 
@@ -256,13 +257,13 @@ void dynsec_grouplist__remove(struct dynsec__grouplist **base_grouplist, struct 
 void dynsec_roles__cleanup(struct dynsec__data *data);
 int dynsec_roles__config_load(struct dynsec__data *data, cJSON *tree);
 int dynsec_roles__config_save(struct dynsec__data *data, cJSON *tree);
-int dynsec_roles__process_add_acl(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_remove_acl(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_add_acl(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_roles__process_create(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_roles__process_delete(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_roles__process_get(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_roles__process_list(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_roles__process_modify(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
+int dynsec_roles__process_remove_acl(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context);
 struct dynsec__role *dynsec_roles__find(struct dynsec__data *data, const char *rolename);
 
 

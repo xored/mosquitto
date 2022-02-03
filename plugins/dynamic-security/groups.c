@@ -103,7 +103,7 @@ static void group__free_item(struct dynsec__data *data, struct dynsec__group *gr
 	mosquitto_free(group);
 }
 
-int dynsec_groups__process_add_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_add_role(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname, *rolename;
 	struct dynsec__group *group;
@@ -112,34 +112,34 @@ int dynsec_groups__process_add_role(struct dynsec__data *data, cJSON *j_response
 	const char *admin_clientid, *admin_username;
 	int rc;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "rolename", &rolename, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Invalid/missing rolename", correlation_data);
+	if(json_get_string(cmd->j_command, "rolename", &rolename, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing rolename");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(rolename, (int)strlen(rolename)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Role name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Role name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
-	json_get_int(command, "priority", &priority, true, -1);
+	json_get_int(cmd->j_command, "priority", &priority, true, -1);
 
 	group = dynsec_groups__find(data, groupname);
 	if(group == NULL){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 		return MOSQ_ERR_SUCCESS;
 	}
 
 	role = dynsec_roles__find(data, rolename);
 	if(role == NULL){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Role not found", correlation_data);
+		plugin__command_reply(cmd, "Role not found");
 		return MOSQ_ERR_SUCCESS;
 	}
 
@@ -150,10 +150,10 @@ int dynsec_groups__process_add_role(struct dynsec__data *data, cJSON *j_response
 	if(rc == MOSQ_ERR_SUCCESS){
 		/* Continue */
 	}else if(rc == MOSQ_ERR_ALREADY_EXISTS){
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Group is already in this role", correlation_data);
+		plugin__command_reply(cmd, "Group is already in this role");
 		return MOSQ_ERR_ALREADY_EXISTS;
 	}else{
-		dynsec__command_reply(j_responses, context, "addGroupRole", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_UNKNOWN;
 	}
 
@@ -161,7 +161,7 @@ int dynsec_groups__process_add_role(struct dynsec__data *data, cJSON *j_response
 			admin_clientid, admin_username, groupname, rolename, priority);
 
 	dynsec__config_save(data);
-	dynsec__command_reply(j_responses, context, "addGroupRole", NULL, correlation_data);
+	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
 	group__kick_all(data, group);
@@ -358,53 +358,53 @@ int dynsec_groups__config_save(struct dynsec__data *data, cJSON *tree)
 }
 
 
-int dynsec_groups__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_create(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname, *text_name, *text_description;
 	struct dynsec__group *group = NULL;
 	int rc = MOSQ_ERR_SUCCESS;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "createGroup", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "createGroup", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "textname", &text_name, true) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "createGroup", "Invalid/missing textname", correlation_data);
+	if(json_get_string(cmd->j_command, "textname", &text_name, true) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing textname");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "textdescription", &text_description, true) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "createGroup", "Invalid/missing textdescription", correlation_data);
+	if(json_get_string(cmd->j_command, "textdescription", &text_description, true) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing textdescription");
 		return MOSQ_ERR_INVAL;
 	}
 
 	group = dynsec_groups__find(data, groupname);
 	if(group){
-		dynsec__command_reply(j_responses, context, "createGroup", "Group already exists", correlation_data);
+		plugin__command_reply(cmd, "Group already exists");
 		return MOSQ_ERR_SUCCESS;
 	}
 
 	group = mosquitto_calloc(1, sizeof(struct dynsec__group));
 	if(group == NULL){
-		dynsec__command_reply(j_responses, context, "createGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 	group->groupname = strdup(groupname);
 	if(group->groupname == NULL){
-		dynsec__command_reply(j_responses, context, "createGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		group__free_item(data, group);
 		return MOSQ_ERR_NOMEM;
 	}
 	if(text_name){
 		group->text_name = strdup(text_name);
 		if(group->text_name == NULL){
-			dynsec__command_reply(j_responses, context, "createGroup", "Internal error", correlation_data);
+			plugin__command_reply(cmd, "Internal error");
 			group__free_item(data, group);
 			return MOSQ_ERR_NOMEM;
 		}
@@ -412,20 +412,20 @@ int dynsec_groups__process_create(struct dynsec__data *data, cJSON *j_responses,
 	if(text_description){
 		group->text_description = strdup(text_description);
 		if(group->text_description == NULL){
-			dynsec__command_reply(j_responses, context, "createGroup", "Internal error", correlation_data);
+			plugin__command_reply(cmd, "Internal error");
 			group__free_item(data, group);
 			return MOSQ_ERR_NOMEM;
 		}
 	}
 
-	rc = dynsec_rolelist__load_from_json(data, command, &group->rolelist);
+	rc = dynsec_rolelist__load_from_json(data, cmd->j_command, &group->rolelist);
 	if(rc == MOSQ_ERR_SUCCESS || rc == ERR_LIST_NOT_FOUND){
 	}else if(rc == MOSQ_ERR_NOT_FOUND){
-		dynsec__command_reply(j_responses, context, "createGroup", "Role not found", correlation_data);
+		plugin__command_reply(cmd, "Role not found");
 		group__free_item(data, group);
 		return MOSQ_ERR_INVAL;
 	}else{
-		dynsec__command_reply(j_responses, context, "createGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		group__free_item(data, group);
 		return MOSQ_ERR_INVAL;
 	}
@@ -438,23 +438,23 @@ int dynsec_groups__process_create(struct dynsec__data *data, cJSON *j_responses,
 			admin_clientid, admin_username, groupname);
 
 	dynsec__config_save(data);
-	dynsec__command_reply(j_responses, context, "createGroup", NULL, correlation_data);
+	plugin__command_reply(cmd, NULL);
 	return MOSQ_ERR_SUCCESS;
 }
 
 
-int dynsec_groups__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_delete(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname;
 	struct dynsec__group *group;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "deleteGroup", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "deleteGroup", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
@@ -466,7 +466,7 @@ int dynsec_groups__process_delete(struct dynsec__data *data, cJSON *j_responses,
 		dynsec__remove_all_roles_from_group(group);
 		group__free_item(data, group);
 		dynsec__config_save(data);
-		dynsec__command_reply(j_responses, context, "deleteGroup", NULL, correlation_data);
+		plugin__command_reply(cmd, NULL);
 
 		admin_clientid = mosquitto_client_id(context);
 		admin_username = mosquitto_client_username(context);
@@ -475,7 +475,7 @@ int dynsec_groups__process_delete(struct dynsec__data *data, cJSON *j_responses,
 
 		return MOSQ_ERR_SUCCESS;
 	}else{
-		dynsec__command_reply(j_responses, context, "deleteGroup", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 		return MOSQ_ERR_SUCCESS;
 	}
 }
@@ -522,32 +522,32 @@ int dynsec_groups__add_client(struct dynsec__data *data, const char *username, c
 }
 
 
-int dynsec_groups__process_add_client(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_add_client(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *username, *groupname;
 	int rc;
 	int priority;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "username", &username, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Invalid/missing username", correlation_data);
+	if(json_get_string(cmd->j_command, "username", &username, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing username");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(username, (int)strlen(username)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Username not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Username not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
-	json_get_int(command, "priority", &priority, true, -1);
+	json_get_int(cmd->j_command, "priority", &priority, true, -1);
 
 	rc = dynsec_groups__add_client(data, username, groupname, priority, true);
 	if(rc == MOSQ_ERR_SUCCESS){
@@ -556,15 +556,15 @@ int dynsec_groups__process_add_client(struct dynsec__data *data, cJSON *j_respon
 		mosquitto_log_printf(MOSQ_LOG_INFO, "dynsec: %s/%s | addGroupClient | groupname=%s | username=%s | priority=%d",
 				admin_clientid, admin_username, groupname, username, priority);
 
-		dynsec__command_reply(j_responses, context, "addGroupClient", NULL, correlation_data);
+		plugin__command_reply(cmd, NULL);
 	}else if(rc == ERR_USER_NOT_FOUND){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Client not found", correlation_data);
+		plugin__command_reply(cmd, "Client not found");
 	}else if(rc == ERR_GROUP_NOT_FOUND){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 	}else if(rc == MOSQ_ERR_ALREADY_EXISTS){
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Client is already in this group", correlation_data);
+		plugin__command_reply(cmd, "Client is already in this group");
 	}else{
-		dynsec__command_reply(j_responses, context, "addGroupClient", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 	}
 
 	/* Enforce any changes */
@@ -624,27 +624,27 @@ int dynsec_groups__remove_client(struct dynsec__data *data, const char *username
 	return MOSQ_ERR_SUCCESS;
 }
 
-int dynsec_groups__process_remove_client(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_remove_client(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *username, *groupname;
 	int rc;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "username", &username, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Invalid/missing username", correlation_data);
+	if(json_get_string(cmd->j_command, "username", &username, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing username");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(username, (int)strlen(username)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Username not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Username not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
@@ -655,13 +655,13 @@ int dynsec_groups__process_remove_client(struct dynsec__data *data, cJSON *j_res
 		mosquitto_log_printf(MOSQ_LOG_INFO, "dynsec: %s/%s | removeGroupClient | groupname=%s | username=%s",
 				admin_clientid, admin_username, groupname, username);
 
-		dynsec__command_reply(j_responses, context, "removeGroupClient", NULL, correlation_data);
+		plugin__command_reply(cmd, NULL);
 	}else if(rc == ERR_USER_NOT_FOUND){
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Client not found", correlation_data);
+		plugin__command_reply(cmd, "Client not found");
 	}else if(rc == ERR_GROUP_NOT_FOUND){
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 	}else{
-		dynsec__command_reply(j_responses, context, "removeGroupClient", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 	}
 
 	/* Enforce any changes */
@@ -718,7 +718,7 @@ static cJSON *add_group_to_json(struct dynsec__group *group)
 }
 
 
-int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_list(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	bool verbose;
 	cJSON *tree, *j_groups, *j_group, *j_data;
@@ -726,13 +726,13 @@ int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, s
 	int i, count, offset;
 	const char *admin_clientid, *admin_username;
 
-	json_get_bool(command, "verbose", &verbose, true, false);
-	json_get_int(command, "count", &count, true, -1);
-	json_get_int(command, "offset", &offset, true, 0);
+	json_get_bool(cmd->j_command, "verbose", &verbose, true, false);
+	json_get_int(cmd->j_command, "count", &count, true, -1);
+	json_get_int(cmd->j_command, "offset", &offset, true, 0);
 
 	tree = cJSON_CreateObject();
 	if(tree == NULL){
-		dynsec__command_reply(j_responses, context, "listGroups", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
@@ -740,11 +740,11 @@ int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, s
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
 			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, data->groups)) == NULL
 			|| (j_groups = cJSON_AddArrayToObject(j_data, "groups")) == NULL
-			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
+			|| (cmd->correlation_data && cJSON_AddStringToObject(tree, "correlationData", cmd->correlation_data) == NULL)
 			){
 
 		cJSON_Delete(tree);
-		dynsec__command_reply(j_responses, context, "listGroups", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
@@ -755,7 +755,7 @@ int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, s
 				j_group = add_group_to_json(group);
 				if(j_group == NULL){
 					cJSON_Delete(tree);
-					dynsec__command_reply(j_responses, context, "listGroups", "Internal error", correlation_data);
+					plugin__command_reply(cmd, "Internal error");
 					return MOSQ_ERR_NOMEM;
 				}
 				cJSON_AddItemToArray(j_groups, j_group);
@@ -766,7 +766,7 @@ int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, s
 					cJSON_AddItemToArray(j_groups, j_group);
 				}else{
 					cJSON_Delete(tree);
-					dynsec__command_reply(j_responses, context, "listGroups", "Internal error", correlation_data);
+					plugin__command_reply(cmd, "Internal error");
 					return MOSQ_ERR_NOMEM;
 				}
 			}
@@ -781,7 +781,7 @@ int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, s
 		i++;
 	}
 
-	cJSON_AddItemToArray(j_responses, tree);
+	cJSON_AddItemToArray(cmd->j_responses, tree);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -792,35 +792,35 @@ int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, s
 }
 
 
-int dynsec_groups__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_get(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname;
 	cJSON *tree, *j_group, *j_data;
 	struct dynsec__group *group;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "getGroup", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "getGroup", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
 	tree = cJSON_CreateObject();
 	if(tree == NULL){
-		dynsec__command_reply(j_responses, context, "getGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
 	if(cJSON_AddStringToObject(tree, "command", "getGroup") == NULL
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
-			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
+			|| (cmd->correlation_data && cJSON_AddStringToObject(tree, "correlationData", cmd->correlation_data) == NULL)
 			){
 
 		cJSON_Delete(tree);
-		dynsec__command_reply(j_responses, context, "getGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
@@ -829,17 +829,17 @@ int dynsec_groups__process_get(struct dynsec__data *data, cJSON *j_responses, st
 		j_group = add_group_to_json(group);
 		if(j_group == NULL){
 			cJSON_Delete(tree);
-			dynsec__command_reply(j_responses, context, "getGroup", "Internal error", correlation_data);
+			plugin__command_reply(cmd, "Internal error");
 			return MOSQ_ERR_NOMEM;
 		}
 		cJSON_AddItemToObject(j_data, "group", j_group);
 	}else{
 		cJSON_Delete(tree);
-		dynsec__command_reply(j_responses, context, "getGroup", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 		return MOSQ_ERR_NOMEM;
 	}
 
-	cJSON_AddItemToArray(j_responses, tree);
+	cJSON_AddItemToArray(cmd->j_responses, tree);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -850,46 +850,46 @@ int dynsec_groups__process_get(struct dynsec__data *data, cJSON *j_responses, st
 }
 
 
-int dynsec_groups__process_remove_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_remove_role(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname, *rolename;
 	struct dynsec__group *group;
 	struct dynsec__role *role;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupRole", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupRole", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "rolename", &rolename, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupRole", "Invalid/missing rolename", correlation_data);
+	if(json_get_string(cmd->j_command, "rolename", &rolename, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing rolename");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(rolename, (int)strlen(rolename)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "removeGroupRole", "Role name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Role name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
 	group = dynsec_groups__find(data, groupname);
 	if(group == NULL){
-		dynsec__command_reply(j_responses, context, "removeGroupRole", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 		return MOSQ_ERR_SUCCESS;
 	}
 
 	role = dynsec_roles__find(data, rolename);
 	if(role == NULL){
-		dynsec__command_reply(j_responses, context, "removeGroupRole", "Role not found", correlation_data);
+		plugin__command_reply(cmd, "Role not found");
 		return MOSQ_ERR_SUCCESS;
 	}
 
 	dynsec_rolelist__group_remove(group, role);
 	dynsec__config_save(data);
-	dynsec__command_reply(j_responses, context, "removeGroupRole", NULL, correlation_data);
+	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
 	group__kick_all(data, group);
@@ -903,7 +903,7 @@ int dynsec_groups__process_remove_role(struct dynsec__data *data, cJSON *j_respo
 }
 
 
-int dynsec_groups__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_modify(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname;
 	char *text_name, *text_description;
@@ -915,64 +915,64 @@ int dynsec_groups__process_modify(struct dynsec__data *data, cJSON *j_responses,
 	cJSON *j_client, *j_clients, *jtmp;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "modifyGroup", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "modifyGroup", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
 	group = dynsec_groups__find(data, groupname);
 	if(group == NULL){
-		dynsec__command_reply(j_responses, context, "modifyGroup", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 		return MOSQ_ERR_INVAL;
 	}
 
-	if(json_get_string(command, "textname", &text_name, false) == MOSQ_ERR_SUCCESS){
+	if(json_get_string(cmd->j_command, "textname", &text_name, false) == MOSQ_ERR_SUCCESS){
 		str = mosquitto_strdup(text_name);
 		if(str == NULL){
-			dynsec__command_reply(j_responses, context, "modifyGroup", "Internal error", correlation_data);
+			plugin__command_reply(cmd, "Internal error");
 			return MOSQ_ERR_NOMEM;
 		}
 		mosquitto_free(group->text_name);
 		group->text_name = str;
 	}
 
-	if(json_get_string(command, "textdescription", &text_description, false) == MOSQ_ERR_SUCCESS){
+	if(json_get_string(cmd->j_command, "textdescription", &text_description, false) == MOSQ_ERR_SUCCESS){
 		str = mosquitto_strdup(text_description);
 		if(str == NULL){
-			dynsec__command_reply(j_responses, context, "modifyGroup", "Internal error", correlation_data);
+			plugin__command_reply(cmd, "Internal error");
 			return MOSQ_ERR_NOMEM;
 		}
 		mosquitto_free(group->text_description);
 		group->text_description = str;
 	}
 
-	rc = dynsec_rolelist__load_from_json(data, command, &rolelist);
+	rc = dynsec_rolelist__load_from_json(data, cmd->j_command, &rolelist);
 	if(rc == MOSQ_ERR_SUCCESS){
 		dynsec_rolelist__cleanup(&group->rolelist);
 		group->rolelist = rolelist;
 	}else if(rc == ERR_LIST_NOT_FOUND){
 		/* There was no list in the JSON, so no modification */
 	}else if(rc == MOSQ_ERR_NOT_FOUND){
-		dynsec__command_reply(j_responses, context, "modifyGroup", "Role not found", correlation_data);
+		plugin__command_reply(cmd, "Role not found");
 		dynsec_rolelist__cleanup(&rolelist);
 		group__kick_all(data, group);
 		return MOSQ_ERR_INVAL;
 	}else{
 		if(rc == MOSQ_ERR_INVAL){
-			dynsec__command_reply(j_responses, context, "modifyGroup", "'roles' not an array or missing/invalid rolename", correlation_data);
+			plugin__command_reply(cmd, "'roles' not an array or missing/invalid rolename");
 		}else{
-			dynsec__command_reply(j_responses, context, "modifyGroup", "Internal error", correlation_data);
+			plugin__command_reply(cmd, "Internal error");
 		}
 		dynsec_rolelist__cleanup(&rolelist);
 		group__kick_all(data, group);
 		return MOSQ_ERR_INVAL;
 	}
 
-	j_clients = cJSON_GetObjectItem(command, "clients");
+	j_clients = cJSON_GetObjectItem(cmd->j_command, "clients");
 	if(j_clients && cJSON_IsArray(j_clients)){
 		dynsec__remove_all_clients_from_group(group);
 
@@ -989,7 +989,7 @@ int dynsec_groups__process_modify(struct dynsec__data *data, cJSON *j_responses,
 
 	dynsec__config_save(data);
 
-	dynsec__command_reply(j_responses, context, "modifyGroup", NULL, correlation_data);
+	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
 	group__kick_all(data, group);
@@ -1003,31 +1003,31 @@ int dynsec_groups__process_modify(struct dynsec__data *data, cJSON *j_responses,
 }
 
 
-int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	char *groupname;
 	struct dynsec__group *group = NULL;
 	const char *admin_clientid, *admin_username;
 
-	if(json_get_string(command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "setAnonymousGroup", "Invalid/missing groupname", correlation_data);
+	if(json_get_string(cmd->j_command, "groupname", &groupname, false) != MOSQ_ERR_SUCCESS){
+		plugin__command_reply(cmd, "Invalid/missing groupname");
 		return MOSQ_ERR_INVAL;
 	}
 	if(mosquitto_validate_utf8(groupname, (int)strlen(groupname)) != MOSQ_ERR_SUCCESS){
-		dynsec__command_reply(j_responses, context, "setAnonymousGroup", "Group name not valid UTF-8", correlation_data);
+		plugin__command_reply(cmd, "Group name not valid UTF-8");
 		return MOSQ_ERR_INVAL;
 	}
 
 	group = dynsec_groups__find(data, groupname);
 	if(group == NULL){
-		dynsec__command_reply(j_responses, context, "setAnonymousGroup", "Group not found", correlation_data);
+		plugin__command_reply(cmd, "Group not found");
 		return MOSQ_ERR_SUCCESS;
 	}
 
 	data->anonymous_group = group;
 
 	dynsec__config_save(data);
-	dynsec__command_reply(j_responses, context, "setAnonymousGroup", NULL, correlation_data);
+	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
 	mosquitto_kick_client_by_username(NULL, false);
@@ -1040,17 +1040,15 @@ int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, cJSON 
 	return MOSQ_ERR_SUCCESS;
 }
 
-int dynsec_groups__process_get_anonymous_group(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_groups__process_get_anonymous_group(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context)
 {
 	cJSON *tree, *j_data, *j_group;
 	const char *groupname;
 	const char *admin_clientid, *admin_username;
 
-	UNUSED(command);
-
 	tree = cJSON_CreateObject();
 	if(tree == NULL){
-		dynsec__command_reply(j_responses, context, "getAnonymousGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
@@ -1064,15 +1062,15 @@ int dynsec_groups__process_get_anonymous_group(struct dynsec__data *data, cJSON 
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
 			|| (j_group = cJSON_AddObjectToObject(j_data, "group")) == NULL
 			|| cJSON_AddStringToObject(j_group, "groupname", groupname) == NULL
-			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
+			|| (cmd->correlation_data && cJSON_AddStringToObject(tree, "correlationData", cmd->correlation_data) == NULL)
 			){
 
 		cJSON_Delete(tree);
-		dynsec__command_reply(j_responses, context, "getAnonymousGroup", "Internal error", correlation_data);
+		plugin__command_reply(cmd, "Internal error");
 		return MOSQ_ERR_NOMEM;
 	}
 
-	cJSON_AddItemToArray(j_responses, tree);
+	cJSON_AddItemToArray(cmd->j_responses, tree);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
