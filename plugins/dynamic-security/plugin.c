@@ -33,9 +33,8 @@ Contributors:
 
 MOSQUITTO_PLUGIN_DECLARE_VERSION(5);
 
-struct dynsec__data g_dynsec_data;
+static struct dynsec__data dynsec_data;
 static mosquitto_plugin_id_t *plg_id = NULL;
-char *g_config_file = NULL;
 
 int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, struct mosquitto_opt *options, int option_count)
 {
@@ -43,18 +42,18 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 
 	UNUSED(user_data);
 
-	memset(&g_dynsec_data, 0, sizeof(struct dynsec__data));
+	memset(&dynsec_data, 0, sizeof(struct dynsec__data));
 
 	for(i=0; i<option_count; i++){
 		if(!strcasecmp(options[i].key, "config_file")){
-			g_config_file = mosquitto_strdup(options[i].value);
-			if(g_config_file == NULL){
+			dynsec_data.config_file = mosquitto_strdup(options[i].value);
+			if(dynsec_data.config_file == NULL){
 				return MOSQ_ERR_NOMEM;
 			}
 			break;
 		}
 	}
-	if(g_config_file == NULL){
+	if(dynsec_data.config_file == NULL){
 		mosquitto_log_printf(MOSQ_LOG_WARNING, "Warning: Dynamic security plugin has no plugin_opt_config_file defined. The plugin will not be activated.");
 		return MOSQ_ERR_SUCCESS;
 	}
@@ -62,10 +61,10 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	plg_id = identifier;
 	mosquitto_plugin_set_info(identifier, "dynamic-security", NULL);
 
-	dynsec__config_load();
-	mosquitto_callback_register(plg_id, MOSQ_EVT_CONTROL, dynsec_control_callback, "$CONTROL/dynamic-security/v1", NULL);
-	mosquitto_callback_register(plg_id, MOSQ_EVT_BASIC_AUTH, dynsec_auth__basic_auth_callback, NULL, NULL);
-	mosquitto_callback_register(plg_id, MOSQ_EVT_ACL_CHECK, dynsec__acl_check_callback, NULL, NULL);
+	dynsec__config_load(&dynsec_data);
+	mosquitto_callback_register(plg_id, MOSQ_EVT_CONTROL, dynsec_control_callback, "$CONTROL/dynamic-security/v1", &dynsec_data);
+	mosquitto_callback_register(plg_id, MOSQ_EVT_BASIC_AUTH, dynsec_auth__basic_auth_callback, NULL, &dynsec_data);
+	mosquitto_callback_register(plg_id, MOSQ_EVT_ACL_CHECK, dynsec__acl_check_callback, NULL, &dynsec_data);
 
 	return MOSQ_ERR_SUCCESS;
 }
@@ -76,11 +75,11 @@ int mosquitto_plugin_cleanup(void *user_data, struct mosquitto_opt *options, int
 	UNUSED(options);
 	UNUSED(option_count);
 
-	dynsec_groups__cleanup();
-	dynsec_clients__cleanup();
-	dynsec_roles__cleanup();
+	dynsec_groups__cleanup(&dynsec_data);
+	dynsec_clients__cleanup(&dynsec_data);
+	dynsec_roles__cleanup(&dynsec_data);
 
-	mosquitto_free(g_config_file);
-	g_config_file = NULL;
+	mosquitto_free(dynsec_data.config_file);
+	dynsec_data.config_file = NULL;
 	return MOSQ_ERR_SUCCESS;
 }

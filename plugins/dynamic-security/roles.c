@@ -64,10 +64,10 @@ static void role__free_all_acls(struct dynsec__acl **acl)
 	}
 }
 
-static void role__free_item(struct dynsec__role *role, bool remove_from_hash)
+static void role__free_item(struct dynsec__data *data, struct dynsec__role *role, bool remove_from_hash)
 {
 	if(remove_from_hash){
-		HASH_DEL(g_dynsec_data.roles, role);
+		HASH_DEL(data->roles, role);
 	}
 	dynsec_clientlist__cleanup(&role->clientlist);
 	dynsec_grouplist__cleanup(&role->grouplist);
@@ -83,35 +83,35 @@ static void role__free_item(struct dynsec__role *role, bool remove_from_hash)
 	mosquitto_free(role);
 }
 
-struct dynsec__role *dynsec_roles__find(const char *rolename)
+struct dynsec__role *dynsec_roles__find(struct dynsec__data *data, const char *rolename)
 {
 	struct dynsec__role *role = NULL;
 
 	if(rolename){
-		HASH_FIND(hh, g_dynsec_data.roles, rolename, strlen(rolename), role);
+		HASH_FIND(hh, data->roles, rolename, strlen(rolename), role);
 	}
 	return role;
 }
 
 
-void dynsec_roles__cleanup(void)
+void dynsec_roles__cleanup(struct dynsec__data *data)
 {
 	struct dynsec__role *role, *role_tmp = NULL;
 
-	HASH_ITER(hh, g_dynsec_data.roles, role, role_tmp){
-		role__free_item(role, true);
+	HASH_ITER(hh, data->roles, role, role_tmp){
+		role__free_item(data, role, true);
 	}
 }
 
 
-static void role__kick_all(struct dynsec__role *role)
+static void role__kick_all(struct dynsec__data *data, struct dynsec__role *role)
 {
 	struct dynsec__grouplist *grouplist, *grouplist_tmp = NULL;
 
 	dynsec_clientlist__kick_all(role->clientlist);
 
 	HASH_ITER(hh, role->grouplist, grouplist, grouplist_tmp){
-		if(grouplist->group == g_dynsec_data.anonymous_group){
+		if(grouplist->group == data->anonymous_group){
 			mosquitto_kick_client_by_username(NULL, false);
 		}
 		dynsec_clientlist__kick_all(grouplist->group->clientlist);
@@ -173,7 +173,7 @@ static int add_acls_to_json(cJSON *j_role, struct dynsec__role *role)
 	return 0;
 }
 
-int dynsec_roles__config_save(cJSON *tree)
+int dynsec_roles__config_save(struct dynsec__data *data, cJSON *tree)
 {
 	cJSON *j_roles, *j_role;
 	struct dynsec__role *role, *role_tmp = NULL;
@@ -182,7 +182,7 @@ int dynsec_roles__config_save(cJSON *tree)
 		return 1;
 	}
 
-	HASH_ITER(hh, g_dynsec_data.roles, role, role_tmp){
+	HASH_ITER(hh, data->roles, role, role_tmp){
 		j_role = add_role_to_json(role, true);
 		if(j_role == NULL){
 			return 1;
@@ -240,7 +240,7 @@ static int dynsec_roles__acl_load(cJSON *j_acls, const char *key, struct dynsec_
 }
 
 
-int dynsec_roles__config_load(cJSON *tree)
+int dynsec_roles__config_load(struct dynsec__data *data, cJSON *tree)
 {
 	cJSON *j_roles, *j_role, *jtmp, *j_acls;
 	struct dynsec__role *role;
@@ -321,16 +321,16 @@ int dynsec_roles__config_load(cJSON *tree)
 				}
 			}
 
-			HASH_ADD_KEYPTR(hh, g_dynsec_data.roles, role->rolename, strlen(role->rolename), role);
+			HASH_ADD_KEYPTR(hh, data->roles, role->rolename, strlen(role->rolename), role);
 		}
 	}
-	HASH_SORT(g_dynsec_data.roles, role_cmp);
+	HASH_SORT(data->roles, role_cmp);
 
 	return 0;
 }
 
 
-int dynsec_roles__process_create(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	char *rolename;
 	char *text_name, *text_description;
@@ -364,7 +364,7 @@ int dynsec_roles__process_create(cJSON *j_responses, struct mosquitto *context, 
 		return MOSQ_ERR_INVAL;
 	}
 
-	role = dynsec_roles__find(rolename);
+	role = dynsec_roles__find(data, rolename);
 	if(role){
 		dynsec__command_reply(j_responses, context, "createRole", "Role already exists", correlation_data);
 		return MOSQ_ERR_SUCCESS;
@@ -417,9 +417,9 @@ int dynsec_roles__process_create(cJSON *j_responses, struct mosquitto *context, 
 	}
 
 
-	HASH_ADD_KEYPTR_INORDER(hh, g_dynsec_data.roles, role->rolename, strlen(role->rolename), role, role_cmp);
+	HASH_ADD_KEYPTR_INORDER(hh, data->roles, role->rolename, strlen(role->rolename), role, role_cmp);
 
-	dynsec__config_save();
+	dynsec__config_save(data);
 
 	dynsec__command_reply(j_responses, context, "createRole", NULL, correlation_data);
 
@@ -431,7 +431,7 @@ int dynsec_roles__process_create(cJSON *j_responses, struct mosquitto *context, 
 	return MOSQ_ERR_SUCCESS;
 error:
 	if(role){
-		role__free_item(role, false);
+		role__free_item(data, role, false);
 	}
 	return rc;
 }
@@ -448,12 +448,12 @@ static void role__remove_all_clients(struct dynsec__role *role)
 	}
 }
 
-static void role__remove_all_groups(struct dynsec__role *role)
+static void role__remove_all_groups(struct dynsec__data *data, struct dynsec__role *role)
 {
 	struct dynsec__grouplist *grouplist, *grouplist_tmp = NULL;
 
 	HASH_ITER(hh, role->grouplist, grouplist, grouplist_tmp){
-		if(grouplist->group == g_dynsec_data.anonymous_group){
+		if(grouplist->group == data->anonymous_group){
 			mosquitto_kick_client_by_username(NULL, false);
 		}
 		dynsec_clientlist__kick_all(grouplist->group->clientlist);
@@ -462,7 +462,7 @@ static void role__remove_all_groups(struct dynsec__role *role)
 	}
 }
 
-int dynsec_roles__process_delete(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	char *rolename;
 	struct dynsec__role *role;
@@ -477,12 +477,12 @@ int dynsec_roles__process_delete(cJSON *j_responses, struct mosquitto *context, 
 		return MOSQ_ERR_INVAL;
 	}
 
-	role = dynsec_roles__find(rolename);
+	role = dynsec_roles__find(data, rolename);
 	if(role){
 		role__remove_all_clients(role);
-		role__remove_all_groups(role);
-		role__free_item(role, true);
-		dynsec__config_save();
+		role__remove_all_groups(data, role);
+		role__free_item(data, role, true);
+		dynsec__config_save(data);
 		dynsec__command_reply(j_responses, context, "deleteRole", NULL, correlation_data);
 
 		admin_clientid = mosquitto_client_id(context);
@@ -530,7 +530,7 @@ static cJSON *add_role_to_json(struct dynsec__role *role, bool verbose)
 	return j_role;
 }
 
-int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	bool verbose;
 	struct dynsec__role *role, *role_tmp = NULL;
@@ -550,7 +550,7 @@ int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJ
 
 	if(cJSON_AddStringToObject(tree, "command", "listRoles") == NULL
 			|| (j_data = cJSON_AddObjectToObject(tree, "data")) == NULL
-			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, g_dynsec_data.roles)) == NULL
+			|| cJSON_AddIntToObject(j_data, "totalCount", (int)HASH_CNT(hh, data->roles)) == NULL
 			|| (j_roles = cJSON_AddArrayToObject(j_data, "roles")) == NULL
 			|| (correlation_data && cJSON_AddStringToObject(tree, "correlationData", correlation_data) == NULL)
 			){
@@ -561,7 +561,7 @@ int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJ
 	}
 
 	i = 0;
-	HASH_ITER(hh, g_dynsec_data.roles, role, role_tmp){
+	HASH_ITER(hh, data->roles, role, role_tmp){
 		if(i>=offset){
 			j_role = add_role_to_json(role, verbose);
 			if(j_role == NULL){
@@ -592,7 +592,7 @@ int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJ
 }
 
 
-int dynsec_roles__process_add_acl(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_add_acl(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	char *rolename;
 	char *topic;
@@ -611,7 +611,7 @@ int dynsec_roles__process_add_acl(cJSON *j_responses, struct mosquitto *context,
 		return MOSQ_ERR_INVAL;
 	}
 
-	role = dynsec_roles__find(rolename);
+	role = dynsec_roles__find(data, rolename);
 	if(role == NULL){
 		dynsec__command_reply(j_responses, context, "addRoleACL", "Role not found", correlation_data);
 		return MOSQ_ERR_SUCCESS;
@@ -679,10 +679,10 @@ int dynsec_roles__process_add_acl(cJSON *j_responses, struct mosquitto *context,
 	json_get_bool(command, "allow", &acl->allow, true, false);
 
 	HASH_ADD_KEYPTR_INORDER(hh, *acllist, acl->topic, strlen(acl->topic), acl, insert_acl_cmp);
-	dynsec__config_save();
+	dynsec__config_save(data);
 	dynsec__command_reply(j_responses, context, "addRoleACL", NULL, correlation_data);
 
-	role__kick_all(role);
+	role__kick_all(data, role);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -693,7 +693,7 @@ int dynsec_roles__process_add_acl(cJSON *j_responses, struct mosquitto *context,
 }
 
 
-int dynsec_roles__process_remove_acl(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_remove_acl(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	char *rolename;
 	struct dynsec__role *role;
@@ -712,7 +712,7 @@ int dynsec_roles__process_remove_acl(cJSON *j_responses, struct mosquitto *conte
 		return MOSQ_ERR_INVAL;
 	}
 
-	role = dynsec_roles__find(rolename);
+	role = dynsec_roles__find(data, rolename);
 	if(role == NULL){
 		dynsec__command_reply(j_responses, context, "removeRoleACL", "Role not found", correlation_data);
 		return MOSQ_ERR_SUCCESS;
@@ -757,10 +757,10 @@ int dynsec_roles__process_remove_acl(cJSON *j_responses, struct mosquitto *conte
 	HASH_FIND(hh, *acllist, topic, strlen(topic), acl);
 	if(acl){
 		role__free_acl(acllist, acl);
-		dynsec__config_save();
+		dynsec__config_save(data);
 		dynsec__command_reply(j_responses, context, "removeRoleACL", NULL, correlation_data);
 
-		role__kick_all(role);
+		role__kick_all(data, role);
 
 		admin_clientid = mosquitto_client_id(context);
 		admin_username = mosquitto_client_username(context);
@@ -775,7 +775,7 @@ int dynsec_roles__process_remove_acl(cJSON *j_responses, struct mosquitto *conte
 }
 
 
-int dynsec_roles__process_get(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	char *rolename;
 	struct dynsec__role *role;
@@ -790,7 +790,7 @@ int dynsec_roles__process_get(cJSON *j_responses, struct mosquitto *context, cJS
 		return MOSQ_ERR_INVAL;
 	}
 
-	role = dynsec_roles__find(rolename);
+	role = dynsec_roles__find(data, rolename);
 	if(role == NULL){
 		dynsec__command_reply(j_responses, context, "getRole", "Role not found", correlation_data);
 		return MOSQ_ERR_SUCCESS;
@@ -825,7 +825,7 @@ int dynsec_roles__process_get(cJSON *j_responses, struct mosquitto *context, cJS
 }
 
 
-int dynsec_roles__process_modify(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
+int dynsec_roles__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data)
 {
 	char *rolename;
 	char *text_name, *text_description;
@@ -848,7 +848,7 @@ int dynsec_roles__process_modify(cJSON *j_responses, struct mosquitto *context, 
 		return MOSQ_ERR_INVAL;
 	}
 
-	role = dynsec_roles__find(rolename);
+	role = dynsec_roles__find(data, rolename);
 	if(role == NULL){
 		dynsec__command_reply(j_responses, context, "modifyRole", "Role does not exist", correlation_data);
 		return MOSQ_ERR_INVAL;
@@ -920,9 +920,9 @@ int dynsec_roles__process_modify(cJSON *j_responses, struct mosquitto *context, 
 	}
 
 	if(do_kick){
-		role__kick_all(role);
+		role__kick_all(data, role);
 	}
-	dynsec__config_save();
+	dynsec__config_save(data);
 
 	dynsec__command_reply(j_responses, context, "modifyRole", NULL, correlation_data);
 

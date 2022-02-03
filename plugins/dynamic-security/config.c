@@ -33,7 +33,7 @@ Contributors:
 
 #include "dynamic_security.h"
 
-static int dynsec__general_config_load(cJSON *tree)
+static int dynsec__general_config_load(struct dynsec__data *data, cJSON *tree)
 {
 	cJSON *j_default_access, *jtmp;
 
@@ -41,36 +41,36 @@ static int dynsec__general_config_load(cJSON *tree)
 	if(j_default_access && cJSON_IsObject(j_default_access)){
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_PUB_C_SEND);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			g_dynsec_data.default_access.publish_c_send = cJSON_IsTrue(jtmp);
+			data->default_access.publish_c_send = cJSON_IsTrue(jtmp);
 		}else{
-			g_dynsec_data.default_access.publish_c_send = false;
+			data->default_access.publish_c_send = false;
 		}
 
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_PUB_C_RECV);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			g_dynsec_data.default_access.publish_c_recv = cJSON_IsTrue(jtmp);
+			data->default_access.publish_c_recv = cJSON_IsTrue(jtmp);
 		}else{
-			g_dynsec_data.default_access.publish_c_recv = false;
+			data->default_access.publish_c_recv = false;
 		}
 
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_SUB_GENERIC);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			g_dynsec_data.default_access.subscribe = cJSON_IsTrue(jtmp);
+			data->default_access.subscribe = cJSON_IsTrue(jtmp);
 		}else{
-			g_dynsec_data.default_access.subscribe = false;
+			data->default_access.subscribe = false;
 		}
 
 		jtmp = cJSON_GetObjectItem(j_default_access, ACL_TYPE_UNSUB_GENERIC);
 		if(jtmp && cJSON_IsBool(jtmp)){
-			g_dynsec_data.default_access.unsubscribe = cJSON_IsTrue(jtmp);
+			data->default_access.unsubscribe = cJSON_IsTrue(jtmp);
 		}else{
-			g_dynsec_data.default_access.unsubscribe = false;
+			data->default_access.unsubscribe = false;
 		}
 	}
 	return MOSQ_ERR_SUCCESS;
 }
 
-static int dynsec__general_config_save(cJSON *tree)
+static int dynsec__general_config_save(struct dynsec__data *data, cJSON *tree)
 {
 	cJSON *j_default_access;
 
@@ -80,10 +80,10 @@ static int dynsec__general_config_save(cJSON *tree)
 	}
 	cJSON_AddItemToObject(tree, "defaultACLAccess", j_default_access);
 
-	if(cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_SEND, g_dynsec_data.default_access.publish_c_send) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_RECV, g_dynsec_data.default_access.publish_c_recv) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_SUB_GENERIC, g_dynsec_data.default_access.subscribe) == NULL
-			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_UNSUB_GENERIC, g_dynsec_data.default_access.unsubscribe) == NULL
+	if(cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_SEND, data->default_access.publish_c_send) == NULL
+			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_PUB_C_RECV, data->default_access.publish_c_recv) == NULL
+			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_SUB_GENERIC, data->default_access.subscribe) == NULL
+			|| cJSON_AddBoolToObject(j_default_access, ACL_TYPE_UNSUB_GENERIC, data->default_access.unsubscribe) == NULL
 			){
 
 		return 1;
@@ -92,7 +92,7 @@ static int dynsec__general_config_save(cJSON *tree)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int dynsec__config_load(void)
+int dynsec__config_load(struct dynsec__data *data)
 {
 	FILE *fptr;
 	long flen_l;
@@ -101,14 +101,14 @@ int dynsec__config_load(void)
 	cJSON *tree;
 
 	/* Load from file */
-	fptr = fopen(g_config_file, "rb");
+	fptr = fopen(data->config_file, "rb");
 	if(fptr == NULL){
 		/* Attempt to initialise a new config file */
-		if(dynsec__config_init(g_config_file) == MOSQ_ERR_SUCCESS){
+		if(dynsec__config_init(data->config_file) == MOSQ_ERR_SUCCESS){
 			mosquitto_log_printf(MOSQ_LOG_INFO, "Dynamic security plugin config not found, generating a default config.");
-			mosquitto_log_printf(MOSQ_LOG_INFO, "  Generated passwords are at %s.pw", g_config_file);
+			mosquitto_log_printf(MOSQ_LOG_INFO, "  Generated passwords are at %s.pw", data->config_file);
 			/* If it works, try to open the file again */
-			fptr = fopen(g_config_file, "rb");
+			fptr = fopen(data->config_file, "rb");
 		}
 
 		if(fptr == NULL){
@@ -151,10 +151,10 @@ int dynsec__config_load(void)
 		return 1;
 	}
 
-	if(dynsec__general_config_load(tree)
-			|| dynsec_roles__config_load(tree)
-			|| dynsec_clients__config_load(tree)
-			|| dynsec_groups__config_load(tree)
+	if(dynsec__general_config_load(data, tree)
+			|| dynsec_roles__config_load(data, tree)
+			|| dynsec_clients__config_load(data, tree)
+			|| dynsec_groups__config_load(data, tree)
 			){
 
 		cJSON_Delete(tree);
@@ -166,7 +166,7 @@ int dynsec__config_load(void)
 }
 
 
-void dynsec__config_save(void)
+void dynsec__config_save(struct dynsec__data *data)
 {
 	cJSON *tree;
 	size_t file_path_len;
@@ -178,10 +178,10 @@ void dynsec__config_save(void)
 	tree = cJSON_CreateObject();
 	if(tree == NULL) return;
 
-	if(dynsec__general_config_save(tree)
-			|| dynsec_clients__config_save(tree)
-			|| dynsec_groups__config_save(tree)
-			|| dynsec_roles__config_save(tree)){
+	if(dynsec__general_config_save(data, tree)
+			|| dynsec_clients__config_save(data, tree)
+			|| dynsec_groups__config_save(data, tree)
+			|| dynsec_roles__config_save(data, tree)){
 
 		cJSON_Delete(tree);
 		return;
@@ -198,14 +198,14 @@ void dynsec__config_save(void)
 	json_str_len = strlen(json_str);
 
 	/* Save to file */
-	file_path_len = strlen(g_config_file) + 1;
+	file_path_len = strlen(data->config_file) + 1;
 	file_path = mosquitto_malloc(file_path_len);
 	if(file_path == NULL){
 		mosquitto_free(json_str);
 		mosquitto_log_printf(MOSQ_LOG_ERR, "Error saving Dynamic security plugin config: Out of memory.\n");
 		return;
 	}
-	snprintf(file_path, file_path_len, "%s.new", g_config_file);
+	snprintf(file_path, file_path_len, "%s.new", data->config_file);
 
 	fptr = fopen(file_path, "wt");
 	if(fptr == NULL){
@@ -219,7 +219,7 @@ void dynsec__config_save(void)
 	fclose(fptr);
 
 	/* Everything is ok, so move new file over proper file */
-	if(rename(file_path, g_config_file) < 0){
+	if(rename(file_path, data->config_file) < 0){
 		mosquitto_log_printf(MOSQ_LOG_ERR, "Error updating dynsec config file: %s", strerror(errno));
 	}
 	mosquitto_free(file_path);

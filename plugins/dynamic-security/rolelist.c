@@ -162,7 +162,7 @@ int dynsec_rolelist__group_add(struct dynsec__group *group, struct dynsec__role 
 }
 
 
-int dynsec_rolelist__load_from_json(cJSON *command, struct dynsec__rolelist **rolelist)
+int dynsec_rolelist__load_from_json(struct dynsec__data *data, cJSON *command, struct dynsec__rolelist **rolelist)
 {
 	cJSON *j_roles, *j_role, *j_rolename;
 	int priority;
@@ -175,7 +175,7 @@ int dynsec_rolelist__load_from_json(cJSON *command, struct dynsec__rolelist **ro
 				j_rolename = cJSON_GetObjectItem(j_role, "rolename");
 				if(j_rolename && cJSON_IsString(j_rolename)){
 					json_get_int(j_role, "priority", &priority, true, -1);
-					role = dynsec_roles__find(j_rolename->valuestring);
+					role = dynsec_roles__find(data, j_rolename->valuestring);
 					if(role){
 						dynsec_rolelist__add(rolelist, role, priority);
 					}else{

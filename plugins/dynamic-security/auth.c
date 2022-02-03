@@ -53,6 +53,7 @@ static int memcmp_const(const void *a, const void *b, size_t len)
 int dynsec_auth__basic_auth_callback(int event, void *event_data, void *userdata)
 {
 	struct mosquitto_evt_basic_auth *ed = event_data;
+	struct dynsec__data *data = userdata;
 	struct dynsec__client *client;
 	unsigned char password_hash[64]; /* For SHA512 */
 	const char *clientid;
@@ -62,7 +63,7 @@ int dynsec_auth__basic_auth_callback(int event, void *event_data, void *userdata
 
 	if(ed->username == NULL || ed->password == NULL) return MOSQ_ERR_PLUGIN_DEFER;
 
-	client = dynsec_clients__find(ed->username);
+	client = dynsec_clients__find(data, ed->username);
 	if(client){
 		if(client->disabled){
 			return MOSQ_ERR_AUTH;

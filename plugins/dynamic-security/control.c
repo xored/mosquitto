@@ -77,6 +77,7 @@ static void send_response(cJSON *tree)
 int dynsec_control_callback(int event, void *event_data, void *userdata)
 {
 	struct mosquitto_evt_control *ed = event_data;
+	struct dynsec__data *data = userdata;
 	cJSON *tree, *commands;
 	cJSON *j_response_tree, *j_responses;
 
@@ -119,7 +120,7 @@ int dynsec_control_callback(int event, void *event_data, void *userdata)
 	}
 
 	/* Handle commands */
-	dynsec__handle_control(j_responses, ed->client, commands);
+	dynsec__handle_control(data, j_responses, ed->client, commands);
 	cJSON_Delete(tree);
 
 	send_response(j_response_tree);
@@ -134,7 +135,7 @@ int dynsec_control_callback(int event, void *event_data, void *userdata)
  * #
  * ################################################################ */
 
-int dynsec__handle_control(cJSON *j_responses, struct mosquitto *context, cJSON *commands)
+int dynsec__handle_control(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *commands)
 {
 	int rc = MOSQ_ERR_SUCCESS;
 	cJSON *aiter;
@@ -151,73 +152,73 @@ int dynsec__handle_control(cJSON *j_responses, struct mosquitto *context, cJSON 
 
 				/* Plugin */
 				if(!strcasecmp(command, "setDefaultACLAccess")){
-					rc = dynsec__process_set_default_acl_access(j_responses, context, aiter, correlation_data);
+					rc = dynsec__process_set_default_acl_access(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "getDefaultACLAccess")){
-					rc = dynsec__process_get_default_acl_access(j_responses, context, aiter, correlation_data);
+					rc = dynsec__process_get_default_acl_access(data, j_responses, context, aiter, correlation_data);
 
 				/* Clients */
 				}else if(!strcasecmp(command, "createClient")){
-					rc = dynsec_clients__process_create(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_create(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "deleteClient")){
-					rc = dynsec_clients__process_delete(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_delete(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "getClient")){
-					rc = dynsec_clients__process_get(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_get(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "listClients")){
-					rc = dynsec_clients__process_list(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_list(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "modifyClient")){
-					rc = dynsec_clients__process_modify(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_modify(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "setClientPassword")){
-					rc = dynsec_clients__process_set_password(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_set_password(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "setClientId")){
-					rc = dynsec_clients__process_set_id(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_set_id(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "addClientRole")){
-					rc = dynsec_clients__process_add_role(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_add_role(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "removeClientRole")){
-					rc = dynsec_clients__process_remove_role(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_remove_role(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "enableClient")){
-					rc = dynsec_clients__process_enable(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_enable(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "disableClient")){
-					rc = dynsec_clients__process_disable(j_responses, context, aiter, correlation_data);
+					rc = dynsec_clients__process_disable(data, j_responses, context, aiter, correlation_data);
 
 				/* Groups */
 				}else if(!strcasecmp(command, "addGroupClient")){
-					rc = dynsec_groups__process_add_client(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_add_client(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "createGroup")){
-					rc = dynsec_groups__process_create(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_create(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "deleteGroup")){
-					rc = dynsec_groups__process_delete(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_delete(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "getGroup")){
-					rc = dynsec_groups__process_get(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_get(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "listGroups")){
-					rc = dynsec_groups__process_list(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_list(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "modifyGroup")){
-					rc = dynsec_groups__process_modify(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_modify(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "removeGroupClient")){
-					rc = dynsec_groups__process_remove_client(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_remove_client(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "addGroupRole")){
-					rc = dynsec_groups__process_add_role(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_add_role(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "removeGroupRole")){
-					rc = dynsec_groups__process_remove_role(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_remove_role(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "setAnonymousGroup")){
-					rc = dynsec_groups__process_set_anonymous_group(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_set_anonymous_group(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "getAnonymousGroup")){
-					rc = dynsec_groups__process_get_anonymous_group(j_responses, context, aiter, correlation_data);
+					rc = dynsec_groups__process_get_anonymous_group(data, j_responses, context, aiter, correlation_data);
 
 				/* Roles */
 				}else if(!strcasecmp(command, "createRole")){
-					rc = dynsec_roles__process_create(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_create(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "getRole")){
-					rc = dynsec_roles__process_get(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_get(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "listRoles")){
-					rc = dynsec_roles__process_list(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_list(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "modifyRole")){
-					rc = dynsec_roles__process_modify(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_modify(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "deleteRole")){
-					rc = dynsec_roles__process_delete(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_delete(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "addRoleACL")){
-					rc = dynsec_roles__process_add_acl(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_add_acl(data, j_responses, context, aiter, correlation_data);
 				}else if(!strcasecmp(command, "removeRoleACL")){
-					rc = dynsec_roles__process_remove_acl(j_responses, context, aiter, correlation_data);
+					rc = dynsec_roles__process_remove_acl(data, j_responses, context, aiter, correlation_data);
 
 				/* Unknown */
 				}else{

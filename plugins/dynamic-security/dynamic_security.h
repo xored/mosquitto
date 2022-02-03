@@ -131,15 +131,13 @@ struct dynsec__acl_default_access{
 };
 
 struct dynsec__data{
+	char *config_file;
 	struct dynsec__client *clients;
 	struct dynsec__group *groups;
 	struct dynsec__role *roles;
 	struct dynsec__group *anonymous_group;
 	struct dynsec__acl_default_access default_access;
 };
-
-extern struct dynsec__data g_dynsec_data;
-extern char *g_config_file;
 
 /* ################################################################
  * #
@@ -148,9 +146,9 @@ extern char *g_config_file;
  * ################################################################ */
 
 int dynsec__config_init(const char *filename);
-void dynsec__config_save(void);
-int dynsec__config_load(void);
-int dynsec__handle_control(cJSON *j_responses, struct mosquitto *context, cJSON *commands);
+void dynsec__config_save(struct dynsec__data *data);
+int dynsec__config_load(struct dynsec__data *data);
+int dynsec__handle_control(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *commands);
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data);
 int dynsec_control_callback(int event, void *event_data, void *userdata);
 
@@ -162,8 +160,8 @@ int dynsec_control_callback(int event, void *event_data, void *userdata);
  * ################################################################ */
 
 int dynsec__acl_check_callback(int event, void *event_data, void *userdata);
-int dynsec__process_set_default_acl_access(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec__process_get_default_acl_access(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec__process_set_default_acl_access(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec__process_get_default_acl_access(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
 
 
 /* ################################################################
@@ -182,21 +180,21 @@ int dynsec_auth__basic_auth_callback(int event, void *event_data, void *userdata
  * #
  * ################################################################ */
 
-void dynsec_clients__cleanup(void);
-int dynsec_clients__config_load(cJSON *tree);
-int dynsec_clients__config_save(cJSON *tree);
-int dynsec_clients__process_add_role(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_create(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_delete(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_disable(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_enable(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_get(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_list(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_modify(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_remove_role(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_set_id(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_clients__process_set_password(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-struct dynsec__client *dynsec_clients__find(const char *username);
+void dynsec_clients__cleanup(struct dynsec__data *data);
+int dynsec_clients__config_load(struct dynsec__data *data, cJSON *tree);
+int dynsec_clients__config_save(struct dynsec__data *data, cJSON *tree);
+int dynsec_clients__process_add_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_disable(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_enable(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_remove_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_set_id(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_clients__process_set_password(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+struct dynsec__client *dynsec_clients__find(struct dynsec__data *data, const char *username);
 
 
 /* ################################################################
@@ -218,23 +216,23 @@ void dynsec_clientlist__kick_all(struct dynsec__clientlist *base_clientlist);
  * #
  * ################################################################ */
 
-void dynsec_groups__cleanup(void);
-int dynsec_groups__config_load(cJSON *tree);
-int dynsec_groups__add_client(const char *username, const char *groupname, int priority, bool update_config);
-int dynsec_groups__config_save(cJSON *tree);
-int dynsec_groups__process_add_client(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_add_role(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_create(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_delete(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_get(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_list(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_modify(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_remove_client(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_remove_role(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_get_anonymous_group(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__process_set_anonymous_group(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_groups__remove_client(const char *username, const char *groupname, bool update_config);
-struct dynsec__group *dynsec_groups__find(const char *groupname);
+void dynsec_groups__cleanup(struct dynsec__data *data);
+int dynsec_groups__config_load(struct dynsec__data *data, cJSON *tree);
+int dynsec_groups__add_client(struct dynsec__data *data, const char *username, const char *groupname, int priority, bool update_config);
+int dynsec_groups__config_save(struct dynsec__data *data, cJSON *tree);
+int dynsec_groups__process_add_client(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_add_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_remove_client(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_remove_role(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_get_anonymous_group(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_groups__remove_client(struct dynsec__data *data, const char *username, const char *groupname, bool update_config);
+struct dynsec__group *dynsec_groups__find(struct dynsec__data *data, const char *groupname);
 
 
 /* ################################################################
@@ -255,17 +253,17 @@ void dynsec_grouplist__remove(struct dynsec__grouplist **base_grouplist, struct 
  * #
  * ################################################################ */
 
-void dynsec_roles__cleanup(void);
-int dynsec_roles__config_load(cJSON *tree);
-int dynsec_roles__config_save(cJSON *tree);
-int dynsec_roles__process_add_acl(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_create(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_delete(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_get(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_list(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_modify(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-int dynsec_roles__process_remove_acl(cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
-struct dynsec__role *dynsec_roles__find(const char *rolename);
+void dynsec_roles__cleanup(struct dynsec__data *data);
+int dynsec_roles__config_load(struct dynsec__data *data, cJSON *tree);
+int dynsec_roles__config_save(struct dynsec__data *data, cJSON *tree);
+int dynsec_roles__process_add_acl(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_create(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_delete(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_get(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_list(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_modify(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+int dynsec_roles__process_remove_acl(struct dynsec__data *data, cJSON *j_responses, struct mosquitto *context, cJSON *command, char *correlation_data);
+struct dynsec__role *dynsec_roles__find(struct dynsec__data *data, const char *rolename);
 
 
 /* ################################################################
@@ -278,7 +276,7 @@ int dynsec_rolelist__client_add(struct dynsec__client *client, struct dynsec__ro
 int dynsec_rolelist__client_remove(struct dynsec__client *client, struct dynsec__role *role);
 int dynsec_rolelist__group_add(struct dynsec__group *group, struct dynsec__role *role, int priority);
 void dynsec_rolelist__group_remove(struct dynsec__group *group, struct dynsec__role *role);
-int dynsec_rolelist__load_from_json(cJSON *command, struct dynsec__rolelist **rolelist);
+int dynsec_rolelist__load_from_json(struct dynsec__data *data, cJSON *command, struct dynsec__rolelist **rolelist);
 void dynsec_rolelist__cleanup(struct dynsec__rolelist **base_rolelist);
 cJSON *dynsec_rolelist__all_to_json(struct dynsec__rolelist *base_rolelist);
 
