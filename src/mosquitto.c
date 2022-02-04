@@ -259,10 +259,10 @@ int main(int argc, char *argv[])
 
 	net__broker_init();
 
+	db.config = &config;
 	config__init(&config);
 	rc = config__parse_args(&config, argc, argv);
 	if(rc != MOSQ_ERR_SUCCESS) return rc;
-	db.config = &config;
 
 	rc = keepalive__init();
 	if(rc != MOSQ_ERR_SUCCESS) return rc;

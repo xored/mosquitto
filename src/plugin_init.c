@@ -132,10 +132,8 @@ int mosquitto_security_module_init(void)
 			rc = security__module_init_single(&db.config->listeners[i], &db.config->listeners[i].security_options);
 			if(rc) return rc;
 		}
-	}else{
-		rc = security__module_init_single(NULL, &db.config->security_options);
 	}
-	return rc;
+	return security__module_init_single(NULL, &db.config->security_options);
 }
 
 
@@ -205,5 +203,6 @@ int mosquitto_security_init(bool reload)
 			if(rc != MOSQ_ERR_SUCCESS) return rc;
 		}
 	}
-	return mosquitto_security_init_default(reload);
+	rc = mosquitto_security_init_default(reload);
+	return rc;
 }
