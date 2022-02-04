@@ -82,9 +82,24 @@ if(WITH_SRV)
 	endif()
 endif()
 
+if(WITH_WEBSOCKETS AND WITH_WEBSOCKETS_BUILTIN)
+	add_definitions("-DWITH_WEBSOCKETS=WS_IS_BUILTIN")
+	set(C_SRC ${C_SRC}
+		../deps/picohttpparser/picohttpparser.c
+		base64_mosq.c base64_mosq.h
+		http_client.c http_client.h
+		net_ws.c
+		)
+endif()
+
 add_library(libmosquitto SHARED
 	${C_SRC}
 )
+
+if(WITH_WEBSOCKETS AND WITH_WEBSOCKETS_BUILTIN)
+	target_include_directories(libmosquitto PRIVATE
+		"${mosquitto_SOURCE_DIR}/deps/picohttpparser")
+endif()
 
 target_include_directories(libmosquitto PRIVATE
 	"${OPENSSL_INCLUDE_DIR}"

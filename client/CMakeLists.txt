@@ -21,6 +21,10 @@ if(CJSON_FOUND)
 	set(CLIENT_INC "${CLIENT_INC};${CJSON_INCLUDE_DIRS}")
 endif()
 
+if(WITH_WEBSOCKETS AND WITH_WEBSOCKETS_BUILTIN)
+	add_definitions("-DWITH_WEBSOCKETS=WS_IS_BUILTIN")
+endif()
+
 add_executable(mosquitto_pub pub_client.c pub_shared.c ${shared_src})
 add_executable(mosquitto_sub sub_client.c sub_client_output.c ${shared_src})
 add_executable(mosquitto_rr rr_client.c pub_shared.c sub_client_output.c ${shared_src})
