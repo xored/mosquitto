@@ -30,6 +30,7 @@ if(WITH_TLS AND CJSON_FOUND)
 		"${mosquitto_SOURCE_DIR}/include"
 		"${mosquitto_SOURCE_DIR}/lib"
 		"${mosquitto_SOURCE_DIR}/plugins/dynamic-security"
+		"${mosquitto_SOURCE_DIR}/plugins/shared"
 		"${mosquitto_SOURCE_DIR}/src"
 	)
 	if(WITH_BUNDLED_DEPS)

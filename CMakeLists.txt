@@ -48,6 +48,11 @@ else()
 	set (OPENSSL_INCLUDE_DIR "")
 endif()
 
+option(WITH_SQLITE "Include sqlite persistence support?" ON)
+if (WITH_SQLITE)
+	find_package(sqlite3 REQUIRED)
+	add_definitions("-DWITH_SQLITE")
+endif()
 
 option(WITH_UNIX_SOCKETS "Include Unix Domain Socket support?" ON)
 if(WITH_UNIX_SOCKETS AND NOT WIN32)

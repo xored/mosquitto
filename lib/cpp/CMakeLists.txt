@@ -40,6 +40,14 @@ if(WITH_STATIC_LIBRARIES)
 		)
 	endif()
 
+	target_include_directories(mosquittopp_static PRIVATE
+		"${STDBOOL_H_PATH}"
+		"${STDINT_H_PATH}"
+		"${mosquitto_SOURCE_DIR}/include"
+		"${mosquitto_SOURCE_DIR}/lib"
+		"${mosquitto_SOURCE_DIR}/lib/cpp"
+	)
+
 	target_link_libraries(mosquittopp_static ${LIBRARIES})
 
 	set_target_properties(mosquittopp_static PROPERTIES

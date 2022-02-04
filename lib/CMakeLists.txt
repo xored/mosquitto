@@ -130,6 +130,16 @@ if(WITH_STATIC_LIBRARIES)
 
 	target_link_libraries(libmosquitto_static ${LIBRARIES})
 
+	target_include_directories(libmosquitto_static PRIVATE
+		"${OPENSSL_INCLUDE_DIR}"
+		"${PTHREAD_INCLUDE_DIR}"
+		"${STDBOOL_H_PATH}"
+		"${STDINT_H_PATH}"
+		"${mosquitto_SOURCE_DIR}"
+		"${mosquitto_SOURCE_DIR}/include"
+		"${mosquitto_SOURCE_DIR}/lib"
+	)
+
 	set_target_properties(libmosquitto_static PROPERTIES
 		OUTPUT_NAME mosquitto_static
 		VERSION ${VERSION}
