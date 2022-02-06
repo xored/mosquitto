@@ -28,6 +28,7 @@ int persist_sqlite__client_add_cb(int event, void *event_data, void *userdata)
 	struct mosquitto_evt_persist_client *ed = event_data;
 	struct mosquitto_sqlite *ms = userdata;
 	int rc = MOSQ_ERR_UNKNOWN;
+	time_t now;
 
 	UNUSED(event);
 
@@ -42,14 +43,16 @@ int persist_sqlite__client_add_cb(int event, void *event_data, void *userdata)
 			sqlite3_bind_null(ms->client_add_stmt, 2);
 		}
 
-		if(sqlite3_bind_int64(ms->client_add_stmt, 3, ed->will_delay_time) == SQLITE_OK
-				&& sqlite3_bind_int64(ms->client_add_stmt, 4, ed->session_expiry_time) == SQLITE_OK
-				&& sqlite3_bind_int(ms->client_add_stmt, 5, ed->listener_port) == SQLITE_OK
-				&& sqlite3_bind_int(ms->client_add_stmt, 6, (int)ed->max_packet_size) == SQLITE_OK
-				&& sqlite3_bind_int(ms->client_add_stmt, 7, ed->max_qos) == SQLITE_OK
-				&& sqlite3_bind_int(ms->client_add_stmt, 8, ed->retain_available) == SQLITE_OK
-				&& sqlite3_bind_int(ms->client_add_stmt, 9, (int)ed->session_expiry_interval) == SQLITE_OK
-				&& sqlite3_bind_int(ms->client_add_stmt, 10, (int)ed->will_delay_interval) == SQLITE_OK
+		now = time(NULL);
+		if(sqlite3_bind_int64(ms->client_add_stmt, 3, now) == SQLITE_OK
+				&& sqlite3_bind_int64(ms->client_add_stmt, 4, ed->will_delay_time) == SQLITE_OK
+				&& sqlite3_bind_int64(ms->client_add_stmt, 5, ed->session_expiry_time) == SQLITE_OK
+				&& sqlite3_bind_int(ms->client_add_stmt, 6, ed->listener_port) == SQLITE_OK
+				&& sqlite3_bind_int(ms->client_add_stmt, 7, (int)ed->max_packet_size) == SQLITE_OK
+				&& sqlite3_bind_int(ms->client_add_stmt, 8, ed->max_qos) == SQLITE_OK
+				&& sqlite3_bind_int(ms->client_add_stmt, 9, ed->retain_available) == SQLITE_OK
+				&& sqlite3_bind_int(ms->client_add_stmt, 10, (int)ed->session_expiry_interval) == SQLITE_OK
+				&& sqlite3_bind_int(ms->client_add_stmt, 11, (int)ed->will_delay_interval) == SQLITE_OK
 				){
 
 			rc = sqlite3_step(ms->client_add_stmt);

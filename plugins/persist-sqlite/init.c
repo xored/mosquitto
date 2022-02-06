@@ -62,6 +62,7 @@ static int create_tables(struct mosquitto_sqlite *ms)
 			"("
 				"client_id TEXT PRIMARY KEY,"
 				"username TEXT,"
+				"connection_time INT64,"
 				"will_delay_time INT64,"
 				"session_expiry_time INT64,"
 				"listener_port INT,"
@@ -153,10 +154,10 @@ static int prepare_statements(struct mosquitto_sqlite *ms)
 	/* Clients */
 	rc = sqlite3_prepare_v3(ms->db,
 			"INSERT OR REPLACE INTO clients "
-				"(client_id, username, will_delay_time, session_expiry_time, "
+				"(client_id, username, connection_time, will_delay_time, session_expiry_time, "
 				"listener_port, max_packet_size, max_qos, retain_available, "
 				"session_expiry_interval, will_delay_interval) "
-				"VALUES(?,?,?,?,?,?,?,?,?,?)",
+				"VALUES(?,?,?,?,?,?,?,?,?,?,?)",
 			-1, SQLITE_PREPARE_PERSISTENT,
 			&ms->client_add_stmt, NULL);
 	if(rc) goto fail;
