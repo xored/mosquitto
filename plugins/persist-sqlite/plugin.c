@@ -54,6 +54,8 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	UNUSED(user_data);
 
 	memset(&plg_data, 0,sizeof(struct mosquitto_sqlite));
+	/* Default to "normal" synchronous mode. */
+	plg_data.synchronous = 1;
 
 	for(i=0; i<option_count; i++){
 		if(!strcasecmp(options[i].key, "db_file")){
