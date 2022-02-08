@@ -130,6 +130,7 @@ static int disconnect_callback(int event, void *event_data, void *userdata)
 	HASH_FIND(hh, clients, id, idlen, client);
 	if(client){
 		HASH_DELETE(hh, clients, client);
+		DL_DELETE(active_subs, client);
 		mosquitto_free(client);
 	}
 
