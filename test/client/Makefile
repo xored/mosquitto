@@ -1,4 +1,5 @@
 .PHONY: all check test ptest clean
+.NOTPARALLEL:
 
 all :
 
