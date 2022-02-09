@@ -169,17 +169,17 @@ endif
 
 STATIC_LIB_DEPS:=
 
-APP_CPPFLAGS=$(CPPFLAGS) -I. -I../../ -I../../include -I../../src -I../../lib
+APP_CPPFLAGS=$(CPPFLAGS) -I. -I${R}/ -I${R}/include -I${R}/common -I${R}/lib
 APP_CFLAGS=$(CFLAGS) -DVERSION=\""${VERSION}\""
 APP_LDFLAGS:=$(LDFLAGS)
 
-LIB_CPPFLAGS=$(CPPFLAGS) -I. -I.. -I../include -I../../include
+LIB_CPPFLAGS=$(CPPFLAGS) -I${R}/ -I. -I${R}/common -I${R}/include -I${R}/lib
 LIB_CFLAGS:=$(CFLAGS)
 LIB_CXXFLAGS:=$(CXXFLAGS)
 LIB_LDFLAGS:=$(LDFLAGS)
 LIB_LIBADD:=$(LIBADD)
 
-BROKER_CPPFLAGS:=$(LIB_CPPFLAGS) -I../lib
+BROKER_CPPFLAGS:=$(LIB_CPPFLAGS) -I../lib -I../common
 BROKER_CFLAGS:=${CFLAGS} -DVERSION="\"${VERSION}\"" -DWITH_BROKER
 BROKER_LDFLAGS:=${LDFLAGS}
 BROKER_LDADD:=
@@ -191,7 +191,7 @@ CLIENT_LDADD:=
 
 PASSWD_LDADD:=
 
-PLUGIN_CPPFLAGS:=$(CPPFLAGS) -I../.. -I../../include
+PLUGIN_CPPFLAGS:=$(CPPFLAGS) -I${R} -I${R}/include -I${R}/common -I${R}/plugins/common
 PLUGIN_CFLAGS:=$(CFLAGS) -fPIC
 PLUGIN_LDFLAGS:=$(LDFLAGS)
 

@@ -1,6 +1,6 @@
 set (MOSQ_SRCS
 	../lib/alias_mosq.c ../lib/alias_mosq.h
-	../lib/base64_mosq.c
+	../common/base64_mosq.c ../common/base64_mosq.h
 	bridge.c bridge_topic.c
 	broker_control.c
 	conf.c
@@ -22,9 +22,9 @@ set (MOSQ_SRCS
 	../lib/handle_unsuback.c
 	handle_unsubscribe.c
 	http_serv.c
-	json_help.c json_help.h
+	../common/json_help.c ../common/json_help.h
 	keepalive.c
-	lib_load.h
+	../common/lib_load.h
 	listeners.c
 	logging.c
 	loop.c
@@ -32,14 +32,14 @@ set (MOSQ_SRCS
 	memory_public.c
 	mosquitto.c
 	../include/mosquitto_broker.h mosquitto_broker_internal.h
-	../lib/misc_mosq.c ../lib/misc_mosq.h
+	../common/misc_mosq.c ../common/misc_mosq.h
 	mux.c mux.h mux_epoll.c mux_kqueue.c mux_poll.c
 	net.c
 	../lib/net_mosq_ocsp.c ../lib/net_mosq.c ../lib/net_mosq.h
 	../lib/net_ws.c
 	../lib/packet_datatypes.c
 	../lib/packet_mosq.c ../lib/packet_mosq.h
-	password_mosq.c password_mosq.h
+	../common/password_mosq.c ../common/password_mosq.h
 	persist_read_v234.c persist_read_v5.c persist_read.c
 	persist_write_v5.c persist_write.c
 	persist.h
@@ -69,7 +69,7 @@ set (MOSQ_SRCS
 	../lib/strings_mosq.c
 	subs.c
 	sys_tree.c sys_tree.h
-	../lib/time_mosq.c
+	../common/time_mosq.c ../common/time_mosq.h
 	../lib/tls_mosq.c
 	topic_tok.c
 	../lib/util_mosq.c ../lib/util_topic.c ../lib/util_mosq.h
@@ -225,6 +225,7 @@ target_include_directories(mosquitto PRIVATE
 	"${STDBOOL_H_PATH}"
 	"${STDINT_H_PATH}"
 	"${mosquitto_SOURCE_DIR}"
+	"${mosquitto_SOURCE_DIR}/common"
 	"${mosquitto_SOURCE_DIR}/include"
 	"${mosquitto_SOURCE_DIR}/lib"
 	"${mosquitto_SOURCE_DIR}/src"

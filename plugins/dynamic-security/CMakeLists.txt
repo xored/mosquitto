@@ -8,10 +8,11 @@ if(CJSON_FOUND AND WITH_TLS)
 		"${STDBOOL_H_PATH}"
 		"${STDINT_H_PATH}"
 		"${mosquitto_SOURCE_DIR}"
+		"${mosquitto_SOURCE_DIR}/common"
 		"${mosquitto_SOURCE_DIR}/deps"
 		"${mosquitto_SOURCE_DIR}/include"
 		"${mosquitto_SOURCE_DIR}/lib"
-		"${mosquitto_SOURCE_DIR}/plugins/shared"
+		"${mosquitto_SOURCE_DIR}/plugins/common"
 		"${mosquitto_SOURCE_DIR}/src"
 	)
 
@@ -20,7 +21,7 @@ if(CJSON_FOUND AND WITH_TLS)
 	add_library(mosquitto_dynamic_security MODULE
 		acl.c
 		auth.c
-		../../lib/base64_mosq.c ../../lib/base64_mosq.h
+		../../common/base64_mosq.c ../../common/base64_mosq.h
 		clients.c
 		clientlist.c
 		config.c
@@ -31,11 +32,11 @@ if(CJSON_FOUND AND WITH_TLS)
 		groups.c
 		grouplist.c
 		hash.c
-		../shared/json_help.c ../shared/json_help.h
-		../../lib/misc_mosq.c ../../lib/misc_mosq.h
-		../../src/password_mosq.c ../../src/password_mosq.h
+		../../common/json_help.c ../../common/json_help.h
+		../../common/misc_mosq.c ../../common/misc_mosq.h
+		../../common/password_mosq.c ../../common/password_mosq.h
 		plugin.c
-		../shared/plugin_shared.c ../shared/plugin_shared.h
+		../common/plugin_common.c ../common/plugin_common.h
 		roles.c
 		rolelist.c
 	)

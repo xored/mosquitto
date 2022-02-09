@@ -5,7 +5,7 @@ if(WITH_TLS AND CJSON_FOUND)
 
 	add_executable(mosquitto_ctrl
 		mosquitto_ctrl.c mosquitto_ctrl.h
-		../../lib/base64_mosq.c ../../lib/base64_mosq.h
+		../../common/base64_mosq.c ../../common/base64_mosq.h
 		broker.c
 		client.c
 		dynsec.c
@@ -17,7 +17,7 @@ if(WITH_TLS AND CJSON_FOUND)
 		../../lib/memory_mosq.c ../../lib/memory_mosq.h
 		../../src/memory_public.c
 		options.c
-		../../src/password_mosq.c ../../src/password_mosq.h
+		../../common/password_mosq.c ../../common/password_mosq.h
 	)
 
 	target_include_directories(mosquitto_ctrl PRIVATE
@@ -27,10 +27,11 @@ if(WITH_TLS AND CJSON_FOUND)
 		"${STDINT_H_PATH}"
 		"${mosquitto_SOURCE_DIR}"
 		"${mosquitto_SOURCE_DIR}/apps/mosquitto_passwd"
+		"${mosquitto_SOURCE_DIR}/common"
 		"${mosquitto_SOURCE_DIR}/include"
 		"${mosquitto_SOURCE_DIR}/lib"
+		"${mosquitto_SOURCE_DIR}/plugins/common"
 		"${mosquitto_SOURCE_DIR}/plugins/dynamic-security"
-		"${mosquitto_SOURCE_DIR}/plugins/shared"
 		"${mosquitto_SOURCE_DIR}/src"
 	)
 	if(WITH_BUNDLED_DEPS)

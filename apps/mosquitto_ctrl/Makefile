@@ -13,7 +13,7 @@ LIBMOSQ:=${R}/lib/libmosquitto.a
 endif
 endif
 
-LOCAL_CPPFLAGS:=-I${R}/apps/mosquitto_passwd -I${R}/plugins/dynamic-security -DWITH_CJSON -I${R}/plugins/shared
+LOCAL_CPPFLAGS:=-I${R}/apps/mosquitto_passwd -I${R}/plugins/dynamic-security -DWITH_CJSON -I${R}/plugins/common -I${R}/common
 ifeq ($(WITH_BUNDLED_DEPS),yes)
 LOCAL_CPPFLAGS+=-I${R}/deps
 endif
@@ -57,7 +57,7 @@ mosquitto_ctrl_example.so : ${EXAMPLE_OBJS}
 mosquitto_ctrl.o : mosquitto_ctrl.c mosquitto_ctrl.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-base64_mosq.o : ${R}/lib/base64_mosq.c ${R}/lib/base64_mosq.h
+base64_mosq.o : ${R}/common/base64_mosq.c ${R}/common/base64_mosq.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
 broker.o : broker.c mosquitto_ctrl.h
@@ -99,7 +99,7 @@ options.o : options.c mosquitto_ctrl.h
 misc_mosq.o : ${R}/lib/misc_mosq.c ${R}/lib/misc_mosq.h
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-password_mosq.o : ${R}/src/password_mosq.c ${R}/src/password_mosq.h
+password_mosq.o : ${R}/common/password_mosq.c ${R}/common/password_mosq.h
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
 ${R}/lib/libmosquitto.so.${SOVERSION} :

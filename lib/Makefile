@@ -128,7 +128,7 @@ alias_mosq.o : alias_mosq.c alias_mosq.h ${R}/include/mosquitto.h mosquitto_inte
 callbacks.o : callbacks.c ${R}/include/mosquitto.h mosquitto_internal.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
-base64_mosq.o : base64_mosq.c base64_mosq.h
+base64_mosq.o : ${R}/common/base64_mosq.c ${R}/common/base64_mosq.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
 connect.o : connect.c ${R}/include/mosquitto.h mosquitto_internal.h
@@ -182,7 +182,7 @@ messages_mosq.o : messages_mosq.c messages_mosq.h
 memory_mosq.o : memory_mosq.c memory_mosq.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
-misc_mosq.o : misc_mosq.c misc_mosq.h
+misc_mosq.o : ${R}/common/misc_mosq.c ${R}/common/misc_mosq.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
 net_mosq_ocsp.o : net_mosq_ocsp.c net_mosq.h
@@ -191,7 +191,7 @@ net_mosq_ocsp.o : net_mosq_ocsp.c net_mosq.h
 net_mosq.o : net_mosq.c net_mosq.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
-password_mosq.o : ${R}/src/password_mosq.c net_mosq.h
+password_mosq.o : ${R}/common/password_mosq.c net_mosq.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
 picohttpparser.o : ${R}/deps/picohttpparser/picohttpparser.c ${R}/deps/picohttpparser/picohttpparser.h
@@ -245,7 +245,7 @@ strings_mosq.o : strings_mosq.c
 thread_mosq.o : thread_mosq.c
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
-time_mosq.o : time_mosq.c
+time_mosq.o : ${R}/common/time_mosq.c ${R}/common/time_mosq.h
 	${CROSS_COMPILE}$(CC) $(LIB_CPPFLAGS) $(LIB_CFLAGS) -c $< -o $@
 
 tls_mosq.o : tls_mosq.c

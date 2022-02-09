@@ -26,7 +26,7 @@ set(C_SRC
 	loop.c
 	memory_mosq.c memory_mosq.h
 	messages_mosq.c messages_mosq.h
-	misc_mosq.c misc_mosq.h
+	../common/misc_mosq.c ../common/misc_mosq.h
 	mosquitto.c ../include/mosquitto.h
 	mosquitto_internal.h
 	../include/mqtt_protocol.h
@@ -48,14 +48,14 @@ set(C_SRC
 	srv_mosq.c
 	strings_mosq.c
 	thread_mosq.c
-	time_mosq.c
+	../common/time_mosq.c ../common/time_mosq.h
 	tls_mosq.c
 	utf8_mosq.c
 	util_mosq.c util_topic.c util_mosq.h
 	will_mosq.c will_mosq.h)
 
 if (WIN32)
-	list(APPEND C_SRC "winthread_mosq.c" "winthread_mosq.h")
+	list(APPEND C_SRC "../common/winthread_mosq.c" "../common/winthread_mosq.h")
 endif()
 
 set (LIBRARIES ${OPENSSL_LIBRARIES} ${PTHREAD_LIBRARIES})
@@ -86,7 +86,7 @@ if(WITH_WEBSOCKETS AND WITH_WEBSOCKETS_BUILTIN)
 	add_definitions("-DWITH_WEBSOCKETS=WS_IS_BUILTIN")
 	set(C_SRC ${C_SRC}
 		../deps/picohttpparser/picohttpparser.c
-		base64_mosq.c base64_mosq.h
+		../common/base64_mosq.c ../common/base64_mosq.h
 		http_client.c http_client.h
 		net_ws.c
 		)
@@ -107,6 +107,7 @@ target_include_directories(libmosquitto PRIVATE
 	"${STDBOOL_H_PATH}"
 	"${STDINT_H_PATH}"
 	"${mosquitto_SOURCE_DIR}"
+	"${mosquitto_SOURCE_DIR}/common"
 	"${mosquitto_SOURCE_DIR}/include"
 	"${mosquitto_SOURCE_DIR}/lib"
 )

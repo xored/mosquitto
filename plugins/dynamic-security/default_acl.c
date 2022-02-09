@@ -30,7 +30,7 @@ Contributors:
 #include "mosquitto_broker.h"
 #include "mosquitto_plugin.h"
 #include "mqtt_protocol.h"
-#include "plugin_shared.h"
+#include "plugin_common.h"
 
 #include "dynamic_security.h"
 

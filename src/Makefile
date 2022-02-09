@@ -116,7 +116,7 @@ mosquitto.o : mosquitto.c mosquitto_broker_internal.h
 alias_mosq.o : ${R}/lib/alias_mosq.c ${R}/lib/alias_mosq.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
-base64_mosq.o : ${R}/lib/base64_mosq.c ${R}/lib/base64_mosq.h
+base64_mosq.o : ${R}/common/base64_mosq.c ${R}/common/base64_mosq.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
 bridge.o : bridge.c mosquitto_broker_internal.h
@@ -185,7 +185,7 @@ handle_unsubscribe.o : handle_unsubscribe.c mosquitto_broker_internal.h
 http_serv.o : http_serv.c mosquitto_broker_internal.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
-json_help.o : json_help.c json_help.h
+json_help.o : ${R}/common/json_help.c ${R}/common/json_help.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
 keepalive.o : keepalive.c mosquitto_broker_internal.h
@@ -206,7 +206,7 @@ memory_mosq.o : ${R}/lib/memory_mosq.c ${R}/lib/memory_mosq.h
 memory_public.o : memory_public.c mosquitto_broker_internal.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
-misc_mosq.o : ${R}/lib/misc_mosq.c ${R}/lib/misc_mosq.h
+misc_mosq.o : ${R}/common/misc_mosq.c ${R}/common/misc_mosq.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
 mux.o : mux.c mosquitto_broker_internal.h
@@ -233,7 +233,7 @@ net_mosq.o : ${R}/lib/net_mosq.c ${R}/lib/net_mosq.h
 net_ws.o : ${R}/lib/net_ws.c ${R}/lib/net_mosq.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
-password_mosq.o : password_mosq.c password_mosq.h mosquitto_broker_internal.h
+password_mosq.o : ${R}/common/password_mosq.c ${R}/common/password_mosq.h mosquitto_broker_internal.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
 persist_read.o : persist_read.c persist.h mosquitto_broker_internal.h
@@ -374,7 +374,7 @@ subs.o : subs.c mosquitto_broker_internal.h
 sys_tree.o : sys_tree.c mosquitto_broker_internal.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
-time_mosq.o : ${R}/lib/time_mosq.c ${R}/lib/time_mosq.h
+time_mosq.o : ${R}/common/time_mosq.c ${R}/common/time_mosq.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
 tls_mosq.o : ${R}/lib/tls_mosq.c

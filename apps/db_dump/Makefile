@@ -1,7 +1,7 @@
 R=../..
 include ${R}/config.mk
 
-CFLAGS_FINAL=${CFLAGS} -I${R}/include -I${R}/ -I${R}/lib -I${R}/src -I${R}/deps -DWITH_BROKER -DWITH_PERSISTENCE
+CFLAGS_FINAL=${CFLAGS} -I${R}/include -I${R}/ -I${R}/lib -I${R}/src -I${R}/deps -I${R}/common -DWITH_BROKER -DWITH_PERSISTENCE
 
 OBJS = \
 	   db_dump.o \
@@ -70,7 +70,7 @@ stubs.o : stubs.c
 send_disconnect.o : ${R}/lib/send_disconnect.c
 	${CROSS_COMPILE}${CC} $(CFLAGS_FINAL) -c $< -o $@
 
-time_mosq.o : ${R}/lib/time_mosq.c
+time_mosq.o : ${R}/common/time_mosq.c ${R}/common/time_mosq.h
 	${CROSS_COMPILE}${CC} $(CFLAGS_FINAL) -c $< -o $@
 
 topic_tok.o : ${R}/src/topic_tok.c

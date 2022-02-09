@@ -1,5 +1,5 @@
 #include <cjson/cJSON.h>
-#include "plugin_shared.h"
+#include "plugin_common.h"
 
 void plugin__command_reply(struct plugin_cmd *cmd, const char *error)
 {

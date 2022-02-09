@@ -23,7 +23,7 @@ Contributors:
 #include "mosquitto.h"
 #include "password_mosq.h"
 #include "base64_mosq.h"
-#include "plugin_shared.h"
+#include "plugin_common.h"
 
 /* ################################################################
  * #

@@ -3,7 +3,7 @@ include ${R}/config.mk
 
 .PHONY: all check test test-broker test-lib clean coverage
 
-CPPFLAGS:=$(CPPFLAGS) -I${R} -I${R}/include -I${R}/lib -I${R}/src
+CPPFLAGS:=$(CPPFLAGS) -I${R} -I${R}/include -I${R}/lib -I${R}/src -I${R}/common
 ifeq ($(WITH_BUNDLED_DEPS),yes)
         CPPFLAGS:=$(CPPFLAGS) -I${R}/deps
 endif
@@ -138,8 +138,8 @@ memory_mosq.o : ${R}/lib/memory_mosq.c
 memory_public.o : ${R}/src/memory_public.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $^
 
-misc_mosq.o : ${R}/lib/misc_mosq.c
-	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $^
+misc_mosq.o : ${R}/common/misc_mosq.c ${R}/common/misc_mosq.h
+	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 packet_datatypes.o : ${R}/lib/packet_datatypes.c
 	$(CROSS_COMPILE)$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $^
