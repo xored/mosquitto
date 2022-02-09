@@ -2,7 +2,6 @@ if(SQLITE3_FOUND AND CJSON_FOUND)
 	add_definitions("-DWITH_CJSON")
 	set(CLIENT_INC
 		"${SQLITE3_INCLUDE_DIRS}"
-		"${PTHREAD_INCLUDE_DIR}"
 		"${STDBOOL_H_PATH}"
 		"${STDINT_H_PATH}"
 		"${mosquitto_SOURCE_DIR}"

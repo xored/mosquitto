@@ -18,7 +18,15 @@ target_include_directories(mosquittopp PRIVATE
 
 link_directories(${mosquitto_BINARY_DIR}/lib)
 
-target_link_libraries(mosquittopp libmosquitto)
+target_link_libraries(mosquittopp PRIVATE libmosquitto)
+
+if (WITH_THREADING AND NOT WIN32)
+	set(THREADS_PREFER_PTHREAD_FLAG ON)
+	find_package(Threads REQUIRED)
+
+	target_link_libraries(mosquittopp PRIVATE Threads::Threads)
+endif()
+
 set_target_properties(mosquittopp PROPERTIES
 	VERSION ${VERSION}
 	SOVERSION 1
@@ -48,7 +56,7 @@ if(WITH_STATIC_LIBRARIES)
 		"${mosquitto_SOURCE_DIR}/lib/cpp"
 	)
 
-	target_link_libraries(mosquittopp_static ${LIBRARIES})
+	target_link_libraries(mosquittopp_static PRIVATE ${LIBRARIES})
 
 	set_target_properties(mosquittopp_static PROPERTIES
 		OUTPUT_NAME mosquittopp_static
