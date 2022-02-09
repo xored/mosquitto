@@ -1,11 +1,12 @@
-include ../../config.mk
+R=../..
+include ${R}/config.mk
 
 .PHONY : all binary check clean reallyclean test install uninstall
 
 PLUGIN_NAME=mosquitto_dynamic_security
-LOCAL_CPPFLAGS=-I../../lib/ -I../../src/ -I../shared -DWITH_CJSON -DWITH_TLS
+LOCAL_CPPFLAGS=-I${R}/lib/ -I${R}/src/ -I${R}/plugins/shared -DWITH_CJSON -DWITH_TLS
 ifeq ($(WITH_BUNDLED_DEPS),yes)
-	LOCAL_CPPFLAGS:=$(LOCAL_CPPFLAGS) -I../deps
+	LOCAL_CPPFLAGS:=$(LOCAL_CPPFLAGS) -I${R}/deps
 endif
 
 OBJS=	\
@@ -51,7 +52,7 @@ acl.o : acl.c dynamic_security.h
 auth.o : auth.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-base64_mosq.o : ../../lib/base64_mosq.c ../../lib/base64_mosq.h
+base64_mosq.o : ${R}/lib/base64_mosq.c ${R}/lib/base64_mosq.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 clients.o : clients.c dynamic_security.h
@@ -81,19 +82,19 @@ grouplist.o : grouplist.c dynamic_security.h
 hash.o : hash.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-json_help.o : ../shared/json_help.c ../shared/json_help.h
+json_help.o : ${R}/plugins/shared/json_help.c ${R}/plugins/shared/json_help.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-misc_mosq.o : ../../lib/misc_mosq.c dynamic_security.h
+misc_mosq.o : ${R}/lib/misc_mosq.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-password_mosq.o : ../../src/password_mosq.c dynamic_security.h
+password_mosq.o : ${R}/src/password_mosq.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 plugin.o : plugin.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-plugin_shared.o : ../shared/plugin_shared.c dynamic_security.h
+plugin_shared.o : ${R}/plugins/shared/plugin_shared.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 roles.o : roles.c dynamic_security.h

@@ -1,4 +1,5 @@
-include ../../config.mk
+R=../..
+include ${R}/config.mk
 
 .PHONY: all check clean test ptest seqtest
 .NOTPARALLEL:

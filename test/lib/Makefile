@@ -1,9 +1,10 @@
-include ../../config.mk
+R=../..
+include ${R}/config.mk
 
 .PHONY: all check test test-compile test-compile-c test-compile-cpp c cpp
 .NOTPARALLEL:
 
-LD_LIBRARY_PATH=../../lib
+LD_LIBRARY_PATH=${R}/lib
 
 all :
 

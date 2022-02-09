@@ -1,7 +1,8 @@
+R=../../..
 .PHONY: all clean reallyclean
 
-CFLAGS=-I../../../include -Werror
-LIBS=../../../lib/libmosquitto.so.1
+CFLAGS=-I${R}/include -Werror
+LIBS=${R}/lib/libmosquitto.so.1
 
 SRC = \
 	01-con-discon-success.c \

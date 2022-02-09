@@ -1,9 +1,10 @@
-include ../../../config.mk
+R=../../..
+include ${R}/config.mk
 
 .PHONY : all binary check clean reallyclean test install uninstall
 
 PLUGIN_NAME=mosquitto_print_ip_on_publish
-PLUGIN_CFLAGS+=-I../../../include -I../../../
+PLUGIN_CFLAGS+=-I${R}/include -I${R}/
 
 all : binary
 

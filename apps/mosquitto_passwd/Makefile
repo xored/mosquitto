@@ -1,4 +1,5 @@
-include ../../config.mk
+R=../..
+include ${R}/config.mk
 
 .PHONY: all install uninstall clean reallyclean
 
@@ -25,19 +26,19 @@ mosquitto_passwd.o : mosquitto_passwd.c
 get_password.o : get_password.c
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-base64_mosq.o : ../../lib/base64_mosq.c ../../lib/base64_mosq.h
+base64_mosq.o : ${R}/lib/base64_mosq.c ${R}/lib/base64_mosq.h
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-memory_mosq.o : ../../lib/memory_mosq.c
+memory_mosq.o : ${R}/lib/memory_mosq.c
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-memory_public.o : ../../src/memory_public.c
+memory_public.o : ${R}/src/memory_public.c
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-misc_mosq.o : ../../lib/misc_mosq.c ../../lib/misc_mosq.h
+misc_mosq.o : ${R}/lib/misc_mosq.c ${R}/lib/misc_mosq.h
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
-password_mosq.o : ../../src/password_mosq.c ../../src/password_mosq.h
+password_mosq.o : ${R}/src/password_mosq.c ${R}/src/password_mosq.h
 	${CROSS_COMPILE}${CC} $(APP_CPPFLAGS) $(APP_CFLAGS) -c $< -o $@
 
 install : all

@@ -1,4 +1,5 @@
-include ../../config.mk
+R=../..
+include ${R}/config.mk
 
 ifneq ($(UNAME),SunOS)
 	LIB_LDFLAGS:=$(LDFLAGS) -Wl,-soname,libmosquittopp.so.${SOVERSION}
@@ -25,7 +26,7 @@ endif
 	$(INSTALL) -d "${DESTDIR}${incdir}/"
 	$(INSTALL) mosquittopp.h "${DESTDIR}${incdir}/mosquittopp.h"
 	$(INSTALL) -d "${DESTDIR}${libdir}/pkgconfig/"
-	$(INSTALL) -m644 ../../libmosquittopp.pc.in "${DESTDIR}${libdir}/pkgconfig/libmosquittopp.pc"
+	$(INSTALL) -m644 ${R}/libmosquittopp.pc.in "${DESTDIR}${libdir}/pkgconfig/libmosquittopp.pc"
 	sed ${SEDINPLACE} -e "s#@CMAKE_INSTALL_PREFIX@#${prefix}#" -e "s#@VERSION@#${VERSION}#" "${DESTDIR}${libdir}/pkgconfig/libmosquittopp.pc"
 
 uninstall :

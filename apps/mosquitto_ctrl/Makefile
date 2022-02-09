@@ -1,5 +1,4 @@
 R=../..
-
 include ${R}/config.mk
 
 .PHONY: all install uninstall clean reallyclean

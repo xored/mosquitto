@@ -1,6 +1,7 @@
+R=../../..
 .PHONY: all test clean reallyclean
 
-CFLAGS=-I../../../include -Wall -Werror
+CFLAGS=-I${R}/include -Wall -Werror
 
 PLUGIN_SRC = \
 	auth_plugin_acl.c \
@@ -39,7 +40,7 @@ ${PLUGINS} : %.so: %.c
 
 
 ${TESTS} : %.test: %.c
-	$(CC) ${CFLAGS} $< -o $@ ../../../lib/libmosquitto.so.1
+	$(CC) ${CFLAGS} $< -o $@ ${R}/lib/libmosquitto.so.1
 
 
 reallyclean : clean

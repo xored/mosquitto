@@ -1,9 +1,10 @@
-include ../../config.mk
+R=../..
+include ${R}/config.mk
 
 .PHONY : all binary check clean reallyclean test install uninstall
 
 PLUGIN_NAME=mosquitto_persist_sqlite
-LOCAL_CPPFLAGS=-I../../src/
+LOCAL_CPPFLAGS=-I${R}/src/
 
 OBJS=	\
 		clients.o \
