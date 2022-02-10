@@ -48,10 +48,6 @@ Contributors:
 #  define G_PUB_MSGS_SENT_INC(A)
 #endif
 
-#ifndef LWS_PRE
-#  define LWS_PRE 0
-#endif
-
 int packet__alloc(struct mosquitto__packet **packet, uint8_t command, uint32_t remaining_length)
 {
 	uint8_t remaining_bytes[5], byte;
