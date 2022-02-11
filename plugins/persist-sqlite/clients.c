@@ -55,6 +55,7 @@ int persist_sqlite__client_add_cb(int event, void *event_data, void *userdata)
 				&& sqlite3_bind_int(ms->client_add_stmt, 11, (int)ed->will_delay_interval) == SQLITE_OK
 				){
 
+			ms->event_count++;
 			rc = sqlite3_step(ms->client_add_stmt);
 			if(rc == SQLITE_DONE){
 				rc = MOSQ_ERR_SUCCESS;
@@ -79,12 +80,14 @@ int persist_sqlite__client_remove_cb(int event, void *event_data, void *userdata
 	if(sqlite3_bind_text(ms->subscription_clear_stmt, 1,
 				ed->client_id, (int)strlen(ed->client_id), SQLITE_STATIC) == SQLITE_OK){
 
+		ms->event_count++;
 		sqlite3_step(ms->subscription_clear_stmt);
 		sqlite3_reset(ms->subscription_clear_stmt);
 	}
 	if(sqlite3_bind_text(ms->client_remove_stmt, 1,
 				ed->client_id, (int)strlen(ed->client_id), SQLITE_STATIC) == SQLITE_OK){
 
+		ms->event_count++;
 		rc = sqlite3_step(ms->client_remove_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;
@@ -112,6 +115,7 @@ int persist_sqlite__client_update_cb(int event, void *event_data, void *userdata
 				(int)strlen(ed->client_id), SQLITE_STATIC) == SQLITE_OK
 			){
 
+		ms->event_count++;
 		rc = sqlite3_step(ms->client_update_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;

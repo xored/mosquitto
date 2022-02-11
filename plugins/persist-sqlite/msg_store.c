@@ -200,6 +200,7 @@ int persist_sqlite__msg_add_cb(int event, void *event_data, void *userdata)
 	}
 
 	if(rc == 0){
+		ms->event_count++;
 		rc = sqlite3_step(ms->msg_add_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;
@@ -222,6 +223,7 @@ int persist_sqlite__msg_remove_cb(int event, void *event_data, void *userdata)
 	UNUSED(event);
 
 	if(sqlite3_bind_int64(ms->msg_remove_stmt, 1, (int64_t)ed->store_id) == SQLITE_OK){
+		ms->event_count++;
 		rc = sqlite3_step(ms->msg_remove_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;

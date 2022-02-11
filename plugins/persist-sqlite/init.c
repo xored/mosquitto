@@ -278,6 +278,7 @@ int persist_sqlite__init(struct mosquitto_sqlite *ms)
 	rc = prepare_statements(ms);
 	if(rc) return rc;
 
+	sqlite3_exec(ms->db, "BEGIN;", NULL, NULL, NULL);
 	return MOSQ_ERR_SUCCESS;
 fail:
 	mosquitto_log_printf(MOSQ_LOG_ERR, "Sqlite persistence: Error opening database: %s", sqlite3_errstr(rc));
@@ -303,6 +304,7 @@ void persist_sqlite__cleanup(struct mosquitto_sqlite *ms)
 	sqlite3_finalize(ms->retain_remove_stmt);
 
 	if(ms->db){
+		sqlite3_exec(ms->db, "END;", NULL, NULL, NULL);
 		sqlite3_close(ms->db);
 		ms->db = NULL;
 	}

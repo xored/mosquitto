@@ -21,6 +21,7 @@ if(SQLITE3_FOUND AND CJSON_FOUND)
 		restore.c
 		retains.c
 		subscriptions.c
+		tick.c
 	)
 
 	target_include_directories(mosquitto_persist_sqlite PRIVATE

@@ -118,6 +118,8 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	if(rc) goto fail;
 	rc = mosquitto_callback_register(plg_id, MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR, persist_sqlite__client_msg_clear_cb, NULL, &plg_data);
 	if(rc) goto fail;
+	rc = mosquitto_callback_register(plg_id, MOSQ_EVT_TICK, persist_sqlite__tick_cb, NULL, &plg_data);
+	if(rc) goto fail;
 
 	return MOSQ_ERR_SUCCESS;
 fail:
@@ -153,6 +155,7 @@ int mosquitto_plugin_cleanup(void *user_data, struct mosquitto_opt *options, int
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_CLIENT_MSG_DELETE, persist_sqlite__client_msg_remove_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE, persist_sqlite__client_msg_update_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR, persist_sqlite__client_msg_clear_cb, NULL);
+		mosquitto_callback_unregister(plg_id, MOSQ_EVT_TICK, persist_sqlite__tick_cb, NULL);
 	}
 
 	mosquitto_free(plg_data.db_file);

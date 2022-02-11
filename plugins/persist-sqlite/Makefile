@@ -14,7 +14,8 @@ OBJS=	\
 		plugin.o \
 		restore.o \
 		retains.o \
-		subscriptions.o
+		subscriptions.o \
+		tick.o
 
 ifeq ($(WITH_SQLITE),yes)
 ALL_DEPS:= binary
@@ -50,6 +51,9 @@ retains.o : retains.c persist_sqlite.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 subscriptions.o : subscriptions.c persist_sqlite.h
+	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
+
+tick.o : tick.c persist_sqlite.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 reallyclean : clean

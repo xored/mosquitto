@@ -42,6 +42,7 @@ int persist_sqlite__client_msg_add_cb(int event, void *event_data, void *userdat
 			&& sqlite3_bind_int(ms->client_msg_add_stmt, 8, ed->state) == SQLITE_OK
 			){
 
+		ms->event_count++;
 		rc = sqlite3_step(ms->client_msg_add_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;
@@ -68,6 +69,7 @@ int persist_sqlite__client_msg_remove_cb(int event, void *event_data, void *user
 			&& sqlite3_bind_int(ms->client_msg_remove_stmt, 3, ed->direction) == SQLITE_OK
 			){
 
+		ms->event_count++;
 		rc = sqlite3_step(ms->client_msg_remove_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;
@@ -95,6 +97,7 @@ int persist_sqlite__client_msg_update_cb(int event, void *event_data, void *user
 			&& sqlite3_bind_int64(ms->client_msg_update_stmt, 4, (int64_t)ed->store_id) == SQLITE_OK
 			){
 
+		ms->event_count++;
 		rc = sqlite3_step(ms->client_msg_update_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;
@@ -120,6 +123,7 @@ int persist_sqlite__client_msg_clear_cb(int event, void *event_data, void *userd
 			&& sqlite3_bind_int64(ms->client_msg_clear_stmt, 2, ed->direction) == SQLITE_OK
 			){
 
+		ms->event_count++;
 		rc = sqlite3_step(ms->client_msg_clear_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;

@@ -20,6 +20,7 @@ Contributors:
 #define PERSIST_SQLITE_H
 
 #include <sqlite3.h>
+#include <time.h>
 
 #ifndef UNUSED
 #  define UNUSED(A) (void)(A)
@@ -43,7 +44,9 @@ struct mosquitto_sqlite {
 	sqlite3_stmt *msg_load_stmt;
 	sqlite3_stmt *retain_add_stmt;
 	sqlite3_stmt *retain_remove_stmt;
+	time_t last_transaction;
 	int synchronous;
+	int event_count;
 };
 
 int persist_sqlite__init(struct mosquitto_sqlite *ms);
@@ -65,4 +68,5 @@ int persist_sqlite__retain_add_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__retain_remove_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__subscription_add_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__subscription_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__tick_cb(int event, void *event_data, void *userdata);
 #endif

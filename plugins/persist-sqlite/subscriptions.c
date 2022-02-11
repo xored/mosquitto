@@ -43,6 +43,7 @@ int persist_sqlite__subscription_add_cb(int event, void *event_data, void *userd
 				if(sqlite3_bind_int(ms->subscription_add_stmt, 4,
 							(int)ed->subscription_identifier) == SQLITE_OK){
 
+					ms->event_count++;
 					rc = sqlite3_step(ms->subscription_add_stmt);
 					if(rc == SQLITE_DONE){
 						rc = MOSQ_ERR_SUCCESS;
@@ -72,6 +73,7 @@ int persist_sqlite__subscription_remove_cb(int event, void *event_data, void *us
 		if(sqlite3_bind_text(ms->subscription_remove_stmt, 2,
 					ed->topic, (int)strlen(ed->topic), SQLITE_STATIC) == SQLITE_OK){
 
+			ms->event_count++;
 			rc = sqlite3_step(ms->subscription_remove_stmt);
 			if(rc == SQLITE_DONE){
 				rc = MOSQ_ERR_SUCCESS;
