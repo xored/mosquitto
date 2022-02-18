@@ -12,4 +12,6 @@ struct plugin_cmd{
 
 void plugin__command_reply(struct plugin_cmd *cmd, const char *error);
 
+void plugin_send_response(cJSON *tree, const char* topic);
+
 #endif

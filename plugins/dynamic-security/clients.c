@@ -859,12 +859,59 @@ static int dynsec__remove_client_from_all_groups(struct dynsec__data *data, cons
 	return MOSQ_ERR_SUCCESS;
 }
 
+struct connection_array_context {
+	const char* username;
+	cJSON *j_connections;
+};
+
+static int dynsec__add_client_address(const struct mosquitto* client, void* context_ptr)
+{
+	struct connection_array_context* functor_context = (struct connection_array_context*)context_ptr;
+
+	if (!strcmp(functor_context->username,mosquitto_client_username(client))) {
+		cJSON *j_connection = cJSON_CreateObject();
+		const char* address;
+		if (!j_connection){
+			return MOSQ_ERR_NOMEM;
+		}
+		if ((address=mosquitto_client_address(client)) && !cJSON_AddStringToObject(j_connection,"address",address)) {
+			cJSON_Delete(j_connection);
+			return MOSQ_ERR_NOMEM;
+		}			
+		cJSON_AddItemToArray(functor_context->j_connections,j_connection);
+	}
+	return MOSQ_ERR_SUCCESS;
+}
+			
+
+static cJSON* dynsec_connections__all_to_json(const char* username, const char* clientid)
+{
+	struct connection_array_context functor_context = { username, cJSON_CreateArray()};
+	//	functor_context.j_connections = cJSON_CreateArray();
+	//functor_context.username = username;
+	if (clientid) {
+		const struct mosquitto* client = mosquitto_client(clientid);
+		if (client && dynsec__add_client_address(client, &functor_context) != MOSQ_ERR_SUCCESS) {
+			cJSON_Delete(functor_context.j_connections);
+			return NULL;
+		}
+	} else {
+		if (mosquitto_apply_on_all_clients(&dynsec__add_client_address, &functor_context) != MOSQ_ERR_SUCCESS) {
+			cJSON_Delete(functor_context.j_connections);
+			return NULL;
+		}
+	}
+	return functor_context.j_connections;
+}
+
 
 static cJSON *add_client_to_json(struct dynsec__client *client, bool verbose)
 {
-	cJSON *j_client = NULL, *j_groups, *j_roles;
+	cJSON *j_client = NULL;
 
 	if(verbose){
+		cJSON *j_groups, *j_roles, *j_connections;
+		
 		j_client = cJSON_CreateObject();
 		if(j_client == NULL){
 			return NULL;
@@ -894,6 +941,13 @@ static cJSON *add_client_to_json(struct dynsec__client *client, bool verbose)
 			return NULL;
 		}
 		cJSON_AddItemToObject(j_client, "groups", j_groups);
+
+		j_connections = dynsec_connections__all_to_json(client->username, client->clientid);
+		if (j_connections == NULL){
+			cJSON_Delete(j_client);
+			return NULL;
+		}
+		cJSON_AddItemToObject(j_client, "connections", j_connections);
 	}else{
 		j_client = cJSON_CreateString(client->username);
 		if(j_client == NULL){

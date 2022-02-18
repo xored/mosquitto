@@ -20,6 +20,7 @@
 	mosquitto_free;
 	mosquitto_kick_client_by_clientid;
 	mosquitto_kick_client_by_username;
+	mosquitto_apply_on_all_clients;
 	mosquitto_log_printf;
 	mosquitto_malloc;
 	mosquitto_persist_client_add;

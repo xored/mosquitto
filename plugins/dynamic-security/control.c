@@ -35,20 +35,7 @@ Contributors:
 
 static void send_response(cJSON *tree)
 {
-	char *payload;
-	size_t payload_len;
-
-	payload = cJSON_PrintUnformatted(tree);
-	cJSON_Delete(tree);
-	if(payload == NULL) return;
-
-	payload_len = strlen(payload);
-	if(payload_len > MQTT_MAX_PAYLOAD){
-		free(payload);
-		return;
-	}
-	mosquitto_broker_publish(NULL, "$CONTROL/dynamic-security/v1/response",
-			(int)payload_len, payload, 0, 0, NULL);
+	plugin_send_response(tree, "$CONTROL/dynamic-security/v1/response");
 }
 
 

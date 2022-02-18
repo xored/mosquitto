@@ -651,6 +651,18 @@ mosq_EXPORT int mosquitto_kick_client_by_clientid(const char *clientid, bool wit
  */
 mosq_EXPORT int mosquitto_kick_client_by_username(const char *username, bool with_will);
 
+/* Function: mosquitto_apply_on_all_clients
+ *
+ * Apply a given functor to all clients
+ *
+ * The functor will be applied to all existing client structures. If the functor
+ * returns an error code the iteration over the clients will be stopped. The
+ * functor_context pointer maybe used to pass additional data structures into
+ * the functor as second argument.
+ *
+ * The result value will be the result of the last functor invoked.
+ */
+mosq_EXPORT int mosquitto_apply_on_all_clients(int (*FUNC_client_functor)(const struct mosquitto *, void *), void *functor_context);
 
 /* =========================================================================
  *
