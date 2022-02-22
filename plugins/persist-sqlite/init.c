@@ -28,7 +28,7 @@ static int create_tables(struct mosquitto_sqlite *ms)
 	int rc;
 
 	rc = sqlite3_exec(ms->db,
-			"CREATE TABLE IF NOT EXISTS msgs "
+			"CREATE TABLE IF NOT EXISTS base_msgs "
 			"("
 				"store_id INT64 PRIMARY KEY,"
 				"expiry_time INT64,"
@@ -205,26 +205,26 @@ static int prepare_statements(struct mosquitto_sqlite *ms)
 
 	/* Message store */
 	rc = sqlite3_prepare_v3(ms->db,
-			"INSERT INTO msgs "
+			"INSERT INTO base_msgs "
 			"(store_id, expiry_time, topic, payload, source_id, source_username, "
 			"payloadlen, source_mid, source_port, qos, retain, properties) "
 			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
 			-1, SQLITE_PREPARE_PERSISTENT,
-			&ms->msg_add_stmt, NULL);
+			&ms->base_msg_add_stmt, NULL);
 	if(rc) goto fail;
 
 	rc = sqlite3_prepare_v3(ms->db,
-			"DELETE FROM msgs WHERE store_id=?",
+			"DELETE FROM base_msgs WHERE store_id=?",
 			-1, SQLITE_PREPARE_PERSISTENT,
-			&ms->msg_remove_stmt, NULL);
+			&ms->base_msg_remove_stmt, NULL);
 	if(rc) goto fail;
 
 	rc = sqlite3_prepare_v3(ms->db,
 			"SELECT store_id, expiry_time, topic, payload, source_id, source_username, "
 			"payloadlen, source_mid, source_port, qos, retain, properties "
-			"FROM msgs WHERE store_id=?",
+			"FROM base_msgs WHERE store_id=?",
 			-1, SQLITE_PREPARE_PERSISTENT,
-			&ms->msg_load_stmt, NULL);
+			&ms->base_msg_load_stmt, NULL);
 	if(rc) goto fail;
 
 	/* Retains */
@@ -233,13 +233,13 @@ static int prepare_statements(struct mosquitto_sqlite *ms)
 			"(topic, store_id)"
 			"VALUES(?,?)",
 			-1, SQLITE_PREPARE_PERSISTENT,
-			&ms->retain_add_stmt, NULL);
+			&ms->retain_msg_add_stmt, NULL);
 	if(rc) goto fail;
 
 	rc = sqlite3_prepare_v3(ms->db,
 			"DELETE FROM retains WHERE topic=?",
 			-1, SQLITE_PREPARE_PERSISTENT,
-			&ms->retain_remove_stmt, NULL);
+			&ms->retain_msg_remove_stmt, NULL);
 	if(rc) goto fail;
 
 	return 0;
@@ -297,11 +297,11 @@ void persist_sqlite__cleanup(struct mosquitto_sqlite *ms)
 	sqlite3_finalize(ms->client_msg_remove_stmt);
 	sqlite3_finalize(ms->client_msg_update_stmt);
 	sqlite3_finalize(ms->client_msg_clear_stmt);
-	sqlite3_finalize(ms->msg_add_stmt);
-	sqlite3_finalize(ms->msg_remove_stmt);
-	sqlite3_finalize(ms->msg_load_stmt);
-	sqlite3_finalize(ms->retain_add_stmt);
-	sqlite3_finalize(ms->retain_remove_stmt);
+	sqlite3_finalize(ms->base_msg_add_stmt);
+	sqlite3_finalize(ms->base_msg_remove_stmt);
+	sqlite3_finalize(ms->base_msg_load_stmt);
+	sqlite3_finalize(ms->retain_msg_add_stmt);
+	sqlite3_finalize(ms->retain_msg_remove_stmt);
 
 	if(ms->db){
 		sqlite3_exec(ms->db, "END;", NULL, NULL, NULL);

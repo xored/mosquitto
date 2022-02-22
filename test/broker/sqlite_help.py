@@ -47,7 +47,7 @@ def cleanup(port):
     return rc
 
 
-def check_counts(cur, clients, client_msgs, messages, retains, subscriptions):
+def check_counts(cur, clients, client_msgs, base_msgs, retains, subscriptions):
     cur.execute('SELECT COUNT(*) FROM clients')
     row = cur.fetchone()
     if row[0] != clients:
@@ -63,10 +63,10 @@ def check_counts(cur, clients, client_msgs, messages, retains, subscriptions):
     if row[0] != subscriptions:
         raise ValueError("Found %d subscriptions, expected %d" % (row[0], subscriptions))
 
-    cur.execute('SELECT COUNT(*) FROM msgs')
+    cur.execute('SELECT COUNT(*) FROM base_msgs')
     row = cur.fetchone()
-    if row[0] != messages:
-        raise ValueError("Found %d msgs, expected %d" % (row[0], messages))
+    if row[0] != base_msgs:
+        raise ValueError("Found %d base_msgs, expected %d" % (row[0], base_msgs))
 
     cur.execute('SELECT COUNT(*) FROM retains')
     row = cur.fetchone()
@@ -168,7 +168,7 @@ def check_store_msg(cur, expiry_time, topic, payload, source_id, source_username
 
     cur.execute('SELECT store_id,expiry_time,topic,payload,source_id,source_username, ' +
             'payloadlen, source_mid, source_port, qos, retain ' +
-            'FROM msgs')
+            'FROM base_msgs')
 
     for i in range(0, idx+1):
         row = cur.fetchone()

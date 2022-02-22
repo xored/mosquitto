@@ -188,7 +188,7 @@ static int subscription_restore(struct mosquitto_sqlite *ms)
 static int msg_restore(struct mosquitto_sqlite *ms)
 {
 	sqlite3_stmt *stmt;
-	struct mosquitto_evt_persist_msg msg;
+	struct mosquitto_evt_persist_base_msg msg;
 	int rc;
 	long count = 0, failed = 0;
 	const char *str;
@@ -196,7 +196,7 @@ static int msg_restore(struct mosquitto_sqlite *ms)
 
 	rc = sqlite3_prepare_v2(ms->db,
 			"SELECT store_id, expiry_time, topic, payload, source_id, source_username, payloadlen, source_mid, source_port, qos, retain, properties "
-			"FROM msgs",
+			"FROM base_msgs",
 			-1, &stmt, NULL);
 
 	if(rc != SQLITE_OK){
@@ -257,7 +257,7 @@ static int msg_restore(struct mosquitto_sqlite *ms)
 		msg.retain = sqlite3_column_int(stmt, 10);
 		msg.plugin_properties = json_to_properties((const char *)sqlite3_column_text(stmt, 11));
 
-		rc = mosquitto_persist_msg_add(&msg);
+		rc = mosquitto_persist_base_msg_add(&msg);
 		if(rc == MOSQ_ERR_SUCCESS){
 			count++;
 		}else{
@@ -343,7 +343,7 @@ static int retain_restore(struct mosquitto_sqlite *ms)
 		}
 		store_id = (uint64_t)sqlite3_column_int64(stmt, 1);
 
-		rc = mosquitto_persist_retain_add(topic, store_id);
+		rc = mosquitto_persist_retain_msg_add(topic, store_id);
 		if(rc == MOSQ_ERR_SUCCESS){
 			count++;
 		}else{

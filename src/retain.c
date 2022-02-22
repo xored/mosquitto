@@ -71,20 +71,20 @@ int retain__init(void)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_persist_retain_add(const char *topic, uint64_t store_id)
+int mosquitto_persist_retain_msg_add(const char *topic, uint64_t base_msg_id)
 {
-	struct mosquitto_msg_store *stored;
+	struct mosquitto_base_msg *base_msg;
 	int rc = MOSQ_ERR_UNKNOWN;
 	char **split_topics = NULL;
 	char *local_topic = NULL;
 
 	if(topic == NULL) return MOSQ_ERR_INVAL;
 
-	HASH_FIND(hh, db.msg_store, &store_id, sizeof(store_id), stored);
-	if(stored){
+	HASH_FIND(hh, db.msg_store, &base_msg_id, sizeof(base_msg_id), base_msg);
+	if(base_msg){
 		if(sub__topic_tokenise(topic, &local_topic, &split_topics, NULL)) return MOSQ_ERR_NOMEM;
 
-		rc = retain__store(topic, stored, split_topics, false);
+		rc = retain__store(topic, base_msg, split_topics, false);
 		mosquitto__free(split_topics);
 		mosquitto__free(local_topic);
 	}
@@ -94,22 +94,22 @@ int mosquitto_persist_retain_add(const char *topic, uint64_t store_id)
 
 
 
-int mosquitto_persist_retain_delete(const char *topic)
+int mosquitto_persist_retain_msg_delete(const char *topic)
 {
-	struct mosquitto_msg_store stored;
+	struct mosquitto_base_msg base_msg;
 	int rc = MOSQ_ERR_UNKNOWN;
 	char **split_topics = NULL;
 	char *local_topic = NULL;
 
 	if(topic == NULL) return MOSQ_ERR_INVAL;
 
-	memset(&stored, 0, sizeof(stored));
-	stored.ref_count = 10; /* Ensure this isn't freed */
+	memset(&base_msg, 0, sizeof(base_msg));
+	base_msg.ref_count = 10; /* Ensure this isn't freed */
 
 	if(sub__topic_tokenise(topic, &local_topic, &split_topics, NULL)) return MOSQ_ERR_NOMEM;
 
 	/* With stored->payloadlen == 0, this means the message will be removed */
-	rc = retain__store(topic, &stored, split_topics, false);
+	rc = retain__store(topic, &base_msg, split_topics, false);
 	mosquitto__FREE(split_topics);
 	mosquitto__FREE(local_topic);
 
@@ -118,14 +118,14 @@ int mosquitto_persist_retain_delete(const char *topic)
 
 
 
-int retain__store(const char *topic, struct mosquitto_msg_store *stored, char **split_topics, bool persist)
+int retain__store(const char *topic, struct mosquitto_base_msg *base_msg, char **split_topics, bool persist)
 {
 	struct mosquitto__retainhier *retainhier;
 	struct mosquitto__retainhier *branch;
 	int i;
 	size_t slen;
 
-	assert(stored);
+	assert(base_msg);
 	assert(split_topics);
 
 	HASH_FIND(hh, db.retains, split_topics[0], strlen(split_topics[0]), retainhier);
@@ -158,22 +158,22 @@ int retain__store(const char *topic, struct mosquitto_msg_store *stored, char **
 
 	if(retainhier->retained){
 		if(persist && retainhier->retained->topic[0] != '$'){
-			plugin_persist__handle_retain_delete(retainhier->retained);
+			plugin_persist__handle_retain_msg_delete(retainhier->retained);
 		}
 		db__msg_store_ref_dec(&retainhier->retained);
 #ifdef WITH_SYS_TREE
 		db.retained_count--;
 #endif
-		if(stored->payloadlen == 0){
+		if(base_msg->payloadlen == 0){
 			retainhier->retained = NULL;
 		}
 	}
-	if(stored->payloadlen){
-		retainhier->retained = stored;
+	if(base_msg->payloadlen){
+		retainhier->retained = base_msg;
 		db__msg_store_ref_inc(retainhier->retained);
 		if(persist && retainhier->retained->topic[0] != '$'){
-			plugin_persist__handle_msg_add(retainhier->retained);
-			plugin_persist__handle_retain_add(retainhier->retained);
+			plugin_persist__handle_base_msg_add(retainhier->retained);
+			plugin_persist__handle_retain_msg_add(retainhier->retained);
 		}
 #ifdef WITH_SYS_TREE
 		db.retained_count++;
@@ -189,10 +189,10 @@ static int retain__process(struct mosquitto__retainhier *branch, struct mosquitt
 	int rc = 0;
 	uint8_t qos;
 	uint16_t mid;
-	struct mosquitto_msg_store *retained;
+	struct mosquitto_base_msg *retained;
 
 	if(branch->retained->message_expiry_time > 0 && db.now_real_s >= branch->retained->message_expiry_time){
-		plugin_persist__handle_retain_delete(branch->retained);
+		plugin_persist__handle_retain_msg_delete(branch->retained);
 		db__msg_store_ref_dec(&branch->retained);
 		branch->retained = NULL;
 #ifdef WITH_SYS_TREE

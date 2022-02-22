@@ -94,12 +94,12 @@ static void connection_check_acl(struct mosquitto *context, struct mosquitto_cli
 		}else{
 			access = MOSQ_ACL_WRITE;
 		}
-		if(mosquitto_acl_check(context, msg_tail->store->topic,
-							   msg_tail->store->payloadlen, msg_tail->store->payload,
-							   msg_tail->store->qos, msg_tail->store->retain, access) != MOSQ_ERR_SUCCESS){
+		if(mosquitto_acl_check(context, msg_tail->base_msg->topic,
+							   msg_tail->base_msg->payloadlen, msg_tail->base_msg->payload,
+							   msg_tail->base_msg->qos, msg_tail->base_msg->retain, access) != MOSQ_ERR_SUCCESS){
 
 			DL_DELETE((*head), msg_tail);
-			db__msg_store_ref_dec(&msg_tail->store);
+			db__msg_store_ref_dec(&msg_tail->base_msg);
 			mosquitto__FREE(msg_tail);
 		}
 	}

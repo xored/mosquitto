@@ -190,19 +190,19 @@ void plugin_persist__handle_client_msg_clear(struct mosquitto *context, uint8_t 
 	UNUSED(context);
 	UNUSED(direction);
 }
-void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_base_msg_add(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_msg_delete(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_base_msg_delete(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_msg_add(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_msg_delete(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }

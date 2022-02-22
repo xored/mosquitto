@@ -555,18 +555,18 @@ int mosquitto_persist_client_delete(const char *client_id)
 }
 
 
-struct mosquitto_msg_store *find_store_msg(uint64_t store_id)
+struct mosquitto_base_msg *find_store_msg(uint64_t store_id)
 {
-	struct mosquitto_msg_store *stored;
+	struct mosquitto_base_msg *base_msg;
 
-	HASH_FIND(hh, db.msg_store, &store_id, sizeof(store_id), stored);
-	return stored;
+	HASH_FIND(hh, db.msg_store, &store_id, sizeof(store_id), base_msg);
+	return base_msg;
 }
 
 int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *client_msg)
 {
 	struct mosquitto *context;
-	struct mosquitto_msg_store *stored;
+	struct mosquitto_base_msg *base_msg;
 
 	if(client_msg == NULL || client_msg->plugin_client_id == NULL){
 		free(client_msg->plugin_client_id);
@@ -578,8 +578,8 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 	if(context == NULL){
 		return MOSQ_ERR_NOT_FOUND;
 	}
-	stored = find_store_msg(client_msg->store_id);
-	if(stored == NULL){
+	base_msg = find_store_msg(client_msg->store_id);
+	if(base_msg == NULL){
 		return MOSQ_ERR_NOT_FOUND;
 	}
 
@@ -588,9 +588,9 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 			context->last_mid = client_msg->mid;
 		}
 		return db__message_insert_outgoing(context, client_msg->cmsg_id, client_msg->mid, client_msg->qos, client_msg->retain,
-				stored, client_msg->subscription_identifier, false, false);
+				base_msg, client_msg->subscription_identifier, false, false);
 	}else{
-		return db__message_insert_incoming(context, client_msg->cmsg_id, stored, false);
+		return db__message_insert_incoming(context, client_msg->cmsg_id, base_msg, false);
 	}
 	return MOSQ_ERR_SUCCESS;
 }
@@ -673,10 +673,10 @@ int mosquitto_subscription_delete(const char *client_id, const char *topic)
 }
 
 
-int mosquitto_persist_msg_add(struct mosquitto_evt_persist_msg *msg)
+int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
 {
 	struct mosquitto context;
-	struct mosquitto_msg_store *stored;
+	struct mosquitto_base_msg *base_msg;
 	uint32_t message_expiry_interval;
 	time_t message_expiry_interval_tt;
 	int i;
@@ -699,48 +699,48 @@ int mosquitto_persist_msg_add(struct mosquitto_evt_persist_msg *msg)
 		}
 	}
 
-	stored = mosquitto_calloc(1, sizeof(struct mosquitto_msg_store));
-	if(stored == NULL){
+	base_msg = mosquitto_calloc(1, sizeof(struct mosquitto_base_msg));
+	if(base_msg == NULL){
 		goto error;
 	}
-	stored->payloadlen = msg->payloadlen;
-	stored->source_mid = msg->source_mid;
-	stored->qos = msg->qos;
-	stored->retain = msg->retain;
+	base_msg->payloadlen = msg->payloadlen;
+	base_msg->source_mid = msg->source_mid;
+	base_msg->qos = msg->qos;
+	base_msg->retain = msg->retain;
 
-	stored->payload = msg->plugin_payload;
+	base_msg->payload = msg->plugin_payload;
 	msg->plugin_payload = NULL;
-	stored->topic = msg->plugin_topic;
+	base_msg->topic = msg->plugin_topic;
 	msg->plugin_topic = NULL;
-	stored->properties = msg->plugin_properties;
+	base_msg->properties = msg->plugin_properties;
 	msg->plugin_properties = NULL;
 
 	if(msg->source_port){
 		for(i=0; i<db.config->listener_count; i++){
 			if(db.config->listeners[i].port == msg->source_port){
-				stored->source_listener = &db.config->listeners[i];
+				base_msg->source_listener = &db.config->listeners[i];
 				break;
 			}
 		}
 	}
-	return db__message_store(&context, stored, message_expiry_interval, msg->store_id, mosq_mo_broker);
+	return db__message_store(&context, base_msg, message_expiry_interval, msg->store_id, mosq_mo_broker);
 
 error:
 	mosquitto_property_free_all(&msg->plugin_properties);
 	mosquitto_free(msg->plugin_topic);
 	mosquitto_free(msg->plugin_payload);
-	mosquitto_free(stored);
+	mosquitto_free(base_msg);
 
 	return MOSQ_ERR_NOMEM;
 }
 
 
-int mosquitto_persist_msg_delete(uint64_t store_id)
+int mosquitto_persist_base_msg_delete(uint64_t store_id)
 {
-	struct mosquitto_msg_store *stored;
+	struct mosquitto_base_msg *base_msg;
 
-	stored = find_store_msg(store_id);
-	db__msg_store_remove(stored, false);
+	base_msg = find_store_msg(store_id);
+	db__msg_store_remove(base_msg, false);
 
 	return MOSQ_ERR_SUCCESS;
 }

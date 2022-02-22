@@ -50,7 +50,7 @@ struct client_data
 	long message_size;
 };
 
-struct msg_store_chunk
+struct base_msg_chunk
 {
 	UT_hash_handle hh;
 	dbid_t store_id;
@@ -68,14 +68,14 @@ static int do_print = 1;
 static long cfg_count = 0;
 static long client_count = 0;
 static long client_msg_count = 0;
-static long msg_store_count = 0;
+static long base_msg_count = 0;
 static long retain_count = 0;
 static long sub_count = 0;
 /* ====== */
 
 
 struct client_data *clients_by_id = NULL;
-struct msg_store_chunk *msgs_by_id = NULL;
+struct base_msg_chunk *msgs_by_id = NULL;
 
 
 static void free__sub(struct P_sub *chunk)
@@ -96,7 +96,7 @@ static void free__client_msg(struct P_client_msg *chunk)
 }
 
 
-static void free__msg_store(struct P_msg_store *chunk)
+static void free__base_msg(struct P_base_msg *chunk)
 {
 	free(chunk->topic);
 	free(chunk->payload);
@@ -185,7 +185,7 @@ static int dump__client_msg_chunk_process(FILE *db_fd, uint32_t length)
 {
 	struct P_client_msg chunk;
 	struct client_data *cc;
-	struct msg_store_chunk *msc;
+	struct base_msg_chunk *msc;
 	int rc;
 
 	client_msg_count++;
@@ -223,22 +223,22 @@ static int dump__client_msg_chunk_process(FILE *db_fd, uint32_t length)
 }
 
 
-static int dump__msg_store_chunk_process(FILE *db_fptr, uint32_t length)
+static int dump__base_msg_chunk_process(FILE *db_fptr, uint32_t length)
 {
-	struct P_msg_store chunk;
-	struct mosquitto_msg_store *stored = NULL;
+	struct P_base_msg chunk;
+	struct mosquitto_base_msg *stored = NULL;
 	int64_t message_expiry_interval64;
 	uint32_t message_expiry_interval;
 	int rc = 0;
-	struct msg_store_chunk *mcs;
+	struct base_msg_chunk *mcs;
 
-	msg_store_count++;
+	base_msg_count++;
 
-	memset(&chunk, 0, sizeof(struct P_msg_store));
+	memset(&chunk, 0, sizeof(struct P_base_msg));
 	if(db_version == 6 || db_version == 5){
-		rc = persist__chunk_msg_store_read_v56(db_fptr, &chunk, length);
+		rc = persist__chunk_base_msg_read_v56(db_fptr, &chunk, length);
 	}else{
-		rc = persist__chunk_msg_store_read_v234(db_fptr, &chunk, db_version);
+		rc = persist__chunk_base_msg_read_v234(db_fptr, &chunk, db_version);
 	}
 	if(rc){
 		fprintf(stderr, "Error: Corrupt persistent database.");
@@ -257,7 +257,7 @@ static int dump__msg_store_chunk_process(FILE *db_fptr, uint32_t length)
 		message_expiry_interval = 0;
 	}
 
-	stored = mosquitto__calloc(1, sizeof(struct mosquitto_msg_store));
+	stored = mosquitto__calloc(1, sizeof(struct mosquitto_base_msg));
 	if(stored == NULL){
 		fclose(db_fptr);
 		mosquitto__free(chunk.source.id);
@@ -293,7 +293,7 @@ static int dump__msg_store_chunk_process(FILE *db_fptr, uint32_t length)
 	}
 
 	if(client_stats){
-		mcs = calloc(1, sizeof(struct msg_store_chunk));
+		mcs = calloc(1, sizeof(struct base_msg_chunk));
 		if(!mcs){
 			errno = ENOMEM;
 			return 1;
@@ -304,9 +304,9 @@ static int dump__msg_store_chunk_process(FILE *db_fptr, uint32_t length)
 	}
 
 	if(do_print){
-		print__msg_store(&chunk, length);
+		print__base_msg(&chunk, length);
 	}
-	free__msg_store(&chunk);
+	free__base_msg(&chunk);
 
 	return 0;
 }
@@ -425,8 +425,8 @@ int main(int argc, char *argv[])
 					if(dump__cfg_chunk_process(fd, length)) return 1;
 					break;
 
-				case DB_CHUNK_MSG_STORE:
-					if(dump__msg_store_chunk_process(fd, length)) return 1;
+				case DB_CHUNK_BASE_MSG:
+					if(dump__base_msg_chunk_process(fd, length)) return 1;
 					break;
 
 				case DB_CHUNK_CLIENT_MSG:
@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
 
 	if(stats){
 		printf("DB_CHUNK_CFG:        %ld\n", cfg_count);
-		printf("DB_CHUNK_MSG_STORE:  %ld\n", msg_store_count);
+		printf("DB_CHUNK_BASE_MSG:   %ld\n", base_msg_count);
 		printf("DB_CHUNK_CLIENT_MSG: %ld\n", client_msg_count);
 		printf("DB_CHUNK_RETAIN:     %ld\n", retain_count);
 		printf("DB_CHUNK_SUB:        %ld\n", sub_count);

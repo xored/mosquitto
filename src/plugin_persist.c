@@ -198,7 +198,7 @@ void plugin_persist__handle_client_msg_add(struct mosquitto *context, const stru
 
 	event_data.client_id = context->id;
 	event_data.cmsg_id = cmsg->cmsg_id;
-	event_data.store_id = cmsg->store->db_id;
+	event_data.store_id = cmsg->base_msg->db_id;
 	event_data.mid = cmsg->mid;
 	event_data.qos = cmsg->qos;
 	event_data.retain = cmsg->retain;
@@ -233,7 +233,7 @@ void plugin_persist__handle_client_msg_delete(struct mosquitto *context, const s
 	event_data.mid = cmsg->mid;
 	event_data.state = cmsg->state;
 	event_data.qos = cmsg->qos;
-	event_data.store_id = cmsg->store->db_id;
+	event_data.store_id = cmsg->base_msg->db_id;
 	event_data.direction = cmsg->direction;
 
 	DL_FOREACH(opts->plugin_callbacks.persist_client_msg_delete, cb_base){
@@ -255,7 +255,7 @@ void plugin_persist__handle_client_msg_update(struct mosquitto *context, const s
 
 	event_data.client_id = context->id;
 	event_data.cmsg_id = cmsg->cmsg_id;
-	event_data.store_id = cmsg->store->db_id;
+	event_data.store_id = cmsg->base_msg->db_id;
 	event_data.state = cmsg->state;
 	event_data.dup = cmsg->dup;
 	event_data.direction = cmsg->direction;
@@ -286,9 +286,9 @@ void plugin_persist__handle_client_msg_clear(struct mosquitto *context, uint8_t 
 }
 
 
-void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_base_msg_add(struct mosquitto_base_msg *msg)
 {
-	struct mosquitto_evt_persist_msg event_data;
+	struct mosquitto_evt_persist_base_msg event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
@@ -314,16 +314,16 @@ void plugin_persist__handle_msg_add(struct mosquitto_msg_store *msg)
 	event_data.qos = msg->qos;
 	event_data.retain = msg->retain;
 
-	DL_FOREACH(opts->plugin_callbacks.persist_msg_add, cb_base){
-		cb_base->cb(MOSQ_EVT_PERSIST_MSG_ADD, &event_data, cb_base->userdata);
+	DL_FOREACH(opts->plugin_callbacks.persist_base_msg_add, cb_base){
+		cb_base->cb(MOSQ_EVT_PERSIST_BASE_MSG_ADD, &event_data, cb_base->userdata);
 	}
 	msg->stored = true;
 }
 
 
-void plugin_persist__handle_msg_delete(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_base_msg_delete(struct mosquitto_base_msg *msg)
 {
-	struct mosquitto_evt_persist_msg event_data;
+	struct mosquitto_evt_persist_base_msg event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
@@ -334,16 +334,16 @@ void plugin_persist__handle_msg_delete(struct mosquitto_msg_store *msg)
 
 	event_data.store_id = msg->db_id;
 
-	DL_FOREACH(opts->plugin_callbacks.persist_msg_delete, cb_base){
-		cb_base->cb(MOSQ_EVT_PERSIST_MSG_DELETE, &event_data, cb_base->userdata);
+	DL_FOREACH(opts->plugin_callbacks.persist_base_msg_delete, cb_base){
+		cb_base->cb(MOSQ_EVT_PERSIST_BASE_MSG_DELETE, &event_data, cb_base->userdata);
 	}
 	msg->stored = false;
 }
 
 
-void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_msg_add(struct mosquitto_base_msg *msg)
 {
-	struct mosquitto_evt_persist_retain event_data;
+	struct mosquitto_evt_persist_retain_msg event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
@@ -355,15 +355,15 @@ void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
 	event_data.store_id = msg->db_id;
 	event_data.topic = msg->topic;
 
-	DL_FOREACH(opts->plugin_callbacks.persist_retain_add, cb_base){
-		cb_base->cb(MOSQ_EVT_PERSIST_MSG_ADD, &event_data, cb_base->userdata);
+	DL_FOREACH(opts->plugin_callbacks.persist_retain_msg_add, cb_base){
+		cb_base->cb(MOSQ_EVT_PERSIST_RETAIN_MSG_ADD, &event_data, cb_base->userdata);
 	}
 }
 
 
-void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_msg_delete(struct mosquitto_base_msg *msg)
 {
-	struct mosquitto_evt_persist_retain event_data;
+	struct mosquitto_evt_persist_retain_msg event_data;
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
@@ -374,7 +374,7 @@ void plugin_persist__handle_retain_delete(struct mosquitto_msg_store *msg)
 
 	event_data.topic = msg->topic;
 
-	DL_FOREACH(opts->plugin_callbacks.persist_retain_delete, cb_base){
-		cb_base->cb(MOSQ_EVT_PERSIST_MSG_DELETE, &event_data, cb_base->userdata);
+	DL_FOREACH(opts->plugin_callbacks.persist_retain_msg_delete, cb_base){
+		cb_base->cb(MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE, &event_data, cb_base->userdata);
 	}
 }

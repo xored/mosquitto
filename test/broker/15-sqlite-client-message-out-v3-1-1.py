@@ -55,7 +55,7 @@ try:
 
     con = sqlite3.connect(f"{port}/mosquitto.sqlite3")
     cur = con.cursor()
-    sqlite_help.check_counts(cur, clients=1, client_msgs=1, messages=1, retains=0, subscriptions=1)
+    sqlite_help.check_counts(cur, clients=1, client_msgs=1, base_msgs=1, retains=0, subscriptions=1)
 
     # Check client
     sqlite_help.check_client(cur, client_id, None, 0, 0, port, 0, 2, 1, -1, 0)

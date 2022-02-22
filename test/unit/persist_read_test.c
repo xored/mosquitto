@@ -261,20 +261,20 @@ static void TEST_v3_client_message(void)
 		CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight);
 		if(context->msgs_out.inflight){
 			CU_ASSERT_PTR_NULL(context->msgs_out.inflight->next);
-			CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->store);
-			if(context->msgs_out.inflight->store){
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->ref_count, 1);
-				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->store->source_id, "source_id");
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->source_mid, 2);
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->qos, 2);
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->retain, 1);
-				CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->store->topic);
-				if(context->msgs_out.inflight->store->topic){
-					CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->store->topic, "topic");
+			CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->base_msg);
+			if(context->msgs_out.inflight->base_msg){
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->ref_count, 1);
+				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->base_msg->source_id, "source_id");
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->source_mid, 2);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->qos, 2);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->retain, 1);
+				CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->base_msg->topic);
+				if(context->msgs_out.inflight->base_msg->topic){
+					CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->base_msg->topic, "topic");
 				}
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->payloadlen, 7);
-				if(context->msgs_out.inflight->store->payloadlen == 7){
-					CU_ASSERT_NSTRING_EQUAL(context->msgs_out.inflight->store->payload, "payload", 7);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->payloadlen, 7);
+				if(context->msgs_out.inflight->base_msg->payloadlen == 7){
+					CU_ASSERT_NSTRING_EQUAL(context->msgs_out.inflight->base_msg->payload, "payload", 7);
 				}
 			}
 			CU_ASSERT_EQUAL(context->msgs_out.inflight->mid, 0x73);
@@ -617,17 +617,17 @@ static void TEST_v6_client_message(void)
 		CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight);
 		if(context->msgs_out.inflight){
 			CU_ASSERT_PTR_NULL(context->msgs_out.inflight->next);
-			CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->store);
-			if(context->msgs_out.inflight->store){
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->ref_count, 1);
-				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->store->source_id, "source_id");
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->source_mid, 2);
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->qos, 2);
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->retain, 1);
-				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->store->topic, "topic");
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->payloadlen, 7);
-				if(context->msgs_out.inflight->store->payloadlen == 7){
-					CU_ASSERT_NSTRING_EQUAL(context->msgs_out.inflight->store->payload, "payload", 7);
+			CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->base_msg);
+			if(context->msgs_out.inflight->base_msg){
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->ref_count, 1);
+				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->base_msg->source_id, "source_id");
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->source_mid, 2);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->qos, 2);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->retain, 1);
+				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->base_msg->topic, "topic");
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->payloadlen, 7);
+				if(context->msgs_out.inflight->base_msg->payloadlen == 7){
+					CU_ASSERT_NSTRING_EQUAL(context->msgs_out.inflight->base_msg->payload, "payload", 7);
 				}
 			}
 			CU_ASSERT_EQUAL(context->msgs_out.inflight->mid, 0x73);
@@ -664,17 +664,17 @@ static void TEST_v6_client_message_props(void)
 		CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight);
 		if(context->msgs_out.inflight){
 			CU_ASSERT_PTR_NULL(context->msgs_out.inflight->next);
-			CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->store);
-			if(context->msgs_out.inflight->store){
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->ref_count, 1);
-				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->store->source_id, "source_id");
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->source_mid, 2);
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->qos, 2);
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->retain, 1);
-				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->store->topic, "topic");
-				CU_ASSERT_EQUAL(context->msgs_out.inflight->store->payloadlen, 7);
-				if(context->msgs_out.inflight->store->payloadlen == 7){
-					CU_ASSERT_NSTRING_EQUAL(context->msgs_out.inflight->store->payload, "payload", 7);
+			CU_ASSERT_PTR_NOT_NULL(context->msgs_out.inflight->base_msg);
+			if(context->msgs_out.inflight->base_msg){
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->ref_count, 1);
+				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->base_msg->source_id, "source_id");
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->source_mid, 2);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->qos, 2);
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->retain, 1);
+				CU_ASSERT_STRING_EQUAL(context->msgs_out.inflight->base_msg->topic, "topic");
+				CU_ASSERT_EQUAL(context->msgs_out.inflight->base_msg->payloadlen, 7);
+				if(context->msgs_out.inflight->base_msg->payloadlen == 7){
+					CU_ASSERT_NSTRING_EQUAL(context->msgs_out.inflight->base_msg->payload, "payload", 7);
 				}
 			}
 			CU_ASSERT_EQUAL(context->msgs_out.inflight->mid, 0x73);

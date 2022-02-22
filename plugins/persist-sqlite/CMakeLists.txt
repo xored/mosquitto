@@ -13,13 +13,13 @@ if(SQLITE3_FOUND AND CJSON_FOUND)
 	set(CLIENT_DIR "${mosquitto_BINARY_DIR}/lib" "${SQLITE3_DIR}")
 
 	add_library(mosquitto_persist_sqlite MODULE
+		base_msgs.c
 		clients.c
 		client_msgs.c
 		init.c
-		msg_store.c
 		plugin.c
 		restore.c
-		retains.c
+		retain_msgs.c
 		subscriptions.c
 		tick.c
 	)

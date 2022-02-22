@@ -46,7 +46,7 @@ try:
     # Verify sqlite db
     con = sqlite3.connect(f"{port}/mosquitto.sqlite3")
     cur = con.cursor()
-    sqlite_help.check_counts(cur, clients=1, client_msgs=0, messages=0, retains=0, subscriptions=0)
+    sqlite_help.check_counts(cur, clients=1, client_msgs=0, base_msgs=0, retains=0, subscriptions=0)
 
     # Check client
     sqlite_help.check_client(cur, "sqlite-client-v5-0", None, 0, 1, port, 10000, 2, 1, 60, 0)

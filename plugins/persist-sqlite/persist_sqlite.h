@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Roger Light <roger@atchoo.org>
+Copyright (c) 2021,2022 Roger Light <roger@atchoo.org>
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License 2.0
@@ -39,11 +39,11 @@ struct mosquitto_sqlite {
 	sqlite3_stmt *client_msg_remove_stmt;
 	sqlite3_stmt *client_msg_update_stmt;
 	sqlite3_stmt *client_msg_clear_stmt;
-	sqlite3_stmt *msg_add_stmt;
-	sqlite3_stmt *msg_remove_stmt;
-	sqlite3_stmt *msg_load_stmt;
-	sqlite3_stmt *retain_add_stmt;
-	sqlite3_stmt *retain_remove_stmt;
+	sqlite3_stmt *base_msg_add_stmt;
+	sqlite3_stmt *base_msg_remove_stmt;
+	sqlite3_stmt *base_msg_load_stmt;
+	sqlite3_stmt *retain_msg_add_stmt;
+	sqlite3_stmt *retain_msg_remove_stmt;
 	time_t last_transaction;
 	int synchronous;
 	int event_count;
@@ -61,11 +61,11 @@ int persist_sqlite__client_msg_add_cb(int event, void *event_data, void *userdat
 int persist_sqlite__client_msg_clear_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__client_msg_remove_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__client_msg_update_cb(int event, void *event_data, void *userdata);
-int persist_sqlite__msg_add_cb(int event, void *event_data, void *userdata);
-int persist_sqlite__msg_load_cb(int event, void *event_data, void *userdata);
-int persist_sqlite__msg_remove_cb(int event, void *event_data, void *userdata);
-int persist_sqlite__retain_add_cb(int event, void *event_data, void *userdata);
-int persist_sqlite__retain_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__base_msg_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__base_msg_load_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__base_msg_remove_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__retain_msg_add_cb(int event, void *event_data, void *userdata);
+int persist_sqlite__retain_msg_remove_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__subscription_add_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__subscription_remove_cb(int event, void *event_data, void *userdata);
 int persist_sqlite__tick_cb(int event, void *event_data, void *userdata);

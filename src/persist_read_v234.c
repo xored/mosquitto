@@ -129,7 +129,7 @@ error:
 }
 
 
-int persist__chunk_msg_store_read_v234(FILE *db_fptr, struct P_msg_store *chunk, uint32_t db_version)
+int persist__chunk_base_msg_read_v234(FILE *db_fptr, struct P_base_msg *chunk, uint32_t db_version)
 {
 	uint32_t i32temp;
 	uint16_t i16temp;

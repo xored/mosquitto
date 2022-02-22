@@ -29,7 +29,7 @@ Contributors:
 #ifdef WITH_CONTROL
 /* Process messages coming in on $CONTROL/<feature>. These messages aren't
  * passed on to other clients. */
-int control__process(struct mosquitto *context, struct mosquitto_msg_store *stored)
+int control__process(struct mosquitto *context, struct mosquitto_base_msg *base_msg)
 {
 	struct mosquitto__callback *cb_found;
 	struct mosquitto_evt_control event_data;
@@ -39,22 +39,22 @@ int control__process(struct mosquitto *context, struct mosquitto_msg_store *stor
 
 	/* Check global plugins and non-per-listener settings first */
 	opts = &db.config->security_options;
-	HASH_FIND(hh, opts->plugin_callbacks.control, stored->topic, strlen(stored->topic), cb_found);
+	HASH_FIND(hh, opts->plugin_callbacks.control, base_msg->topic, strlen(base_msg->topic), cb_found);
 
 	/* If not found, check for per-listener plugins. */
 	if(cb_found == NULL && db.config->per_listener_settings){
 		opts = &context->listener->security_options;
-		HASH_FIND(hh, opts->plugin_callbacks.control, stored->topic, strlen(stored->topic), cb_found);
+		HASH_FIND(hh, opts->plugin_callbacks.control, base_msg->topic, strlen(base_msg->topic), cb_found);
 	}
 	if(cb_found){
 		memset(&event_data, 0, sizeof(event_data));
 		event_data.client = context;
-		event_data.topic = stored->topic;
-		event_data.payload = stored->payload;
-		event_data.payloadlen = stored->payloadlen;
-		event_data.qos = stored->qos;
-		event_data.retain = stored->retain;
-		event_data.properties = stored->properties;
+		event_data.topic = base_msg->topic;
+		event_data.payload = base_msg->payload;
+		event_data.payloadlen = base_msg->payloadlen;
+		event_data.qos = base_msg->qos;
+		event_data.retain = base_msg->retain;
+		event_data.properties = base_msg->properties;
 		event_data.reason_code = MQTT_RC_SUCCESS;
 		event_data.reason_string = NULL;
 
@@ -67,10 +67,10 @@ int control__process(struct mosquitto *context, struct mosquitto_msg_store *stor
 		SAFE_FREE(event_data.reason_string);
 	}
 
-	if(stored->qos == 1){
-		if(send__puback(context, stored->source_mid, MQTT_RC_SUCCESS, properties)) rc = 1;
-	}else if(stored->qos == 2){
-		if(send__pubrec(context, stored->source_mid, MQTT_RC_SUCCESS, properties)) rc = 1;
+	if(base_msg->qos == 1){
+		if(send__puback(context, base_msg->source_mid, MQTT_RC_SUCCESS, properties)) rc = 1;
+	}else if(base_msg->qos == 2){
+		if(send__pubrec(context, base_msg->source_mid, MQTT_RC_SUCCESS, properties)) rc = 1;
 	}
 	mosquitto_property_free_all(&properties);
 

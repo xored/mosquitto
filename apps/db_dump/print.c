@@ -178,11 +178,11 @@ void print__client_msg(struct P_client_msg *chunk, uint32_t length)
 }
 
 
-void print__msg_store(struct P_msg_store *chunk, uint32_t length)
+void print__base_msg(struct P_base_msg *chunk, uint32_t length)
 {
 	uint8_t *payload;
 
-	printf("DB_CHUNK_MSG_STORE:\n");
+	printf("DB_CHUNK_BASE_MSG:\n");
 	printf("\tLength: %d\n", length);
 	printf("\tStore ID: %" PRIu64 "\n", chunk->F.store_id);
 	/* printf("\tSource ID: %s\n", chunk->source_id); */

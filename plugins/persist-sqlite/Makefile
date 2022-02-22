@@ -7,13 +7,13 @@ PLUGIN_NAME=mosquitto_persist_sqlite
 LOCAL_CPPFLAGS=-I${R}/src/
 
 OBJS=	\
+		base_msgs.o \
 		clients.o \
 		client_msgs.o \
 		init.o \
-		msg_store.o \
 		plugin.o \
 		restore.o \
-		retains.o \
+		retain_msgs.o \
 		subscriptions.o \
 		tick.o
 
@@ -38,7 +38,7 @@ client_msgs.o : client_msgs.c persist_sqlite.h
 init.o : init.c persist_sqlite.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-msg_store.o : msg_store.c persist_sqlite.h
+base_msgs.o : base_msgs.c persist_sqlite.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 plugin.o : plugin.c persist_sqlite.h
@@ -47,7 +47,7 @@ plugin.o : plugin.c persist_sqlite.h
 restore.o : restore.c persist_sqlite.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-retains.o : retains.c persist_sqlite.h
+retain_msgs.o : retain_msgs.c persist_sqlite.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 subscriptions.o : subscriptions.c persist_sqlite.h

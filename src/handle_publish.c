@@ -41,7 +41,7 @@ int handle__publish(struct mosquitto *context)
 	int rc2;
 	uint8_t header = context->in_packet.command;
 	int res = 0;
-	struct mosquitto_msg_store *msg, *stored = NULL;
+	struct mosquitto_base_msg *msg, *stored = NULL;
 	size_t len;
 	uint16_t slen;
 	char *topic_mount;
@@ -59,7 +59,7 @@ int handle__publish(struct mosquitto *context)
 
 	context->stats.messages_received++;
 
-	msg = mosquitto__calloc(1, sizeof(struct mosquitto_msg_store));
+	msg = mosquitto__calloc(1, sizeof(struct mosquitto_base_msg));
 	if(msg == NULL){
 		return MOSQ_ERR_NOMEM;
 	}

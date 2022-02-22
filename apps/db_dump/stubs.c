@@ -20,19 +20,19 @@ void context__add_to_by_id(struct mosquitto *context)
 	UNUSED(context);
 }
 
-int db__message_store(const struct mosquitto *source, struct mosquitto_msg_store *stored, uint32_t message_expiry_interval, dbid_t store_id, enum mosquitto_msg_origin origin)
+int db__message_store(const struct mosquitto *source, struct mosquitto_base_msg *base_msg, uint32_t message_expiry_interval, dbid_t store_id, enum mosquitto_msg_origin origin)
 {
 	UNUSED(source);
-	UNUSED(stored);
+	UNUSED(base_msg);
 	UNUSED(message_expiry_interval);
 	UNUSED(store_id);
 	UNUSED(origin);
     return 0;
 }
 
-void db__msg_store_ref_inc(struct mosquitto_msg_store *store)
+void db__msg_store_ref_inc(struct mosquitto_base_msg *base_msg)
 {
-	UNUSED(store);
+	UNUSED(base_msg);
 }
 
 int handle__packet(struct mosquitto *context)
@@ -105,10 +105,10 @@ ssize_t net__write(struct mosquitto *mosq, const void *buf, size_t count)
 	return 0;
 }
 
-int retain__store(const char *topic, struct mosquitto_msg_store *stored, char **split_topics, bool persist)
+int retain__store(const char *topic, struct mosquitto_base_msg *base_msg, char **split_topics, bool persist)
 {
 	UNUSED(topic);
-	UNUSED(stored);
+	UNUSED(base_msg);
 	UNUSED(split_topics);
 	UNUSED(persist);
 	return 0;
@@ -125,13 +125,13 @@ int sub__add(struct mosquitto *context, const char *sub, uint8_t qos, uint32_t i
 	return 0;
 }
 
-int sub__messages_queue(const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_msg_store **stored)
+int sub__messages_queue(const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_base_msg **base_msg)
 {
 	UNUSED(source_id);
 	UNUSED(topic);
 	UNUSED(qos);
 	UNUSED(retain);
-	UNUSED(stored);
+	UNUSED(base_msg);
 	return 0;
 }
 

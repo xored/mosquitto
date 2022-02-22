@@ -76,11 +76,11 @@ enum mosquitto_plugin_event {
 	MOSQ_EVT_CONNECT = 11,
 	MOSQ_EVT_PERSIST_RESTORE = 12,
 	MOSQ_EVT_PERSIST_CONFIG_ADD = 13,
-	MOSQ_EVT_PERSIST_MSG_ADD = 14,
-	MOSQ_EVT_PERSIST_MSG_DELETE = 15,
-	MOSQ_EVT_PERSIST_MSG_LOAD = 16,
-	MOSQ_EVT_PERSIST_RETAIN_ADD = 17,
-	MOSQ_EVT_PERSIST_RETAIN_DELETE = 18,
+	MOSQ_EVT_PERSIST_BASE_MSG_ADD = 14,
+	MOSQ_EVT_PERSIST_BASE_MSG_DELETE = 15,
+	MOSQ_EVT_PERSIST_BASE_MSG_LOAD = 16,
+	MOSQ_EVT_PERSIST_RETAIN_MSG_ADD = 17,
+	MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE = 18,
 	MOSQ_EVT_PERSIST_CLIENT_ADD = 19,
 	MOSQ_EVT_PERSIST_CLIENT_DELETE = 20,
 	MOSQ_EVT_PERSIST_CLIENT_UPDATE = 21,
@@ -270,10 +270,10 @@ struct mosquitto_evt_persist_client_msg {
 };
 
 
-/* Data for the MOSQ_EVT_PERSIST_MSG_ADD/_DELETE/_LOAD event */
+/* Data for the MOSQ_EVT_PERSIST_BASE_MSG_ADD/_DELETE/_LOAD event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
-struct mosquitto_evt_persist_msg {
+struct mosquitto_evt_persist_base_msg {
 	uint64_t store_id;
 	int64_t expiry_time;
 	const char *topic;
@@ -299,7 +299,7 @@ struct mosquitto_evt_persist_msg {
 /* Data for the MOSQ_EVT_PERSIST_RETAIN/_DELETE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
-struct mosquitto_evt_persist_retain {
+struct mosquitto_evt_persist_retain_msg {
 	const char *topic;
 	char *plugin_topic;
 	uint64_t store_id;
@@ -902,10 +902,10 @@ int mosquitto_persist_client_delete(const char *client_id);
  *   client_msg->plugin_client_id - the client id of the client that the
  *          message belongs to. The broker will *not* modify this string and it
  *          remains the property of the plugin.
- *   client_msg->store_id - the store ID of the stored message that this client
+ *   client_msg->store_id - the ID of the base message that this client
  *          message references.
- *   client_msg->cmsg_id - the client message id of the new message
- *   client_msg->mid - the MQTT message id of the new message
+ *   client_msg->cmsg_id - the client message ID of the new message
+ *   client_msg->mid - the MQTT message ID of the new message
  *   client_msg->qos - the MQTT QoS of the new message
  *   client_msg->direction - the direction of the new message from the perspective
  *          of the broker (mosq_md_in / mosq_md_out)
@@ -918,7 +918,7 @@ int mosquitto_persist_client_delete(const char *client_id);
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success
  *   MOSQ_ERR_INVAL - if client_msg or client_msg->plugin_client_id is NULL
- *   MOSQ_ERR_NOT_FOUND - the client or stored message is not found
+ *   MOSQ_ERR_NOT_FOUND - the client or base message is not found
  */
 int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *client_msg);
 
@@ -972,13 +972,13 @@ int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg 
 int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg *client_msg);
 
 
-/* Function: mosquitto_persist_msg_add
+/* Function: mosquitto_persist_base_msg_add
  *
- * Use to add a new stored message. Any client messages or retained message
- * refering to this stored message must be added afterwards.
+ * Use to add a new base message. Any client messages or retained messages
+ * refering to this base message must be added afterwards.
  *
  * Parameters:
- *   msg->store_id - the stored message ID
+ *   msg->store_id - the base message ID
  *   msg->plugin_source_id - the client id of the client that the
  *          message originated with, or NULL.
  *          The broker will *not* modify this string and it remains the
@@ -1007,20 +1007,20 @@ int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg 
  *   MOSQ_ERR_SUCCESS - on success
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_persist_msg_add(struct mosquitto_evt_persist_msg *msg);
+int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg);
 
 
-/* Function: mosquitto_persist_msg_delete
+/* Function: mosquitto_persist_base_msg_delete
  *
- * Use to delete a stored message.
+ * Use to delete a base message.
  *
  * Parameters:
- *   store_id - the stored message ID
+ *   store_id - the base message ID
  *
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success
  */
-int mosquitto_persist_msg_delete(uint64_t store_id);
+int mosquitto_persist_base_msg_delete(uint64_t store_id);
 
 
 /* Function: mosquitto_persist_subscription_add
@@ -1059,25 +1059,25 @@ int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t
 int mosquitto_subscription_delete(const char *client_id, const char *topic);
 
 
-/* Function: mosquitto_persist_retain_add
+/* Function: mosquitto_persist_retain_msg_add
  *
  * Use to add a retained message. It is not required to delete a retained
  * message for an existing topic first.
  *
  * Parameters:
  *   topic - the topic that the message references
- *   store_id - the store id of the stored message that is to be retained
+ *   store_id - the ID of the base message that is to be retained
  *
  * Returns:
  *   MOSQ_ERR_SUCCESS - on success
  *   MOSQ_ERR_INVAL - if msg or msg->plugin_topic are NULL
- *   MOSQ_ERR_NOT_FOUND - the referenced stored message was not found
+ *   MOSQ_ERR_NOT_FOUND - the referenced base message was not found
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_persist_retain_add(const char *topic, uint64_t store_id);
+int mosquitto_persist_retain_msg_add(const char *topic, uint64_t store_id);
 
 
-/* Function: mosquitto_persist_retain_delete
+/* Function: mosquitto_persist_retain_msg_delete
  *
  * Use to delete a retained message.
  *
@@ -1089,7 +1089,7 @@ int mosquitto_persist_retain_add(const char *topic, uint64_t store_id);
  *   MOSQ_ERR_INVAL - if msg or msg->plugin_topic are NULL
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_persist_retain_delete(const char *topic);
+int mosquitto_persist_retain_msg_delete(const char *topic);
 
 #ifdef __cplusplus
 }

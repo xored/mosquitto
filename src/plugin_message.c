@@ -23,7 +23,7 @@ Contributors:
 #include "utlist.h"
 
 
-static int plugin__handle_message_single(struct mosquitto__security_options *opts, struct mosquitto *context, struct mosquitto_msg_store *stored)
+static int plugin__handle_message_single(struct mosquitto__security_options *opts, struct mosquitto *context, struct mosquitto_base_msg *stored)
 {
 	struct mosquitto_evt_message event_data;
 	struct mosquitto__callback *cb_base;
@@ -57,7 +57,7 @@ static int plugin__handle_message_single(struct mosquitto__security_options *opt
 	return rc;
 }
 
-int plugin__handle_message(struct mosquitto *context, struct mosquitto_msg_store *stored)
+int plugin__handle_message(struct mosquitto *context, struct mosquitto_base_msg *stored)
 {
 	int rc = MOSQ_ERR_SUCCESS;
 

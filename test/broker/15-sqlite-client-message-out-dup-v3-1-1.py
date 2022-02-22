@@ -55,7 +55,7 @@ try:
     mosq_test.do_send_receive(sock, subscribe_packet, suback_packet, "suback")
     sock.close()
 
-    #sqlite_help.check_counts(cur, clients=1, client_msgs=0, messages=0, retains=0, subscriptions=1)
+    #sqlite_help.check_counts(cur, clients=1, client_msgs=0, base_msgs=0, retains=0, subscriptions=1)
 
     # Helper - send message then disconnect
     sock = mosq_test.do_client_connect(connect2_packet, connack2_packet, timeout=5, port=port)
@@ -63,13 +63,13 @@ try:
     mosq_test.do_send_receive(sock, pubrel_packet, pubcomp_packet, "pubcomp")
     sock.close()
 
-    #sqlite_help.check_counts(cur, clients=1, client_msgs=1, messages=1, retains=0, subscriptions=1)
+    #sqlite_help.check_counts(cur, clients=1, client_msgs=1, base_msgs=1, retains=0, subscriptions=1)
 
     # Reconnect, receive publish, disconnect
     sock = mosq_test.do_client_connect(connect1_packet, connack1_packet2, timeout=5, port=port)
     mosq_test.expect_packet(sock, "publish 1", publish_packet_r1)
 
-    #sqlite_help.check_counts(cur, clients=1, client_msgs=1, messages=1, retains=0, subscriptions=1)
+    #sqlite_help.check_counts(cur, clients=1, client_msgs=1, base_msgs=1, retains=0, subscriptions=1)
 
     # Reconnect, receive publish, disconnect - dup should now be set
     sock = mosq_test.do_client_connect(connect1_packet, connack1_packet2, timeout=5, port=port)
@@ -85,7 +85,7 @@ try:
 
     con = sqlite3.connect(f"{port}/mosquitto.sqlite3")
     cur = con.cursor()
-    sqlite_help.check_counts(cur, clients=1, client_msgs=1, messages=1, retains=0, subscriptions=1)
+    sqlite_help.check_counts(cur, clients=1, client_msgs=1, base_msgs=1, retains=0, subscriptions=1)
 
     # Check client
     sqlite_help.check_client(cur, client_id, None, 0, 0, port, 0, 2, 1, -1, 0)

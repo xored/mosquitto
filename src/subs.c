@@ -60,7 +60,7 @@ Contributors:
 
 #include "utlist.h"
 
-static int subs__send(struct mosquitto__subleaf *leaf, const char *topic, uint8_t qos, int retain, struct mosquitto_msg_store *stored)
+static int subs__send(struct mosquitto__subleaf *leaf, const char *topic, uint8_t qos, int retain, struct mosquitto_base_msg *stored)
 {
 	bool client_retain;
 	uint16_t mid;
@@ -103,7 +103,7 @@ static int subs__send(struct mosquitto__subleaf *leaf, const char *topic, uint8_
 }
 
 
-static int subs__shared_process(struct mosquitto__subhier *hier, const char *topic, uint8_t qos, int retain, struct mosquitto_msg_store *stored)
+static int subs__shared_process(struct mosquitto__subhier *hier, const char *topic, uint8_t qos, int retain, struct mosquitto_base_msg *stored)
 {
 	int rc = 0, rc2;
 	struct mosquitto__subshared *shared, *shared_tmp;
@@ -122,7 +122,7 @@ static int subs__shared_process(struct mosquitto__subhier *hier, const char *top
 	return rc;
 }
 
-static int subs__process(struct mosquitto__subhier *hier, const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_msg_store *stored)
+static int subs__process(struct mosquitto__subhier *hier, const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_base_msg *stored)
 {
 	int rc = 0;
 	int rc2;
@@ -470,7 +470,7 @@ static int sub__remove_recurse(struct mosquitto *context, struct mosquitto__subh
 }
 
 
-static int sub__search(struct mosquitto__subhier *subhier, char **split_topics, const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_msg_store *stored)
+static int sub__search(struct mosquitto__subhier *subhier, char **split_topics, const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_base_msg *stored)
 {
 	/* FIXME - need to take into account source_id if the client is a bridge */
 	struct mosquitto__subhier *branch;
@@ -636,7 +636,7 @@ int sub__remove(struct mosquitto *context, const char *sub, struct mosquitto__su
 	return rc;
 }
 
-int sub__messages_queue(const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_msg_store **stored)
+int sub__messages_queue(const char *source_id, const char *topic, uint8_t qos, int retain, struct mosquitto_base_msg **stored)
 {
 	int rc = MOSQ_ERR_SUCCESS, rc2;
 	struct mosquitto__subhier *subhier;

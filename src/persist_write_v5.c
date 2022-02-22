@@ -140,7 +140,7 @@ error:
 }
 
 
-int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_msg_store *chunk)
+int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_base_msg *chunk)
 {
 	struct PF_header header;
 	uint32_t payloadlen = chunk->F.payloadlen;
@@ -162,13 +162,13 @@ int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_msg_store *chu
 	chunk->F.topic_len = htons(chunk->F.topic_len);
 	chunk->F.source_port = htons(chunk->F.source_port);
 
-	header.chunk = htonl(DB_CHUNK_MSG_STORE);
-	header.length = htonl((uint32_t)sizeof(struct PF_msg_store) +
+	header.chunk = htonl(DB_CHUNK_BASE_MSG);
+	header.length = htonl((uint32_t)sizeof(struct PF_base_msg) +
 			topic_len + payloadlen +
 			source_id_len + source_username_len + proplen);
 
 	write_e(db_fptr, &header, sizeof(struct PF_header));
-	write_e(db_fptr, &chunk->F, sizeof(struct PF_msg_store));
+	write_e(db_fptr, &chunk->F, sizeof(struct PF_base_msg));
 	if(source_id_len){
 		write_e(db_fptr, chunk->source.id, source_id_len);
 	}

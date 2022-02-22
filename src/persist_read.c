@@ -112,7 +112,7 @@ int persist__read_string(FILE *db_fptr, char **str)
 static int persist__client_msg_restore(struct P_client_msg *chunk)
 {
 	struct mosquitto_client_msg *cmsg;
-	struct mosquitto_msg_store *msg;
+	struct mosquitto_base_msg *msg;
 	struct mosquitto *context;
 	struct mosquitto_msg_data *msg_data;
 
@@ -135,7 +135,7 @@ static int persist__client_msg_restore(struct P_client_msg *chunk)
 	}
 
 	cmsg->next = NULL;
-	cmsg->store = NULL;
+	cmsg->base_msg = NULL;
 	cmsg->cmsg_id = ++context->last_cmsg_id;
 	cmsg->mid = chunk->F.mid;
 	cmsg->qos = chunk->F.qos;
@@ -145,8 +145,8 @@ static int persist__client_msg_restore(struct P_client_msg *chunk)
 	cmsg->dup = chunk->F.retain_dup&0x0F;
 	cmsg->subscription_identifier = chunk->subscription_identifier;
 
-	cmsg->store = msg;
-	db__msg_store_ref_inc(cmsg->store);
+	cmsg->base_msg = msg;
+	db__msg_store_ref_inc(cmsg->base_msg);
 
 	if(cmsg->direction == mosq_md_out){
 		msg_data = &context->msgs_out;
@@ -242,21 +242,21 @@ static int persist__client_msg_chunk_restore(FILE *db_fptr, uint32_t length)
 }
 
 
-static int persist__msg_store_chunk_restore(FILE *db_fptr, uint32_t length)
+static int persist__base_msg_chunk_restore(FILE *db_fptr, uint32_t length)
 {
-	struct P_msg_store chunk;
-	struct mosquitto_msg_store *stored = NULL;
+	struct P_base_msg chunk;
+	struct mosquitto_base_msg *base_msg = NULL;
 	int64_t message_expiry_interval64;
 	uint32_t message_expiry_interval;
 	int rc = 0;
 	int i;
 
-	memset(&chunk, 0, sizeof(struct P_msg_store));
+	memset(&chunk, 0, sizeof(struct P_base_msg));
 
 	if(db_version == 6 || db_version == 5){
-		rc = persist__chunk_msg_store_read_v56(db_fptr, &chunk, length);
+		rc = persist__chunk_base_msg_read_v56(db_fptr, &chunk, length);
 	}else{
-		rc = persist__chunk_msg_store_read_v234(db_fptr, &chunk, db_version);
+		rc = persist__chunk_base_msg_read_v234(db_fptr, &chunk, db_version);
 	}
 	if(rc){
 		return rc;
@@ -287,8 +287,8 @@ static int persist__msg_store_chunk_restore(FILE *db_fptr, uint32_t length)
 		message_expiry_interval = 0;
 	}
 
-	stored = mosquitto__calloc(1, sizeof(struct mosquitto_msg_store));
-	if(stored == NULL){
+	base_msg = mosquitto__calloc(1, sizeof(struct mosquitto_base_msg));
+	if(base_msg == NULL){
 		mosquitto__FREE(chunk.source.id);
 		mosquitto__FREE(chunk.source.username);
 		mosquitto__FREE(chunk.topic);
@@ -297,16 +297,16 @@ static int persist__msg_store_chunk_restore(FILE *db_fptr, uint32_t length)
 		return MOSQ_ERR_NOMEM;
 	}
 
-	stored->source_mid = chunk.F.source_mid;
-	stored->topic = chunk.topic;
-	stored->qos = chunk.F.qos;
-	stored->payloadlen = chunk.F.payloadlen;
-	stored->retain = chunk.F.retain;
-	stored->properties = chunk.properties;
-	stored->payload = chunk.payload;
-	stored->source_listener = chunk.source.listener;
+	base_msg->source_mid = chunk.F.source_mid;
+	base_msg->topic = chunk.topic;
+	base_msg->qos = chunk.F.qos;
+	base_msg->payloadlen = chunk.F.payloadlen;
+	base_msg->retain = chunk.F.retain;
+	base_msg->properties = chunk.properties;
+	base_msg->payload = chunk.payload;
+	base_msg->source_listener = chunk.source.listener;
 
-	rc = db__message_store(&chunk.source, stored, message_expiry_interval,
+	rc = db__message_store(&chunk.source, base_msg, message_expiry_interval,
 			chunk.F.store_id, mosq_mo_client);
 
 	mosquitto__FREE(chunk.source.id);
@@ -315,14 +315,14 @@ static int persist__msg_store_chunk_restore(FILE *db_fptr, uint32_t length)
 	if(rc == MOSQ_ERR_SUCCESS){
 		return MOSQ_ERR_SUCCESS;
 	}else{
-		mosquitto__FREE(stored);
+		mosquitto__FREE(base_msg);
 		return rc;
 	}
 }
 
 static int persist__retain_chunk_restore(FILE *db_fptr)
 {
-	struct mosquitto_msg_store *msg;
+	struct mosquitto_base_msg *msg;
 	struct P_retain chunk;
 	int rc;
 	char **split_topics;
@@ -462,8 +462,8 @@ int persist__restore(void)
 					db.last_db_id = cfg_chunk.last_db_id;
 					break;
 
-				case DB_CHUNK_MSG_STORE:
-					if(persist__msg_store_chunk_restore(fptr, length)){
+				case DB_CHUNK_BASE_MSG:
+					if(persist__base_msg_chunk_restore(fptr, length)){
 						fclose(fptr);
 						return 1;
 					}

@@ -156,7 +156,7 @@ error:
 }
 
 
-int persist__chunk_msg_store_read_v56(FILE *db_fptr, struct P_msg_store *chunk, uint32_t length)
+int persist__chunk_base_msg_read_v56(FILE *db_fptr, struct P_base_msg *chunk, uint32_t length)
 {
 	int rc = 0;
 	mosquitto_property *properties = NULL;
@@ -164,7 +164,7 @@ int persist__chunk_msg_store_read_v56(FILE *db_fptr, struct P_msg_store *chunk, 
 
 	memset(&prop_packet, 0, sizeof(struct mosquitto__packet));
 
-	read_e(db_fptr, &chunk->F, sizeof(struct PF_msg_store));
+	read_e(db_fptr, &chunk->F, sizeof(struct PF_base_msg));
 	chunk->F.payloadlen = ntohl(chunk->F.payloadlen);
 	if(chunk->F.payloadlen > MQTT_MAX_PAYLOAD){
 		return MOSQ_ERR_INVAL;
@@ -175,7 +175,7 @@ int persist__chunk_msg_store_read_v56(FILE *db_fptr, struct P_msg_store *chunk, 
 	chunk->F.topic_len = ntohs(chunk->F.topic_len);
 	chunk->F.source_port = ntohs(chunk->F.source_port);
 
-	length -= (uint32_t)(sizeof(struct PF_msg_store) + chunk->F.payloadlen + chunk->F.source_id_len + chunk->F.source_username_len + chunk->F.topic_len);
+	length -= (uint32_t)(sizeof(struct PF_base_msg) + chunk->F.payloadlen + chunk->F.source_id_len + chunk->F.source_username_len + chunk->F.topic_len);
 
 	if(chunk->F.source_id_len){
 		rc = persist__read_string_len(db_fptr, &chunk->source.id, chunk->F.source_id_len);

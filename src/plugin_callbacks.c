@@ -109,16 +109,16 @@ static struct mosquitto__callback **plugin__get_callback_base(struct mosquitto__
 			return &security_options->plugin_callbacks.persist_client_msg_update;
 		case MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR:
 			return &security_options->plugin_callbacks.persist_client_msg_clear;
-		case MOSQ_EVT_PERSIST_MSG_ADD:
-			return &security_options->plugin_callbacks.persist_msg_add;
-		case MOSQ_EVT_PERSIST_MSG_DELETE:
-			return &security_options->plugin_callbacks.persist_msg_delete;
-		case MOSQ_EVT_PERSIST_MSG_LOAD:
-			return &security_options->plugin_callbacks.persist_msg_load;
-		case MOSQ_EVT_PERSIST_RETAIN_ADD:
-			return &security_options->plugin_callbacks.persist_retain_add;
-		case MOSQ_EVT_PERSIST_RETAIN_DELETE:
-			return &security_options->plugin_callbacks.persist_retain_delete;
+		case MOSQ_EVT_PERSIST_BASE_MSG_ADD:
+			return &security_options->plugin_callbacks.persist_base_msg_add;
+		case MOSQ_EVT_PERSIST_BASE_MSG_DELETE:
+			return &security_options->plugin_callbacks.persist_base_msg_delete;
+		case MOSQ_EVT_PERSIST_BASE_MSG_LOAD:
+			return &security_options->plugin_callbacks.persist_base_msg_load;
+		case MOSQ_EVT_PERSIST_RETAIN_MSG_ADD:
+			return &security_options->plugin_callbacks.persist_retain_msg_add;
+		case MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE:
+			return &security_options->plugin_callbacks.persist_retain_msg_delete;
 		default:
 			return NULL;
 	}

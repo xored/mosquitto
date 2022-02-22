@@ -51,9 +51,9 @@ static int persist__client_messages_save(FILE *db_fptr, struct mosquitto *contex
 
 	cmsg = queue;
 	while(cmsg){
-		if(!strncmp(cmsg->store->topic, "$SYS", 4)
-				&& cmsg->store->ref_count <= 1
-				&& cmsg->store->dest_id_count == 0){
+		if(!strncmp(cmsg->base_msg->topic, "$SYS", 4)
+				&& cmsg->base_msg->ref_count <= 1
+				&& cmsg->base_msg->dest_id_count == 0){
 
 			/* This $SYS message won't have been persisted, so we can't persist
 			 * this client message. */
@@ -61,7 +61,7 @@ static int persist__client_messages_save(FILE *db_fptr, struct mosquitto *contex
 			continue;
 		}
 
-		chunk.F.store_id = cmsg->store->db_id;
+		chunk.F.store_id = cmsg->base_msg->db_id;
 		chunk.F.mid = cmsg->mid;
 		chunk.F.id_len = (uint16_t)strlen(context->id);
 		chunk.F.qos = cmsg->qos;
@@ -85,22 +85,22 @@ static int persist__client_messages_save(FILE *db_fptr, struct mosquitto *contex
 
 static int persist__message_store_save(FILE *db_fptr)
 {
-	struct P_msg_store chunk;
-	struct mosquitto_msg_store *stored, *stored_tmp;
+	struct P_base_msg chunk;
+	struct mosquitto_base_msg *base_msg, *base_msg_tmp;
 	int rc;
 
 	assert(db_fptr);
 
-	memset(&chunk, 0, sizeof(struct P_msg_store));
+	memset(&chunk, 0, sizeof(struct P_base_msg));
 
-	stored = db.msg_store;
-	HASH_ITER(hh, db.msg_store, stored, stored_tmp){
-		if(stored->ref_count < 1 || stored->topic == NULL){
+	base_msg = db.msg_store;
+	HASH_ITER(hh, db.msg_store, base_msg, base_msg_tmp){
+		if(base_msg->ref_count < 1 || base_msg->topic == NULL){
 			continue;
 		}
 
-		if(!strncmp(stored->topic, "$SYS", 4)){
-			if(stored->ref_count <= 1 && stored->dest_id_count == 0){
+		if(!strncmp(base_msg->topic, "$SYS", 4)){
+			if(base_msg->ref_count <= 1 && base_msg->dest_id_count == 0){
 				/* $SYS messages that are only retained shouldn't be persisted. */
 				continue;
 			}
@@ -110,39 +110,39 @@ static int persist__message_store_save(FILE *db_fptr)
 			 * queue. */
 			chunk.F.retain = 0;
 		}else{
-			chunk.F.retain = (uint8_t)stored->retain;
+			chunk.F.retain = (uint8_t)base_msg->retain;
 		}
 
-		chunk.F.store_id = stored->db_id;
-		chunk.F.expiry_time = stored->message_expiry_time;
-		chunk.F.payloadlen = stored->payloadlen;
-		chunk.F.source_mid = stored->source_mid;
-		if(stored->source_id){
-			chunk.F.source_id_len = (uint16_t)strlen(stored->source_id);
-			chunk.source.id = stored->source_id;
+		chunk.F.store_id = base_msg->db_id;
+		chunk.F.expiry_time = base_msg->message_expiry_time;
+		chunk.F.payloadlen = base_msg->payloadlen;
+		chunk.F.source_mid = base_msg->source_mid;
+		if(base_msg->source_id){
+			chunk.F.source_id_len = (uint16_t)strlen(base_msg->source_id);
+			chunk.source.id = base_msg->source_id;
 		}else{
 			chunk.F.source_id_len = 0;
 			chunk.source.id = NULL;
 		}
-		if(stored->source_username){
-			chunk.F.source_username_len = (uint16_t)strlen(stored->source_username);
-			chunk.source.username = stored->source_username;
+		if(base_msg->source_username){
+			chunk.F.source_username_len = (uint16_t)strlen(base_msg->source_username);
+			chunk.source.username = base_msg->source_username;
 		}else{
 			chunk.F.source_username_len = 0;
 			chunk.source.username = NULL;
 		}
 
-		chunk.F.topic_len = (uint16_t)strlen(stored->topic);
-		chunk.topic = stored->topic;
+		chunk.F.topic_len = (uint16_t)strlen(base_msg->topic);
+		chunk.topic = base_msg->topic;
 
-		if(stored->source_listener){
-			chunk.F.source_port = stored->source_listener->port;
+		if(base_msg->source_listener){
+			chunk.F.source_port = base_msg->source_listener->port;
 		}else{
 			chunk.F.source_port = 0;
 		}
-		chunk.F.qos = stored->qos;
-		chunk.payload = stored->payload;
-		chunk.properties = stored->properties;
+		chunk.F.qos = base_msg->qos;
+		chunk.payload = base_msg->payload;
+		chunk.properties = base_msg->properties;
 
 		rc = persist__chunk_message_store_write_v6(db_fptr, &chunk);
 		if(rc){
