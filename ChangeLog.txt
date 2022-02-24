@@ -4,6 +4,7 @@
 Broker:
 - Fix memory leak when a plugin modifies the topic of a message in
   MOSQ_EVT_MESSAGE.
+- Fix bridge `restart_timeout` not being honoured.
 
 
 2.0.14 - 2021-11-17
