@@ -57,8 +57,7 @@ Contributors:
 
 #ifdef WITH_BRIDGE
 
-static void bridge__backoff_step(struct mosquitto *context);
-static void bridge__backoff_reset(struct mosquitto *context);
+static void bridge__update_backoff(struct mosquitto__bridge *bridge);
 #if defined(__GLIBC__) && defined(WITH_ADNS)
 static int bridge__connect_step1(struct mosquitto *context);
 static int bridge__connect_step2(struct mosquitto *context);
@@ -274,9 +273,6 @@ static int bridge__connect_step1(struct mosquitto *context)
 					qos, 0);
 		}
 	}
-
-	/* prepare backoff for a possible failure. Restart timeout will be reset if connection gets established */
-	bridge__backoff_step(context);
 
 	if(context->bridge->notifications){
 		if(context->max_qos == 0){
@@ -500,9 +496,6 @@ int bridge__connect(struct mosquitto *context)
 		}
 	}
 
-	/* prepare backoff for a possible failure. Restart timeout will be reset if connection gets established */
-	bridge__backoff_step(context);
-
 	if(context->bridge->notifications){
 		if(context->max_qos == 0){
 			qos = 0;
@@ -707,7 +700,7 @@ int bridge__on_connect(struct mosquitto *context)
 		}
 	}
 
-	bridge__backoff_reset(context);
+	context->bridge->connected_at = db.now_s;
 
 	return MOSQ_ERR_SUCCESS;
 }
@@ -863,38 +856,40 @@ static int rand_between(int low, int high)
 	return (abs(r) % (high - low)) + low;
 }
 
-static void bridge__backoff_step(struct mosquitto *context)
+static void bridge__backoff_step(struct mosquitto__bridge *bridge)
 {
-	struct mosquitto__bridge *bridge;
-	if(!context || !context->bridge) return;
+	/*
+		“Decorrelated Jitter” calculation, according to:
+			https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+	*/
 
-	bridge = context->bridge;
-
-	/* skip if not using backoff */
-	if(bridge->backoff_cap){
-		/* “Decorrelated Jitter” calculation, according to:
-		 * https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
-		 */
-		bridge->restart_timeout = rand_between(bridge->backoff_base, bridge->restart_timeout * 3);
-		if(bridge->restart_timeout > bridge->backoff_cap){
-			bridge->restart_timeout = bridge->backoff_cap;
-		}
+	bridge->restart_timeout = rand_between(bridge->backoff_base, bridge->restart_timeout * 3);
+	if(bridge->restart_timeout > bridge->backoff_cap){
+		bridge->restart_timeout = bridge->backoff_cap;
 	}
 }
 
-static void bridge__backoff_reset(struct mosquitto *context)
+static void bridge__backoff_reset(struct mosquitto__bridge *bridge)
 {
-	struct mosquitto__bridge *bridge;
-	if(!context || !context->bridge) return;
-
-	bridge = context->bridge;
-
-	/* skip if not using backoff */
-	if(bridge->backoff_cap){
-		bridge->restart_timeout = bridge->backoff_base;
-	}
+	bridge->restart_timeout = bridge->backoff_base;
 }
 
+static void bridge__update_backoff(struct mosquitto__bridge *bridge)
+{
+	if(!bridge) return;
+	if(!bridge->backoff_cap) return; /* skip if not using jitter */
+
+	if (bridge->connected_at && db.now_s - bridge->connected_at >= bridge->stable_connection_period) {
+		log__printf(NULL, MOSQ_LOG_INFO, "Bridge %s connection was stable enough, resetting backoff", bridge->name);
+		bridge__backoff_reset(bridge);
+	} else {
+		bridge__backoff_step(bridge);
+	}
+
+	bridge->connected_at = 0;
+
+	log__printf(NULL, MOSQ_LOG_INFO, "Bridge %s next backoff will be %d", bridge->name, bridge->restart_timeout);
+}
 
 static void bridge_check_pending(struct mosquitto *context)
 {
@@ -1004,22 +999,21 @@ void bridge_check(void)
 					}
 				}
 			}
-		}
-
-		if(!net__is_connected(context)){
+		}else{
 			if(reload_if_needed(context)) continue;
 
 			/* Want to try to restart the bridge connection */
 			if(!context->bridge->restart_t){
-				context->bridge->restart_t = db.now_s+context->bridge->restart_timeout;
+				bridge__update_backoff(context->bridge);
+				context->bridge->restart_t = 1000*db.now_s+context->bridge->restart_timeout;
 				context->bridge->cur_address++;
 				if(context->bridge->cur_address == context->bridge->address_count){
 					context->bridge->cur_address = 0;
 				}
-				loop__update_next_event(context->bridge->restart_timeout*1000);
+				loop__update_next_event(context->bridge->restart_timeout);
 			}else{
 				if((context->bridge->start_type == bst_lazy && context->bridge->lazy_reconnect)
-						|| (context->bridge->start_type == bst_automatic && db.now_s >= context->bridge->restart_t)){
+						|| (context->bridge->start_type == bst_automatic && 1000*db.now_s >= context->bridge->restart_t)){
 
 #if defined(__GLIBC__) && defined(WITH_ADNS)
 					if(context->adns){

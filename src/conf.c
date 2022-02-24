@@ -1501,6 +1501,7 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 						cur_bridge->restart_timeout = 0;
 						cur_bridge->backoff_base = 5;
 						cur_bridge->backoff_cap = 30;
+						cur_bridge->stable_connection_period = 0;
 						cur_bridge->threshold = 10;
 						cur_bridge->try_private = true;
 						cur_bridge->attempt_unsubscribe = true;
@@ -2142,6 +2143,7 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 						log__printf(NULL, MOSQ_LOG_ERR, "Error: Invalid bridge configuration.");
 						return MOSQ_ERR_INVAL;
 					}
+					cur_bridge->backoff_cap = 0; /* set backoff to constant mode, unless cap is specified further down */
 					token = strtok_r(NULL, " ", &saveptr);
 					if(!token){
 						log__printf(NULL, MOSQ_LOG_ERR, "Error: Empty restart_timeout value in configuration.");
@@ -2160,7 +2162,19 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 							log__printf(NULL, MOSQ_LOG_ERR, "Error: backoff cap is lower than the base in restart_timeout.");
 							return MOSQ_ERR_INVAL;
 						}
+
+						token = strtok_r(NULL, " ", &saveptr);
+						if(token){
+							cur_bridge->stable_connection_period = atoi(token);
+							if(cur_bridge->stable_connection_period < 0){
+								log__printf(NULL, MOSQ_LOG_ERR, "Error: stable connection period cannot be negative.");
+								return MOSQ_ERR_INVAL;
+							}
+						}
 					}
+					cur_bridge->restart_timeout *= 1000; /* backoff is tracked in ms */
+					cur_bridge->backoff_base *= 1000;
+					cur_bridge->backoff_cap *= 1000;
 #else
 					log__printf(NULL, MOSQ_LOG_WARNING, "Warning: Bridge support not available.");
 #endif
