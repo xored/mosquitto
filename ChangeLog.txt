@@ -52,6 +52,7 @@ Broker:
 - Add ability to deny wildcard subscriptions for a role to the dynsec plugin.
 - Add bridge_receive_maximum option for MQTT v5.0 bridges.
 - Add bridge_session_expiry_interval option for MQTT v5.0 bridges.
+- Bridge reconnection backoff improvements.
 
 Plugins / plugin interface:
 - Add persist-sqlite plugin.
