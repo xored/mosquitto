@@ -117,7 +117,7 @@ Client library:
   filter (a subscription) against another topic filter (an ACL), with `%c` and
   `%u` patterns for client id / username substitution.
 - Performance: reduce memory allocations when sending packets.
-- Reintroduce threading support for Windows.
+- Reintroduce threading support for Windows. Closes #1509.
 
 Clients:
 - Add `-W` timeout support to Windows.
