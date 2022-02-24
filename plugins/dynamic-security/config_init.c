@@ -162,6 +162,7 @@ static int client_add_admin(FILE *pwfile, cJSON *j_clients)
 
 	if(client_role_add(j_roles, "super-admin")
 	        || client_role_add(j_roles, "topic-observe")){
+
 		free(password);
 		return MOSQ_ERR_NOMEM;
 	}
@@ -206,7 +207,6 @@ static int client_add_user(FILE *pwfile, cJSON *j_clients)
 	free(salt);
 
 	if(client_role_add(j_roles, "client")){
-
 		free(password);
 		return MOSQ_ERR_NOMEM;
 	}

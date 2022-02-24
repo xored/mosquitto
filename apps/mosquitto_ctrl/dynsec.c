@@ -130,41 +130,41 @@ static void print_list(cJSON *j_response, const char *arrayname, const char *key
 	}
 }
 
-static void print_json_value(cJSON* value, const char* null_value)
+static void print_json_value(cJSON *value, const char *null_value)
 {
-	if (value){
-		if (cJSON_IsString(value)){
+	if(value){
+		if(cJSON_IsString(value)){
 			printf("%s", value->valuestring);
 		}else{
 			char buffer[MAX_STRING_LEN];
 			cJSON_PrintPreallocated(value, buffer, sizeof(buffer), 0);
 			printf("%s", buffer);
 		}
-	} else if (null_value){
+	}else if(null_value){
 		printf("%s",null_value);
 	}
 }
 
-static void print_json_array(cJSON *j_list, int slen, const char* label, const char* element_name, const char* optional_element_name, const char* optional_element_null_value)
+static void print_json_array(cJSON *j_list, int slen, const char *label, const char *element_name, const char *optional_element_name, const char *optional_element_null_value)
 {
 	cJSON *j_elem;
 
 	if(j_list && cJSON_IsArray(j_list)){
 		cJSON_ArrayForEach(j_elem, j_list){
-			if (cJSON_IsObject(j_elem)) {
-				cJSON* jtmp = cJSON_GetObjectItem(j_elem, element_name);
+			if(cJSON_IsObject(j_elem)){
+				cJSON *jtmp = cJSON_GetObjectItem(j_elem, element_name);
 				if(!jtmp || !cJSON_IsString(jtmp)){
 					continue;
 				}
 				printf("%-*s %s", (int)slen, label, jtmp->valuestring);
-				if (optional_element_name) {
+				if(optional_element_name){
 					printf(" (%s: ", optional_element_name);
 					print_json_value(cJSON_GetObjectItem(j_elem,optional_element_name),optional_element_null_value);
 					printf(")");
-				}	
-			} else if (cJSON_IsString(j_elem)) {
+				}
+			}else if(cJSON_IsString(j_elem)){
 				printf("%-*s %s", (int)slen, label, j_elem->valuestring);
-			}					
+			}
 			label = "";
 			printf("\n");
 		}
@@ -176,9 +176,9 @@ static void print_json_array(cJSON *j_list, int slen, const char* label, const c
 
 static void print_client(cJSON *j_response)
 {
-	cJSON *j_data, *j_client, *jtmp;	
+	cJSON *j_data, *j_client, *jtmp;
 	const int label_width = strlen( "Connections:");
-	
+
 	j_data = cJSON_GetObjectItem(j_response, "data");
 	if(j_data == NULL || !cJSON_IsObject(j_data)){
 		fprintf(stderr, "Error: Invalid response from server.\n");
@@ -210,7 +210,7 @@ static void print_client(cJSON *j_response)
 		printf("%-*s %s\n",  label_width, "Disabled:", cJSON_IsTrue(jtmp)?"true":"false");
 	}
 
-	print_json_array(cJSON_GetObjectItem(j_client, "roles"), label_width, "Roles:",  "rolename", "priority", "-1");	
+	print_json_array(cJSON_GetObjectItem(j_client, "roles"), label_width, "Roles:",  "rolename", "priority", "-1");
 	print_json_array(cJSON_GetObjectItem(j_client, "groups"), label_width, "Groups:", "groupname", "priority", "-1");
 	print_json_array(cJSON_GetObjectItem(j_client, "connections"), label_width, "Connections:", "address", NULL, NULL);
 }
@@ -240,8 +240,8 @@ static void print_group(cJSON *j_response)
 	}
 	printf("Groupname: %s\n", jtmp->valuestring);
 
-	print_json_array(cJSON_GetObjectItem(j_group, "roles"), label_width, "Roles:",  "rolename", "priority", "-1");	
-	print_json_array(cJSON_GetObjectItem(j_group, "clients"), label_width, "Clients:",  "username", NULL, NULL);	
+	print_json_array(cJSON_GetObjectItem(j_group, "roles"), label_width, "Roles:",  "rolename", "priority", "-1");
+	print_json_array(cJSON_GetObjectItem(j_group, "clients"), label_width, "Clients:",  "username", NULL, NULL);
 }
 
 

@@ -1,4 +1,5 @@
 {
+	mosquitto_apply_on_all_clients;
 	mosquitto_broker_node_id_set;
 	mosquitto_broker_publish;
 	mosquitto_broker_publish_copy;
@@ -20,14 +21,13 @@
 	mosquitto_free;
 	mosquitto_kick_client_by_clientid;
 	mosquitto_kick_client_by_username;
-	mosquitto_apply_on_all_clients;
 	mosquitto_log_printf;
 	mosquitto_malloc;
 	mosquitto_persist_client_add;
+	mosquitto_persist_client_delete;
 	mosquitto_persist_client_msg_add;
 	mosquitto_persist_client_msg_delete;
 	mosquitto_persist_client_msg_update;
-	mosquitto_persist_client_delete;
 	mosquitto_persist_client_update;
 	mosquitto_persist_msg_add;
 	mosquitto_persist_msg_delete;

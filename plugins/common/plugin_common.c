@@ -24,7 +24,7 @@ void plugin__command_reply(struct plugin_cmd *cmd, const char *error)
 	cJSON_AddItemToArray(cmd->j_responses, j_response);
 }
 
-void plugin_send_response(cJSON *tree, const char* topic)
+void plugin_send_response(cJSON *tree, const char *topic)
 {
 	char *payload;
 	size_t payload_len;
@@ -40,4 +40,3 @@ void plugin_send_response(cJSON *tree, const char* topic)
 	}
 	mosquitto_broker_publish(NULL, topic, (int)payload_len, payload, 0, 0, NULL);
 }
-
