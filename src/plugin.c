@@ -162,7 +162,11 @@ int plugin__handle_message(struct mosquitto *context, struct mosquitto_msg_store
 		}
 	}
 
-	stored->topic = event_data.topic;
+	if(stored->topic != event_data.topic){
+		mosquitto__free(stored->topic);
+		stored->topic = event_data.topic;
+	}
+
 	if(stored->payload != event_data.payload){
 		mosquitto__free(stored->payload);
 		stored->payload = event_data.payload;
