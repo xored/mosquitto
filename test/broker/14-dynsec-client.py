@@ -44,15 +44,15 @@ list_clients_verbose_command = { "commands": [{
             "command": "listClients", "verbose": True, "correlationData": "20"}]
 }
 list_clients_verbose_response = {'responses':[{"command": "listClients", "data":{"totalCount":2, "clients":[
-    {'username': 'admin', 'textname': 'Dynsec admin user', 'roles': [{'rolename': 'admin'}], 'groups': []},
+    {'username': 'admin', 'textname': 'Dynsec admin user', 'roles': [{'rolename': 'admin'}], 'groups': [], 'connections': [{'address': '127.0.0.1'}]},
     {"username":"user_one", "clientid":"cid", "textname":"Name", "textdescription":"Description",
-        "roles":[], "groups":[]}]}, "correlationData":"20"}]}
+        "roles":[], "groups":[], 'connections': []}]}, "correlationData":"20"}]}
 
 
 get_client_command = { "commands": [{
     "command": "getClient", "username": "user_one", "correlationData": "42"}]}
 get_client_response = {'responses':[{'command': 'getClient', 'data': {'client': {'username': 'user_one', 'clientid': 'cid',
-    'textname': 'Name', 'textdescription': 'Description', 'groups': [], 'roles': []}}, "correlationData":"42"}]}
+    'textname': 'Name', 'textdescription': 'Description', 'groups': [], 'connections': [], 'roles': []}}, "correlationData":"42"}]}
 
 set_client_password_command = {"commands": [{
     "command": "setClientPassword", "username": "user_one", "password": "password"}]}

@@ -70,11 +70,11 @@ list_groups_verbose_response = {'responses':[{'command': 'listGroups', 'data': {
 list_clients_verbose_command = { "commands": [{
             "command": "listClients", "verbose": True, "correlationData": "20"}]}
 list_clients_verbose_response = {'responses':[{"command": "listClients", "data":{"totalCount":3, "clients":[
-            {'username': 'admin', 'textname': 'Dynsec admin user', 'roles': [{'rolename': 'admin'}], 'groups': []},
+            {'username': 'admin', 'textname': 'Dynsec admin user', 'roles': [{'rolename': 'admin'}], 'groups': [], 'connections': [{'address': '127.0.0.1'}]},
             {"username":"user_one", "clientid":"cid", "textname":"Name", "textdescription":"description",
-            "groups":[{"groupname":"group_one"}, {"groupname":"group_two"}], "roles":[]},
+             "groups":[{"groupname":"group_one"}, {"groupname":"group_two"}], "roles":[], 'connections': []},
             {"username":"user_two", "textname":"Name", "textdescription":"description",
-            "groups":[{"groupname":"group_one"}], "roles":[]},
+             "groups":[{"groupname":"group_one"}], "roles":[],  'connections': []},
             ]}, "correlationData":"20"}]}
 
 get_group_command = { "commands": [{"command": "getGroup", "groupname":"group_one"}]}

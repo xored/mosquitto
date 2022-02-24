@@ -160,12 +160,8 @@ static int client_add_admin(FILE *pwfile, cJSON *j_clients)
 	free(password_hash);
 	free(salt);
 
-	if(client_role_add(j_roles, "broker-admin")
-			|| client_role_add(j_roles, "dynsec-admin")
-			|| client_role_add(j_roles, "sys-observe")
-			|| client_role_add(j_roles, "topic-observe")
-			){
-
+	if(client_role_add(j_roles, "super-admin")
+	        || client_role_add(j_roles, "topic-observe")){
 		free(password);
 		return MOSQ_ERR_NOMEM;
 	}
@@ -311,8 +307,7 @@ static int acl_add(cJSON *j_acls, const char *acltype, const char *topic, int pr
 	}
 }
 
-
-static int role_add_client(cJSON *j_roles)
+static int add_role_with_full_permission(cJSON *j_roles, const char *role_name, const char *text_description, const char *topic_pattern)
 {
 	cJSON *j_role, *j_acls;
 
@@ -322,79 +317,16 @@ static int role_add_client(cJSON *j_roles)
 	}
 	cJSON_AddItemToArray(j_roles, j_role);
 
-	if(cJSON_AddStringToObject(j_role, "rolename", "client") == NULL
-			|| cJSON_AddStringToObject(j_role, "textdescription",
-				"Read/write access to the full application topic hierarchy.") == NULL
-			|| (j_acls = cJSON_AddArrayToObject(j_role, "acls")) == NULL
-			){
-
+	if(cJSON_AddStringToObject(j_role, "rolename", role_name) == NULL
+		   || cJSON_AddStringToObject(j_role, "textdescription", text_description) == NULL
+		   || (j_acls = cJSON_AddArrayToObject(j_role, "acls")) == NULL){
 		return MOSQ_ERR_NOMEM;
 	}
 
-	if(acl_add(j_acls, "publishClientSend", "#", 0, true)
-			|| acl_add(j_acls, "publishClientReceive", "#", 0, true)
-			|| acl_add(j_acls, "subscribePattern", "#", 0, true)
-			|| acl_add(j_acls, "unsubscribePattern", "#", 0, true)
-			){
-
-		return MOSQ_ERR_NOMEM;
-	}
-	return MOSQ_ERR_SUCCESS;
-}
-
-static int role_add_broker_admin(cJSON *j_roles)
-{
-	cJSON *j_role, *j_acls;
-
-	j_role = cJSON_CreateObject();
-	if(j_role == NULL){
-		return MOSQ_ERR_NOMEM;
-	}
-	cJSON_AddItemToArray(j_roles, j_role);
-
-	if(cJSON_AddStringToObject(j_role, "rolename", "broker-admin") == NULL
-			|| cJSON_AddStringToObject(j_role, "textdescription",
-				"Grants access to administer general broker configuration.") == NULL
-			|| (j_acls = cJSON_AddArrayToObject(j_role, "acls")) == NULL
-			){
-
-		return MOSQ_ERR_NOMEM;
-	}
-
-	if(acl_add(j_acls, "publishClientSend", "$CONTROL/broker/#", 0, true)
-			|| acl_add(j_acls, "publishClientReceive", "$CONTROL/broker/#", 0, true)
-			|| acl_add(j_acls, "subscribePattern", "$CONTROL/broker/#", 0, true)
-			){
-
-		return MOSQ_ERR_NOMEM;
-	}
-	return MOSQ_ERR_SUCCESS;
-}
-
-static int role_add_dynsec_admin(cJSON *j_roles)
-{
-	cJSON *j_role, *j_acls;
-
-	j_role = cJSON_CreateObject();
-	if(j_role == NULL){
-		return MOSQ_ERR_NOMEM;
-	}
-	cJSON_AddItemToArray(j_roles, j_role);
-
-	if(cJSON_AddStringToObject(j_role, "rolename", "dynsec-admin") == NULL
-			|| cJSON_AddStringToObject(j_role, "textdescription",
-				"Grants access to administer clients/groups/roles.") == NULL
-			|| (j_acls = cJSON_AddArrayToObject(j_role, "acls")) == NULL
-			){
-
-		return MOSQ_ERR_NOMEM;
-	}
-
-	if(acl_add(j_acls, "publishClientSend", "$CONTROL/dynamic-security/#", 0, true)
-			|| acl_add(j_acls, "publishClientReceive", "$CONTROL/dynamic-security/#", 0, true)
-			|| acl_add(j_acls, "subscribePattern", "$CONTROL/dynamic-security/#", 0, true)
-			){
-
+	if(acl_add(j_acls, "publishClientSend", topic_pattern, 0, true)
+		|| acl_add(j_acls, "publishClientReceive", topic_pattern, 0, true)
+		|| acl_add(j_acls, "subscribePattern", topic_pattern, 0, true)
+		|| acl_add(j_acls, "unsubscribePattern", topic_pattern, 0, true)){
 		return MOSQ_ERR_NOMEM;
 	}
 	return MOSQ_ERR_SUCCESS;
@@ -494,13 +426,11 @@ static int add_roles(cJSON *j_tree)
 		return MOSQ_ERR_NOMEM;
 	}
 
-	if(role_add_client(j_roles)
-			|| role_add_broker_admin(j_roles)
-			|| role_add_dynsec_admin(j_roles)
-			|| role_add_sys_notify(j_roles)
-			|| role_add_sys_observe(j_roles)
-			|| role_add_topic_observe(j_roles)
-			){
+	if(add_role_with_full_permission(j_roles, "client", "Read/write access to the full application topic hierarchy.", "#")
+		|| add_role_with_full_permission(j_roles, "broker-admin", "Grants access to administer general broker configuration.", "$CONTROL/broker/#")
+		|| add_role_with_full_permission(j_roles, "dynsec-admin", "Grants access to administer clients/groups/roles.", "$CONTROL/dynamic-security/#")
+		|| add_role_with_full_permission(j_roles, "super-admin", "Grants access to administer all kind of broker controls", "$CONTROL/#")
+		|| role_add_sys_notify(j_roles) || role_add_sys_observe(j_roles) || role_add_topic_observe(j_roles)){
 		return MOSQ_ERR_NOMEM;
 	}
 

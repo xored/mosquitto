@@ -400,6 +400,20 @@ int mosquitto_kick_client_by_username(const char *username, bool with_will)
 	return MOSQ_ERR_SUCCESS;
 }
 
+int mosquitto_apply_on_all_clients(int (*FUNC_client_functor)(const struct mosquitto *, void *), void *functor_context)
+{
+	int rc = MOSQ_ERR_SUCCESS;
+	struct mosquitto *ctxt, *ctxt_tmp;
+
+	HASH_ITER(hh_id, db.contexts_by_id, ctxt, ctxt_tmp){
+		rc = (*FUNC_client_functor)(ctxt, functor_context);
+		if(rc != MOSQ_ERR_SUCCESS){
+			break;
+		}
+	}
+
+	return rc;
+}
 
 int mosquitto_persist_client_add(struct mosquitto_evt_persist_client *client)
 {

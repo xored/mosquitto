@@ -109,6 +109,7 @@ get_client_response1 = {'responses':[{'command': 'getClient', 'data': {'client':
     'textname': 'Name', 'textdescription': 'Description',
     'roles': [],
     'groups': [],
+    'connections': []
     }}}]}
 
 get_client_command2 = { "commands": [{
@@ -122,8 +123,9 @@ get_client_response2 = {'responses':[{'command': 'getClient', 'data': {'client':
     ],
     'groups': [
         {'groupname':'group_two', 'priority':8},
-        {'groupname':'group_one', 'priority':3}
-    ]}}}]}
+        {'groupname':'group_one', 'priority':3}],
+    'connections': []
+    }}}]}
 
 get_client_command3 = { "commands": [{
             "command": "getClient", "username": "user_one"}]}
@@ -133,8 +135,9 @@ get_client_response3 = {'responses':[{'command': 'getClient', 'data': {'client':
     'roles': [
         {'rolename':'role_three', 'priority':10},
         {'rolename':'role_one', 'priority':2},
-        {'rolename':'role_two'}
-    ]}}}]}
+        {'rolename':'role_two'}],
+     'connections': []
+    }}}]}
 
 
 

@@ -94,7 +94,7 @@ password_mosq.o : ${R}/common/password_mosq.c ${R}/common/password_mosq.h
 plugin.o : plugin.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
-plugin_common.o : ${R}/plugins/common/plugin_common.c dynamic_security.h
+plugin_common.o : ${R}/plugins/common/plugin_common.c ${R}/plugins/common/plugin_common.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 roles.o : roles.c dynamic_security.h

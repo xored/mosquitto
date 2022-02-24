@@ -148,11 +148,11 @@ list_clients_verbose_command = { "commands": [{
     "command": "listClients", "verbose": True, "correlationData": "20"}]
 }
 list_clients_verbose_response = {'responses':[{"command": "listClients", "data":{'totalCount':3, "clients":[
-    {'username': 'admin', 'textname': 'Dynsec admin user', 'roles': [{'rolename': 'admin'}], 'groups': []},
+    {'username': 'admin', 'textname': 'Dynsec admin user', 'roles': [{'rolename': 'admin'}], 'groups': [],  'connections': [{'address': '127.0.0.1'}]},
     {"username":"user_one", "clientid":"cid", "textname":"Name", "textdescription":"Description",
-    "groups":[], "roles":[{'rolename':'basic'}, {'rolename':'basic2'}]},
+     "groups":[], "roles":[{'rolename':'basic'}, {'rolename':'basic2'}],  'connections': []},
     {"username":"user_two", "textname":"Name", "textdescription":"Description",
-    "groups":[], "roles":[]}]}, "correlationData":"20"}]}
+     "groups":[], "roles":[], 'connections': []}]}, "correlationData":"20"}]}
 
 list_groups_verbose_command = { "commands": [{
     "command": "listGroups", "verbose": True, "correlationData": "20"}]

@@ -38,9 +38,9 @@ add_client_repeat_response = {'responses':[{"command":"createClient","error":"Cl
 get_client_command = { "commands": [{
             "command": "getClient", "username": "user_one"}]}
 get_client_response1 = {'responses':[{'command': 'getClient', 'data': {'client': {'username': 'user_one', 'clientid': 'cid',
-    'textname': 'Name', 'textdescription': 'Description', 'groups': [], 'roles': []}}}]}
+            'textname': 'Name', 'textdescription': 'Description', 'groups': [], 'roles': [], 'connections': []}}}]}
 get_client_response2 = {'responses':[{'command': 'getClient', 'data': {'client': {'username': 'user_one', 'clientid': 'cid',
-    'textname': 'Name', 'textdescription': 'Description', 'disabled':True, 'groups': [], 'roles': []}}}]}
+            'textname': 'Name', 'textdescription': 'Description', 'disabled':True, 'groups': [], 'roles': [], 'connections': []}}}]}
 
 disable_client_command = { "commands": [{
             "command": "disableClient", "username": "user_one"}]}
