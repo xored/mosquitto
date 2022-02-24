@@ -25,6 +25,10 @@ Contributors:
 #include <string.h>
 #include <sys/stat.h>
 
+#ifndef WIN32
+#  include <strings.h>
+#endif
+
 #include "json_help.h"
 #include "mosquitto.h"
 #include "mosquitto_broker.h"
