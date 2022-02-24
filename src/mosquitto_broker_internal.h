@@ -584,6 +584,7 @@ struct mosquitto__bridge{
 	bool topic_remapping;
 	enum mosquitto__protocol protocol_version;
 	time_t restart_t;
+	time_t connected_at;
 	char *remote_clientid;
 	char *remote_username;
 	char *remote_password;
@@ -599,6 +600,7 @@ struct mosquitto__bridge{
 	int restart_timeout;
 	int backoff_base;
 	int backoff_cap;
+	int stable_connection_period;
 	int threshold;
 	uint32_t maximum_packet_size;
 	uint32_t session_expiry_interval;
