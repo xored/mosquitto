@@ -9,6 +9,7 @@ DIRS= \
 		message-timestamp \
 		payload-modification \
 		payload-size-stats \
+		plugin-event-stats \
 		print-ip-on-publish \
 		topic-modification \
 		wildcard-temp
