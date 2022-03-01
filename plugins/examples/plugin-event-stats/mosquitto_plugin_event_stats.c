@@ -26,26 +26,26 @@ Contributors:
  *
  *   plugin /path/to/mosquitto_plugin_event_stats.so
  *
- * Note that this only works on Mosquitto 2.0 or later.
+ * Note that this only works on Mosquitto 2.1 or later.
  */
 #include "config.h"
 
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
 #include "mosquitto_broker.h"
 #include "mosquitto_plugin.h"
-#include "mosquitto.h"
-#include "mqtt_protocol.h"
 
-#define MAX_EVT MOSQ_EVT_PERSIST_CLIENT_MSG_LOAD+1
+#define PLUGIN_NAME "plugin-event-stats"
+#define PLUGIN_VERSION "1.0"
+
+#define MAX_EVT MOSQ_EVT_PERSIST_CLIENT_MSG_LOAD
 MOSQUITTO_PLUGIN_DECLARE_VERSION(5);
 
 static mosquitto_plugin_id_t *mosq_pid = NULL;
 
-static uint64_t evt_counts[MAX_EVT];
-static uint64_t last_evt_counts[MAX_EVT];
+static uint64_t evt_counts[MAX_EVT+1];
+static uint64_t last_evt_counts[MAX_EVT+1];
 static time_t last_report = 0;
 
 #define TOPIC_BASE "$SYS/broker/plugin/events/"
@@ -84,19 +84,17 @@ const char evt_topics[][60] = {
 
 static int callback_tick(int event, void *event_data, void *userdata)
 {
-	struct timespec ts;
+	struct mosquitto_evt_tick *ed = event_data;
 	char payload[40];
 	int slen;
 
 	UNUSED(event);
-	UNUSED(event_data);
 	UNUSED(userdata);
 
-	clock_gettime(CLOCK_REALTIME, &ts);
-	if(last_report + 10 < ts.tv_sec){
-		last_report = ts.tv_sec;
+	if(last_report + 10 < ed->now_s){
+		last_report = ed->now_s;
 
-		for(int i=0; i<MAX_EVT; i++){
+		for(int i=1; i<MAX_EVT+1; i++){
 			if(evt_counts[i] != last_evt_counts[i]){
 				slen = snprintf(payload, sizeof(payload), "%ld", evt_counts[i]);
 				mosquitto_broker_publish_copy(NULL, evt_topics[i], slen, payload, 0, 1, NULL);
@@ -114,7 +112,7 @@ static int callback_counter(int event, void *event_data, void *userdata)
 	UNUSED(event_data);
 	UNUSED(userdata);
 
-	if(event < 0 || event > MAX_EVT-1){
+	if(event < 0 || event > MAX_EVT){
 		return MOSQ_ERR_SUCCESS;
 	}else{
 		evt_counts[event]++;
@@ -134,8 +132,10 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	memset(last_evt_counts, 0, sizeof(last_evt_counts));
 
 	mosq_pid = identifier;
+	mosquitto_plugin_set_info(identifier, PLUGIN_NAME, PLUGIN_VERSION);
+
 	mosquitto_callback_register(mosq_pid, MOSQ_EVT_TICK, callback_tick, NULL, NULL);
-	for(int i=1; i<MAX_EVT-1; i++){
+	for(int i=1; i<MAX_EVT+1; i++){
 		if(i != MOSQ_EVT_TICK){
 			mosquitto_callback_register(mosq_pid, i, callback_counter, NULL, NULL);
 		}
