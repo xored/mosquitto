@@ -374,10 +374,12 @@ int main(int argc, char *argv[])
 		if(!ctxt->wsi)
 #endif
 		{
+			ctxt->is_persisted = false; /* prevent persistence removal */
 			context__cleanup(ctxt, true);
 		}
 	}
 	HASH_ITER(hh_sock, db.contexts_by_sock, ctxt, ctxt_tmp){
+		ctxt->is_persisted = false; /* prevent persistence removal */
 		context__cleanup(ctxt, true);
 	}
 #ifdef WITH_BRIDGE

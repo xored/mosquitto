@@ -54,7 +54,7 @@ void plugin_persist__handle_client_add(struct mosquitto *context)
 
 	UNUSED(will); /* FIXME */
 
-	if(db.shutdown) return;
+	if(db.shutdown || context->is_persisted) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -77,6 +77,7 @@ void plugin_persist__handle_client_add(struct mosquitto *context)
 	DL_FOREACH(opts->plugin_callbacks.persist_client_add, cb_base){
 		cb_base->cb(MOSQ_EVT_PERSIST_CLIENT_ADD, &event_data, cb_base->userdata);
 	}
+	context->is_persisted = true;
 }
 
 
@@ -123,7 +124,8 @@ void plugin_persist__handle_client_delete(struct mosquitto *context)
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(context->session_expiry_interval > 0
+	if(context->is_persisted == false
+			|| context->session_expiry_interval > 0
 			|| context->id == NULL
 			|| context->state == mosq_cs_duplicate
 			|| db.shutdown){
@@ -137,6 +139,7 @@ void plugin_persist__handle_client_delete(struct mosquitto *context)
 	DL_FOREACH(opts->plugin_callbacks.persist_client_delete, cb_base){
 		cb_base->cb(MOSQ_EVT_PERSIST_CLIENT_DELETE, &event_data, cb_base->userdata);
 	}
+	context->is_persisted = false;
 }
 
 
@@ -146,7 +149,7 @@ void plugin_persist__handle_subscription_add(struct mosquitto *context, const ch
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(db.shutdown) return;
+	if(db.shutdown || context->is_persisted == false) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -167,7 +170,7 @@ void plugin_persist__handle_subscription_delete(struct mosquitto *context, const
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(db.shutdown) return;
+	if(db.shutdown || context->is_persisted == false) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -186,7 +189,7 @@ void plugin_persist__handle_client_msg_add(struct mosquitto *context, const stru
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(context->session_expiry_interval == 0
+	if(context->is_persisted == false
 			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)
 			|| db.shutdown){
 
@@ -218,7 +221,7 @@ void plugin_persist__handle_client_msg_delete(struct mosquitto *context, const s
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(context->session_expiry_interval == 0
+	if(context->is_persisted == false
 			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)
 			|| db.shutdown){
 
@@ -248,7 +251,12 @@ void plugin_persist__handle_client_msg_update(struct mosquitto *context, const s
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(db.shutdown) return;
+	if(context->is_persisted == false
+			|| (cmsg->qos == 0 && db.config->queue_qos0_messages == false)
+			|| db.shutdown){
+
+		return;
+	}
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));
@@ -272,7 +280,7 @@ void plugin_persist__handle_client_msg_clear(struct mosquitto *context, uint8_t 
 	struct mosquitto__callback *cb_base;
 	struct mosquitto__security_options *opts;
 
-	if(context->session_expiry_interval == 0 || db.shutdown) return;
+	if(db.shutdown || context->is_persisted == false) return;
 
 	opts = &db.config->security_options;
 	memset(&event_data, 0, sizeof(event_data));

@@ -128,6 +128,14 @@ int connect__on_authorised(struct mosquitto *context, void *auth_data_out, uint1
 			 * done in context__cleanup() below. */
 		}
 
+		if(context->clean_start == true){
+			sub__clean_session(found_context);
+			found_context->session_expiry_interval = 0;
+			plugin_persist__handle_client_delete(found_context);
+		}
+		context->is_persisted = found_context->is_persisted;
+		found_context->is_persisted = false; /* stops persistence for context being removed */
+
 		if(context->clean_start == false && found_context->session_expiry_interval > 0){
 			if(context->protocol == mosq_p_mqtt311 || context->protocol == mosq_p_mqtt5){
 				connect_ack |= 0x01;
@@ -183,11 +191,6 @@ int connect__on_authorised(struct mosquitto *context, void *auth_data_out, uint1
 			}
 		}
 
-		if(context->clean_start == true){
-			sub__clean_session(found_context);
-			found_context->session_expiry_interval = 0;
-			plugin_persist__handle_client_delete(found_context);
-		}
 		if((found_context->protocol == mosq_p_mqtt5 && found_context->session_expiry_interval == 0)
 				|| (found_context->protocol != mosq_p_mqtt5 && found_context->clean_start == true)
 				|| (context->clean_start == true)

@@ -457,6 +457,7 @@ int mosquitto_persist_client_add(struct mosquitto_evt_persist_client *client)
 	context->max_qos = client->max_qos;
 	context->maximum_packet_size = client->max_packet_size;
 	context->retain_available = client->retain_available;
+	context->is_persisted = true;
 
 	/* in per_listener_settings mode, try to find the listener by persisted port */
 	if(db.config->per_listener_settings && client->listener_port > 0){
@@ -548,6 +549,7 @@ int mosquitto_persist_client_delete(const char *client_id)
 
 	context->clean_start = true;
 	context->session_expiry_interval = 0;
+	context->is_persisted = false;
 	mosquitto__set_state(context, mosq_cs_duplicate);
 	do_disconnect(context, MOSQ_ERR_SUCCESS);
 

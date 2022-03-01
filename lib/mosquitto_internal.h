@@ -352,6 +352,7 @@ struct mosquitto {
 	bool in_by_id;
 	bool is_dropping;
 	bool is_bridge;
+	bool is_persisted;
 	struct mosquitto__bridge *bridge;
 	struct mosquitto_msg_data msgs_in;
 	struct mosquitto_msg_data msgs_out;
