@@ -178,13 +178,13 @@ void xtreport(void)
 	fprintf(fptr, "\nfn=(%d) messages\n", fn_index_max);
 	fprintf(fptr, "1 0 0 0 0 0 0 0 0 0 0 0\n");
 
-	struct mosquitto_msg_store *msg_store, *msg_store_tmp;
+	struct mosquitto_base_msg *base_msg, *base_msg_tmp;
 
-	HASH_ITER(hh, db.msg_store, msg_store, msg_store_tmp){
-		if(msg_store->ref_count > 1){
-			fprintf(fptr, "cfn=(%d) %" PRIu64 "\n", fn_index_max, msg_store->db_id);
-			fprintf(fptr, "calls=%d %d\n", msg_store->ref_count, fn_index_max);
-			fprintf(fptr, "%d 0 0 0 0 0 0 0 %d 0 0 0\n", fn_index_max, msg_store->ref_count);
+	HASH_ITER(hh, db.msg_store, base_msg, base_msg_tmp){
+		if(base_msg->ref_count > 1){
+			fprintf(fptr, "cfn=(%d) %" PRIu64 "\n", fn_index_max, base_msg->db_id);
+			fprintf(fptr, "calls=%d %d\n", base_msg->ref_count, fn_index_max);
+			fprintf(fptr, "%d 0 0 0 0 0 0 0 %d 0 0 0\n", fn_index_max, base_msg->ref_count);
 			fn_index_max++;
 		}
 	}
