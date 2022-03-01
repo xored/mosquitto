@@ -47,6 +47,38 @@ static const char *get_event_name(int event)
 			return "disconnect";
 		case MOSQ_EVT_CONNECT:
 			return "connect";
+		case MOSQ_EVT_PERSIST_RESTORE:
+			return "persist-restore";
+		case MOSQ_EVT_PERSIST_BASE_MSG_ADD:
+			return "persist-base-msg-add";
+		case MOSQ_EVT_PERSIST_BASE_MSG_DELETE:
+			return "persist-base-msg-delete";
+		case MOSQ_EVT_PERSIST_BASE_MSG_LOAD:
+			return "persist-base-msg-load";
+		case MOSQ_EVT_PERSIST_RETAIN_MSG_ADD:
+			return "persist-retain-msg-add";
+		case MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE:
+			return "persist-retain-msg-delete";
+		case MOSQ_EVT_PERSIST_CLIENT_ADD:
+			return "persist-client-add";
+		case MOSQ_EVT_PERSIST_CLIENT_DELETE:
+			return "persist-client-delete";
+		case MOSQ_EVT_PERSIST_CLIENT_UPDATE:
+			return "persist-client-update";
+		case MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD:
+			return "persist-subscription-add";
+		case MOSQ_EVT_PERSIST_SUBSCRIPTION_DELETE:
+			return "persist-subscription-delete";
+		case MOSQ_EVT_PERSIST_CLIENT_MSG_ADD:
+			return "persist-client-msg-add";
+		case MOSQ_EVT_PERSIST_CLIENT_MSG_DELETE:
+			return "persist-client-msg-delete";
+		case MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE:
+			return "persist-client-msg-update";
+		case MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR:
+			return "persist-client-msg-clear";
+		case MOSQ_EVT_PERSIST_CLIENT_MSG_LOAD:
+			return "persist-client-msg-load";
 		default:
 			return "";
 	}
