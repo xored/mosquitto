@@ -159,7 +159,7 @@ int retain__store(const char *topic, struct mosquitto_base_msg *base_msg, char *
 	if(retainhier->retained){
 		if(persist && retainhier->retained->topic[0] != '$' && base_msg->payloadlen == 0){
 			/* Only delete if another retained message isn't replacing this one */
-			plugin_persist__handle_retain_msg_delete(retainhier->retained);
+			plugin_persist__queue_retain_event(retainhier->retained, MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE);
 		}
 		db__msg_store_ref_dec(&retainhier->retained);
 #ifdef WITH_SYS_TREE
@@ -173,8 +173,7 @@ int retain__store(const char *topic, struct mosquitto_base_msg *base_msg, char *
 		retainhier->retained = base_msg;
 		db__msg_store_ref_inc(retainhier->retained);
 		if(persist && retainhier->retained->topic[0] != '$'){
-			plugin_persist__handle_base_msg_add(retainhier->retained);
-			plugin_persist__handle_retain_msg_set(retainhier->retained);
+			plugin_persist__queue_retain_event(retainhier->retained, MOSQ_EVT_PERSIST_RETAIN_MSG_SET);
 		}
 #ifdef WITH_SYS_TREE
 		db.retained_count++;

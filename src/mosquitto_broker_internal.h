@@ -478,6 +478,11 @@ struct mosquitto__message_v5{
 	bool retain;
 };
 
+struct persist_retain_event{
+	UT_hash_handle hh;
+	struct mosquitto_base_msg *msg;
+	int event;
+};
 
 struct mosquitto_db{
 	dbid_t last_db_id;
@@ -488,6 +493,7 @@ struct mosquitto_db{
 	struct mosquitto *contexts_by_sock;
 	struct mosquitto *contexts_by_id_delayed_auth;
 	struct mosquitto *contexts_for_free;
+	struct persist_retain_event *persist_retain_events;
 #ifdef WITH_BRIDGE
 	struct mosquitto **bridges;
 	int bridge_count;
@@ -873,6 +879,8 @@ void plugin_persist__handle_base_msg_add(struct mosquitto_base_msg *base_msg);
 void plugin_persist__handle_base_msg_delete(struct mosquitto_base_msg *base_msg);
 void plugin_persist__handle_retain_msg_set(struct mosquitto_base_msg *base_msg);
 void plugin_persist__handle_retain_msg_delete(struct mosquitto_base_msg *base_msg);
+void plugin_persist__process_retain_events(bool force);
+void plugin_persist__queue_retain_event(struct mosquitto_base_msg *msg, int event);
 
 /* ============================================================
  * Property related functions

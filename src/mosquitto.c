@@ -346,13 +346,6 @@ int main(int argc, char *argv[])
 
 	g_run = 1;
 	rc = mosquitto_main_loop(g_listensock, g_listensock_count);
-	db.shutdown = true;
-
-	log__printf(NULL, MOSQ_LOG_INFO, "mosquitto version %s terminating", VERSION);
-
-#ifdef WITH_CJSON
-	broker_control__cleanup();
-#endif
 
 	/* FIXME - this isn't quite right, all wills with will delay zero should be
 	 * sent now, but those with positive will delay should be persisted and
@@ -361,6 +354,16 @@ int main(int argc, char *argv[])
 		context__send_will(ctxt);
 	}
 	will_delay__send_all();
+
+	plugin_persist__process_retain_events(true);
+
+	/* Set to true only after persistence events have been processed */
+	db.shutdown = true;
+	log__printf(NULL, MOSQ_LOG_INFO, "mosquitto version %s terminating", VERSION);
+
+#ifdef WITH_CJSON
+	broker_control__cleanup();
+#endif
 
 #ifdef WITH_PERSISTENCE
 	persist__backup(true);

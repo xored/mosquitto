@@ -682,6 +682,7 @@ int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
 	uint32_t message_expiry_interval;
 	time_t message_expiry_interval_tt;
 	int i;
+	int rc;
 
 	memset(&context, 0, sizeof(context));
 
@@ -725,7 +726,10 @@ int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
 			}
 		}
 	}
-	return db__message_store(&context, base_msg, message_expiry_interval, msg->store_id, mosq_mo_broker);
+	rc = db__message_store(&context, base_msg, message_expiry_interval, msg->store_id, mosq_mo_broker);
+	free(context.id);
+	free(context.username);
+	return rc;
 
 error:
 	mosquitto_property_free_all(&msg->plugin_properties);

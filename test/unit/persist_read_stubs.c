@@ -239,3 +239,14 @@ void plugin_persist__handle_base_msg_add(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }
+
+void plugin_persist__process_retain_events(bool force)
+{
+	UNUSED(force);
+}
+
+void plugin_persist__queue_retain_event(struct mosquitto_base_msg *msg, int event)
+{
+	UNUSED(msg);
+	UNUSED(event);
+}

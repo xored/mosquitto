@@ -349,6 +349,54 @@ void plugin_persist__handle_base_msg_delete(struct mosquitto_base_msg *msg)
 }
 
 
+void plugin_persist__process_retain_events(bool force)
+{
+	struct persist_retain_event *evt, *evt_tmp;
+	static time_t last_run = 0;
+
+	if(db.now_real_s > last_run + 10 || force){
+		HASH_ITER(hh, db.persist_retain_events, evt, evt_tmp){
+			HASH_DELETE(hh, db.persist_retain_events, evt);
+			if(evt->event == MOSQ_EVT_PERSIST_RETAIN_MSG_SET){
+				plugin_persist__handle_base_msg_add(evt->msg);
+				plugin_persist__handle_retain_msg_set(evt->msg);
+			}else if(evt->event == MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE){
+				plugin_persist__handle_retain_msg_delete(evt->msg);
+			}
+			db__msg_store_ref_dec(&evt->msg);
+			SAFE_FREE(evt);
+		}
+		last_run = db.now_real_s;
+	}
+}
+
+
+/* The retain event queue is used to store retain persistence events and periodically apply them.
+ * There can only be one event per topic queued at any one time, and this means that we
+ * can potentially remove a lot of set/delete persist events if a topic is
+ * being updated frequently. */
+void plugin_persist__queue_retain_event(struct mosquitto_base_msg *msg, int event)
+{
+	struct persist_retain_event *evt;
+
+	HASH_FIND(hh, db.persist_retain_events, msg->topic, strlen(msg->topic), evt);
+	if(evt){
+		db__msg_store_ref_dec(&evt->msg);
+		HASH_DELETE(hh, db.persist_retain_events, evt);
+	}else{
+		evt = mosquitto__calloc(1, sizeof(struct persist_retain_event));
+		if(!evt){
+			return;
+		}
+	}
+
+	evt->event = event;
+	evt->msg = msg;
+	db__msg_store_ref_inc(msg);
+	HASH_ADD_KEYPTR(hh, db.persist_retain_events, evt->msg->topic, strlen(evt->msg->topic), evt);
+}
+
+
 void plugin_persist__handle_retain_msg_set(struct mosquitto_base_msg *msg)
 {
 	struct mosquitto_evt_persist_retain_msg event_data;

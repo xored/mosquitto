@@ -206,6 +206,7 @@ int mosquitto_main_loop(struct mosquitto__listener_sock *listensock, int listens
 		plugin__handle_tick();
 		session_expiry__check();
 		will_delay__check();
+		plugin_persist__process_retain_events(false);
 
 		rc = mux__handle(listensock, listensock_count);
 		if(rc) return rc;

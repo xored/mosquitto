@@ -211,3 +211,14 @@ void plugin_persist__handle_subscription_delete(struct mosquitto *context, const
 	UNUSED(context);
 	UNUSED(sub);
 }
+
+void plugin_persist__process_retain_events(bool force)
+{
+	UNUSED(force);
+}
+
+void plugin_persist__queue_retain_event(struct mosquitto_base_msg *msg, int event)
+{
+	UNUSED(msg);
+	UNUSED(event);
+}
