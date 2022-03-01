@@ -4,11 +4,13 @@
 
 from mosq_test_helper import *
 
+vg_index = 0
 def start_broker(filename):
+    global vg_index
     cmd = ['../../src/mosquitto', '-v', '-c', filename]
 
     if os.environ.get('MOSQ_USE_VALGRIND') is not None:
-        logfile = filename+'.'+str(vg_index)+'.vglog'
+        logfile = os.path.basename(__file__)+'.'+str(vg_index)+'.vglog'
         if os.environ.get('MOSQ_USE_VALGRIND') == 'callgrind':
             cmd = ['valgrind', '-q', '--tool=callgrind', '--log-file='+logfile] + cmd
         elif os.environ.get('MOSQ_USE_VALGRIND') == 'massif':
@@ -16,6 +18,7 @@ def start_broker(filename):
         else:
             cmd = ['valgrind', '-q', '--trace-children=yes', '--leak-check=full', '--show-leak-kinds=all', '--log-file='+logfile] + cmd
 
+    vg_index += 1
     return subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 
 
@@ -36,7 +39,10 @@ def do_test():
     broker = start_broker(filename=conf_file)
 
     try:
-        time.sleep(0.1)
+        if os.environ.get('MOSQ_USE_VALGRIND') is None:
+            time.sleep(0.1)
+        else:
+            time.sleep(2)
         sock = mosq_test.do_client_connect_unix(connect_packet, connack_packet, path=f"{port}.sock")
         sock.close()
 
