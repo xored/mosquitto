@@ -79,7 +79,7 @@ enum mosquitto_plugin_event {
 	MOSQ_EVT_PERSIST_BASE_MSG_ADD = 14,
 	MOSQ_EVT_PERSIST_BASE_MSG_DELETE = 15,
 	MOSQ_EVT_PERSIST_BASE_MSG_LOAD = 16,
-	MOSQ_EVT_PERSIST_RETAIN_MSG_ADD = 17,
+	MOSQ_EVT_PERSIST_RETAIN_MSG_SET = 17,
 	MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE = 18,
 	MOSQ_EVT_PERSIST_CLIENT_ADD = 19,
 	MOSQ_EVT_PERSIST_CLIENT_DELETE = 20,
@@ -296,7 +296,7 @@ struct mosquitto_evt_persist_base_msg {
 };
 
 
-/* Data for the MOSQ_EVT_PERSIST_RETAIN/_DELETE event */
+/* Data for the MOSQ_EVT_PERSIST_RETAIN_MSG_SET/_DELETE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_retain_msg {
@@ -1059,9 +1059,9 @@ int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t
 int mosquitto_subscription_delete(const char *client_id, const char *topic);
 
 
-/* Function: mosquitto_persist_retain_msg_add
+/* Function: mosquitto_persist_retain_msg_set
  *
- * Use to add a retained message. It is not required to delete a retained
+ * Use to set a retained message. It is not required to delete a retained
  * message for an existing topic first.
  *
  * Parameters:
@@ -1074,7 +1074,7 @@ int mosquitto_subscription_delete(const char *client_id, const char *topic);
  *   MOSQ_ERR_NOT_FOUND - the referenced base message was not found
  *   MOSQ_ERR_NOMEM - on out of memory
  */
-int mosquitto_persist_retain_msg_add(const char *topic, uint64_t store_id);
+int mosquitto_persist_retain_msg_set(const char *topic, uint64_t store_id);
 
 
 /* Function: mosquitto_persist_retain_msg_delete

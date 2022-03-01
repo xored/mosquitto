@@ -227,7 +227,7 @@ void context__add_to_by_id(struct mosquitto *context)
 	}
 }
 
-void plugin_persist__handle_retain_msg_add(struct mosquitto_base_msg *msg)
+void plugin_persist__handle_retain_msg_set(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }

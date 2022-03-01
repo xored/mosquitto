@@ -343,7 +343,7 @@ static int retain_restore(struct mosquitto_sqlite *ms)
 		}
 		store_id = (uint64_t)sqlite3_column_int64(stmt, 1);
 
-		rc = mosquitto_persist_retain_msg_add(topic, store_id);
+		rc = mosquitto_persist_retain_msg_set(topic, store_id);
 		if(rc == MOSQ_ERR_SUCCESS){
 			count++;
 		}else{

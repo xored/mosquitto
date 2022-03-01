@@ -71,7 +71,7 @@ int retain__init(void)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_persist_retain_msg_add(const char *topic, uint64_t base_msg_id)
+int mosquitto_persist_retain_msg_set(const char *topic, uint64_t base_msg_id)
 {
 	struct mosquitto_base_msg *base_msg;
 	int rc = MOSQ_ERR_UNKNOWN;
@@ -157,7 +157,8 @@ int retain__store(const char *topic, struct mosquitto_base_msg *base_msg, char *
 #endif
 
 	if(retainhier->retained){
-		if(persist && retainhier->retained->topic[0] != '$'){
+		if(persist && retainhier->retained->topic[0] != '$' && base_msg->payloadlen == 0){
+			/* Only delete if another retained message isn't replacing this one */
 			plugin_persist__handle_retain_msg_delete(retainhier->retained);
 		}
 		db__msg_store_ref_dec(&retainhier->retained);
@@ -173,7 +174,7 @@ int retain__store(const char *topic, struct mosquitto_base_msg *base_msg, char *
 		db__msg_store_ref_inc(retainhier->retained);
 		if(persist && retainhier->retained->topic[0] != '$'){
 			plugin_persist__handle_base_msg_add(retainhier->retained);
-			plugin_persist__handle_retain_msg_add(retainhier->retained);
+			plugin_persist__handle_retain_msg_set(retainhier->retained);
 		}
 #ifdef WITH_SYS_TREE
 		db.retained_count++;

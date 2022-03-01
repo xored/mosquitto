@@ -349,7 +349,7 @@ void plugin_persist__handle_base_msg_delete(struct mosquitto_base_msg *msg)
 }
 
 
-void plugin_persist__handle_retain_msg_add(struct mosquitto_base_msg *msg)
+void plugin_persist__handle_retain_msg_set(struct mosquitto_base_msg *msg)
 {
 	struct mosquitto_evt_persist_retain_msg event_data;
 	struct mosquitto__callback *cb_base;
@@ -363,8 +363,8 @@ void plugin_persist__handle_retain_msg_add(struct mosquitto_base_msg *msg)
 	event_data.store_id = msg->db_id;
 	event_data.topic = msg->topic;
 
-	DL_FOREACH(opts->plugin_callbacks.persist_retain_msg_add, cb_base){
-		cb_base->cb(MOSQ_EVT_PERSIST_RETAIN_MSG_ADD, &event_data, cb_base->userdata);
+	DL_FOREACH(opts->plugin_callbacks.persist_retain_msg_set, cb_base){
+		cb_base->cb(MOSQ_EVT_PERSIST_RETAIN_MSG_SET, &event_data, cb_base->userdata);
 	}
 }
 

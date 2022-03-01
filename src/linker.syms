@@ -31,7 +31,7 @@
 	mosquitto_persist_client_msg_delete;
 	mosquitto_persist_client_msg_update;
 	mosquitto_persist_client_update;
-	mosquitto_persist_retain_msg_add;
+	mosquitto_persist_retain_msg_set;
 	mosquitto_persist_retain_msg_delete;
 	mosquitto_plugin_set_info;
 	mosquitto_property_add_binary;

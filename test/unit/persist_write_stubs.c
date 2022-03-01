@@ -198,7 +198,7 @@ void plugin_persist__handle_base_msg_delete(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }
-void plugin_persist__handle_retain_msg_add(struct mosquitto_base_msg *msg)
+void plugin_persist__handle_retain_msg_set(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }

@@ -233,7 +233,7 @@ static int prepare_statements(struct mosquitto_sqlite *ms)
 			"(topic, store_id)"
 			"VALUES(?,?)",
 			-1, SQLITE_PREPARE_PERSISTENT,
-			&ms->retain_msg_add_stmt, NULL);
+			&ms->retain_msg_set_stmt, NULL);
 	if(rc) goto fail;
 
 	rc = sqlite3_prepare_v3(ms->db,
@@ -300,7 +300,7 @@ void persist_sqlite__cleanup(struct mosquitto_sqlite *ms)
 	sqlite3_finalize(ms->base_msg_add_stmt);
 	sqlite3_finalize(ms->base_msg_remove_stmt);
 	sqlite3_finalize(ms->base_msg_load_stmt);
-	sqlite3_finalize(ms->retain_msg_add_stmt);
+	sqlite3_finalize(ms->retain_msg_set_stmt);
 	sqlite3_finalize(ms->retain_msg_remove_stmt);
 
 	if(ms->db){

@@ -23,7 +23,7 @@ Contributors:
 #include "mosquitto_broker.h"
 #include "persist_sqlite.h"
 
-int persist_sqlite__retain_msg_add_cb(int event, void *event_data, void *userdata)
+int persist_sqlite__retain_msg_set_cb(int event, void *event_data, void *userdata)
 {
 	struct mosquitto_evt_persist_retain_msg *ed = event_data;
 	struct mosquitto_sqlite *ms = userdata;
@@ -31,19 +31,19 @@ int persist_sqlite__retain_msg_add_cb(int event, void *event_data, void *userdat
 
 	UNUSED(event);
 
-	if(sqlite3_bind_text(ms->retain_msg_add_stmt, 1, ed->topic, (int)strlen(ed->topic), SQLITE_STATIC) == SQLITE_OK
-			&& sqlite3_bind_int64(ms->retain_msg_add_stmt, 2, (int64_t)ed->store_id) == SQLITE_OK
+	if(sqlite3_bind_text(ms->retain_msg_set_stmt, 1, ed->topic, (int)strlen(ed->topic), SQLITE_STATIC) == SQLITE_OK
+			&& sqlite3_bind_int64(ms->retain_msg_set_stmt, 2, (int64_t)ed->store_id) == SQLITE_OK
 			){
 
 		ms->event_count++;
-		rc = sqlite3_step(ms->retain_msg_add_stmt);
+		rc = sqlite3_step(ms->retain_msg_set_stmt);
 		if(rc == SQLITE_DONE){
 			rc = MOSQ_ERR_SUCCESS;
 		}else{
 			rc = MOSQ_ERR_UNKNOWN;
 		}
 	}
-	sqlite3_reset(ms->retain_msg_add_stmt);
+	sqlite3_reset(ms->retain_msg_set_stmt);
 
 	return rc;
 }

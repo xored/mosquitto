@@ -13,7 +13,7 @@ struct mosquitto_db{
 
 };
 
-struct mosquitto_msg_store{
+struct mosquitto_base_msg{
 
 };
 
@@ -95,12 +95,12 @@ ssize_t net__write(struct mosquitto *mosq, const void *buf, size_t count)
 	return 1;
 }
 
-void plugin_persist__handle_retain_add(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_set(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }
 
-void plugin_persist__handle_retain_remove(struct mosquitto_msg_store *msg)
+void plugin_persist__handle_retain_remove(struct mosquitto_base_msg *msg)
 {
 	UNUSED(msg);
 }

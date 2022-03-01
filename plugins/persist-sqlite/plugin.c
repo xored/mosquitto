@@ -96,7 +96,7 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	if(rc) goto fail;
 	rc = mosquitto_callback_register(plg_id, MOSQ_EVT_PERSIST_BASE_MSG_LOAD, persist_sqlite__base_msg_load_cb, NULL, &plg_data);
 	if(rc) goto fail;
-	rc = mosquitto_callback_register(plg_id, MOSQ_EVT_PERSIST_RETAIN_MSG_ADD, persist_sqlite__retain_msg_add_cb, NULL, &plg_data);
+	rc = mosquitto_callback_register(plg_id, MOSQ_EVT_PERSIST_RETAIN_MSG_SET, persist_sqlite__retain_msg_set_cb, NULL, &plg_data);
 	if(rc) goto fail;
 	rc = mosquitto_callback_register(plg_id, MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE, persist_sqlite__retain_msg_remove_cb, NULL, &plg_data);
 	if(rc) goto fail;
@@ -145,7 +145,7 @@ int mosquitto_plugin_cleanup(void *user_data, struct mosquitto_opt *options, int
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_BASE_MSG_ADD, persist_sqlite__base_msg_add_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_BASE_MSG_DELETE, persist_sqlite__base_msg_remove_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_BASE_MSG_LOAD, persist_sqlite__base_msg_load_cb, NULL);
-		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_RETAIN_MSG_ADD, persist_sqlite__retain_msg_add_cb, NULL);
+		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_RETAIN_MSG_SET, persist_sqlite__retain_msg_set_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE, persist_sqlite__retain_msg_remove_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_CLIENT_ADD, persist_sqlite__client_add_cb, NULL);
 		mosquitto_callback_unregister(plg_id, MOSQ_EVT_PERSIST_CLIENT_DELETE, persist_sqlite__client_remove_cb, NULL);
