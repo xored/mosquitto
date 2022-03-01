@@ -481,7 +481,7 @@ int db__message_insert_incoming(struct mosquitto *context, uint64_t cmsg_id, str
 		db__msg_add_to_inflight_stats(msg_data, msg);
 	}
 
-	if(persist && context->session_expiry_interval){
+	if(persist && context->is_persisted){
 		plugin_persist__handle_base_msg_add(msg->base_msg);
 		plugin_persist__handle_client_msg_add(context, msg);
 	}
@@ -623,7 +623,7 @@ int db__message_insert_outgoing(struct mosquitto *context, uint64_t cmsg_id, uin
 		db__msg_add_to_inflight_stats(msg_data, msg);
 	}
 
-	if(persist && context->session_expiry_interval){
+	if(persist && context->is_persisted){
 		plugin_persist__handle_base_msg_add(msg->base_msg);
 		plugin_persist__handle_client_msg_add(context, msg);
 	}
