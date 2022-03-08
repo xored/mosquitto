@@ -149,7 +149,6 @@ struct dynsec__data{
 int dynsec__config_init(const char *filename);
 void dynsec__config_save(struct dynsec__data *data);
 int dynsec__config_load(struct dynsec__data *data);
-int dynsec__handle_control(struct dynsec__data *data, struct plugin_cmd *cmd, struct mosquitto *context, cJSON *commands);
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data);
 int dynsec_control_callback(int event, void *event_data, void *userdata);
 
