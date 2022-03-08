@@ -65,7 +65,7 @@ RUN set -x && \
         WITH_SHARED_LIBRARIES=yes \
         WITH_SRV=no \
         WITH_STRIP=yes \
-		WITH_TLS_PSK=no \
+        WITH_TLS_PSK=no \
         WITH_WEBSOCKETS=yes \
         prefix=/usr \
         binary && \
@@ -82,8 +82,8 @@ RUN set -x && \
     chown -R mosquitto:mosquitto /mosquitto && \
     apk --no-cache add \
         ca-certificates \
-		libressl \
-		libuuid && \
+        libressl \
+        libuuid && \
     apk del build-deps && \
     rm -rf /build
 
