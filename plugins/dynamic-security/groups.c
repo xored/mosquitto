@@ -177,6 +177,7 @@ void dynsec_groups__cleanup(struct dynsec__data *data)
 	HASH_ITER(hh, data->groups, group, group_tmp){
 		group__free_item(data, group);
 	}
+	data->anonymous_group = NULL;
 }
 
 
