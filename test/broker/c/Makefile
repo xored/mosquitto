@@ -13,6 +13,7 @@ PLUGIN_SRC = \
 	auth_plugin_extended_reauth.c \
 	auth_plugin_extended_single.c \
 	auth_plugin_extended_single2.c \
+	auth_plugin_id_change.c \
 	auth_plugin_msg_params.c \
 	auth_plugin_publish.c \
 	auth_plugin_pwd.c \
@@ -20,8 +21,8 @@ PLUGIN_SRC = \
 	auth_plugin_v3.c \
 	auth_plugin_v4.c \
 	auth_plugin_v5.c \
-	auth_plugin_v5_handle_message.c \
 	auth_plugin_v5_control.c \
+	auth_plugin_v5_handle_message.c \
 	plugin_control.c
 
 PLUGINS = ${PLUGIN_SRC:.c=.so}

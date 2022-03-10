@@ -169,6 +169,7 @@ tests = [
     (1, './09-plugin-auth-v4-unpwd-success.py'),
     (1, './09-plugin-auth-v5-unpwd-fail.py'),
     (1, './09-plugin-auth-v5-unpwd-success.py'),
+    (1, './09-plugin-change-id.py'),
     (1, './09-plugin-delayed-auth.py'),
     (1, './09-plugin-publish.py'),
     (1, './09-pwfile-parse-invalid.py'),

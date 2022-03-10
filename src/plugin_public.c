@@ -320,24 +320,46 @@ int mosquitto_set_username(struct mosquitto *client, const char *username)
 
 int mosquitto_set_clientid(struct mosquitto *client, const char *clientid)
 {
-    char *u_dup;
-    char *old;
+	struct mosquitto *found_client;
+    char *id_dup;
+	bool in_by_id;
 
-    if(!client) return MOSQ_ERR_INVAL;
+    if(!client || !clientid) return MOSQ_ERR_INVAL;
+
+	in_by_id = client->in_by_id;
+	/* If in_by_id is true, then this client has already authenticated and
+	 * completed the connection flow. This means it *cannot* take over an
+	 * existing session, and we must remove/add it to the by_id hash table.
+	 *
+	 * If in_by_id is false, then this client is currently going through
+	 * authentication and so it is safe to change the client id to any value
+	 * because it will be checked after authentication.
+	 */
+
+	if(in_by_id){
+		HASH_FIND(hh_id, db.contexts_by_id, clientid, strlen(clientid), found_client);
+		if(found_client){
+			return MOSQ_ERR_ALREADY_EXISTS;
+		}
+	}
 
     int clientid_len = (int)strlen(clientid);
     if(mosquitto_validate_utf8(clientid, clientid_len)){
         return MOSQ_ERR_INVAL;
     }
 
-    u_dup = mosquitto__strdup(clientid);
-    if(!u_dup) return MOSQ_ERR_NOMEM;
+    id_dup = mosquitto__strdup(clientid);
+    if(!id_dup) return MOSQ_ERR_NOMEM;
 
+	if(in_by_id){
+		context__remove_from_by_id(client);
+	}
+	mosquitto__free(client->id);
+	client->id = id_dup;
+	if(in_by_id){
+		context__add_to_by_id(client);
+	}
 
-    old = client->id;
-    client->id = u_dup;
-
-    mosquitto__free(old);
     return MOSQ_ERR_SUCCESS;
 }
 

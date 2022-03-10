@@ -97,6 +97,8 @@ Plugins / plugin interface:
   listClients.
 - The dynamic security plugin now generates an initial configuration if none
   is present, including a set of default roles.
+- Add `mosquitto_set_clientid()` to allow plugins to force a client id for a
+  client.
 
 Client library:
 - Add MOSQ_OPT_DISABLE_SOCKETPAIR to allow the disabling of the socketpair
