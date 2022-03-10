@@ -318,6 +318,28 @@ int mosquitto_set_username(struct mosquitto *client, const char *username)
 	}
 }
 
+int mosquitto_set_clientid(struct mosquitto *client, const char *clientid)
+{
+    char *u_dup;
+    char *old;
+
+    if(!client) return MOSQ_ERR_INVAL;
+
+    int clientid_len = (int)strlen(clientid);
+    if(mosquitto_validate_utf8(clientid, clientid_len)){
+        return MOSQ_ERR_INVAL;
+    }
+
+    u_dup = mosquitto__strdup(clientid);
+    if(!u_dup) return MOSQ_ERR_NOMEM;
+
+
+    old = client->id;
+    client->id = u_dup;
+
+    mosquitto__free(old);
+    return MOSQ_ERR_SUCCESS;
+}
 
 /* Check to see whether durable clients still have rights to their subscriptions. */
 static void check_subscription_acls(struct mosquitto *context)
