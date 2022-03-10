@@ -55,6 +55,7 @@
 	mosquitto_pub_topic_check;
 	mosquitto_realloc;
 	mosquitto_set_username;
+	mosquitto_set_clientid;
 	mosquitto_strdup;
 	mosquitto_string_to_property_info;
 	mosquitto_sub_matches_acl;
