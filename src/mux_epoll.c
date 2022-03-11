@@ -37,11 +37,8 @@ static void loop_handle_reads_writes(struct mosquitto *context, uint32_t events)
 
 static struct epoll_event ep_events[MAX_EVENTS];
 
-int mux_epoll__init(struct mosquitto__listener_sock *listensock, int listensock_count)
+int mux_epoll__init(void)
 {
-	struct epoll_event ev;
-	int i;
-
 	memset(&ep_events, 0, sizeof(struct epoll_event)*MAX_EVENTS);
 
 	db.epollfd = 0;
@@ -49,14 +46,34 @@ int mux_epoll__init(struct mosquitto__listener_sock *listensock, int listensock_
 		log__printf(NULL, MOSQ_LOG_ERR, "Error in epoll creating: %s", strerror(errno));
 		return MOSQ_ERR_UNKNOWN;
 	}
+
+	return MOSQ_ERR_SUCCESS;
+}
+
+int mux_epoll__add_listeners(struct mosquitto__listener_sock *listensock, int listensock_count)
+{
+	struct epoll_event ev;
+	int i;
+
 	memset(&ev, 0, sizeof(struct epoll_event));
 	for(i=0; i<listensock_count; i++){
 		ev.data.ptr = &listensock[i];
 		ev.events = EPOLLIN;
 		if (epoll_ctl(db.epollfd, EPOLL_CTL_ADD, listensock[i].sock, &ev) == -1) {
 			log__printf(NULL, MOSQ_LOG_ERR, "Error in epoll initial registering: %s", strerror(errno));
-			(void)close(db.epollfd);
-			db.epollfd = 0;
+			return MOSQ_ERR_UNKNOWN;
+		}
+	}
+
+	return MOSQ_ERR_SUCCESS;
+}
+
+int mux_epoll__delete_listeners(struct mosquitto__listener_sock *listensock, int listensock_count)
+{
+	int i;
+
+	for(i=0; i<listensock_count; i++){
+		if (epoll_ctl(db.epollfd, EPOLL_CTL_DEL, listensock[i].sock, NULL) == -1) {
 			return MOSQ_ERR_UNKNOWN;
 		}
 	}
@@ -121,11 +138,8 @@ int mux_epoll__new(struct mosquitto *context)
 
 int mux_epoll__delete(struct mosquitto *context)
 {
-	struct epoll_event ev;
-
-	memset(&ev, 0, sizeof(struct epoll_event));
 	if(context->sock != INVALID_SOCKET){
-		if(epoll_ctl(db.epollfd, EPOLL_CTL_DEL, context->sock, &ev) == -1){
+		if(epoll_ctl(db.epollfd, EPOLL_CTL_DEL, context->sock, NULL) == -1){
 			return 1;
 		}
 	}

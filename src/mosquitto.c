@@ -324,10 +324,10 @@ int main(int argc, char *argv[])
 	sys_tree__init();
 #endif
 
-	if(listeners__start()) return 1;
-
-	rc = mux__init(g_listensock, g_listensock_count);
+	rc = mux__init();
 	if(rc) return rc;
+
+	if(listeners__start()) return 1;
 
 	signal__setup();
 

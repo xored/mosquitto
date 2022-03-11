@@ -34,11 +34,8 @@ static void loop_handle_reads_writes(struct mosquitto *context, short events);
 
 static struct kevent event_list[MAX_EVENTS];
 
-int mux_kqueue__init(struct mosquitto__listener_sock *listensock, int listensock_count)
+int mux_kqueue__init(void)
 {
-	struct kevent ev;
-	int i;
-
 	memset(&event_list, 0, sizeof(struct kevent)*MAX_EVENTS);
 
 	db.kqueuefd = 0;
@@ -46,12 +43,36 @@ int mux_kqueue__init(struct mosquitto__listener_sock *listensock, int listensock
 		log__printf(NULL, MOSQ_LOG_ERR, "Error in kqueue creating: %s", strerror(errno));
 		return MOSQ_ERR_UNKNOWN;
 	}
+
+	return MOSQ_ERR_SUCCESS;
+}
+
+int mux_kqueue__add_listeners(struct mosquitto__listener_sock *listensock, int listensock_count)
+{
+	struct kevent ev;
+	int i;
+
+	memset(&event_list, 0, sizeof(struct kevent)*MAX_EVENTS);
+
 	for(i=0; i<listensock_count; i++){
 		EV_SET(&ev, listensock[i].sock, EVFILT_READ, EV_ADD, 0, 0, &listensock[i]);
 		if(kevent(db.kqueuefd, &ev, 1, NULL, 0, NULL) == -1){
 			log__printf(NULL, MOSQ_LOG_ERR, "Error in kqueue initial registering: %s", strerror(errno));
-			(void)close(db.kqueuefd);
-			db.kqueuefd = 0;
+			return MOSQ_ERR_UNKNOWN;
+		}
+	}
+
+	return MOSQ_ERR_SUCCESS;
+}
+
+int mux_kqueue__delete_listeners(struct mosquitto__listener_sock *listensock, int listensock_count)
+{
+	struct kevent ev;
+	int i;
+
+	for(i=0; i<listensock_count; i++){
+		EV_SET(&ev, listensock[i].sock, EVFILT_READ, EV_DELETE, 0, 0, &listensock[i]);
+		if(kevent(db.kqueuefd, &ev, 1, NULL, 0, NULL) == -1){
 			return MOSQ_ERR_UNKNOWN;
 		}
 	}
@@ -201,7 +222,7 @@ static void loop_handle_reads_writes(struct mosquitto *context, short event)
 		return;
 	}
 
-#ifdef WITH_WEBSOCKETS
+#if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_LWS
 	if(context->wsi){
 		struct lws_pollfd wspoll;
 		wspoll.fd = context->sock;

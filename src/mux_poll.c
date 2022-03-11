@@ -59,12 +59,11 @@ Contributors:
 static void loop_handle_reads_writes(void);
 
 static struct pollfd *pollfds = NULL;
-static size_t pollfd_max, pollfd_current_max;
+static size_t pollfd_max, pollfd_current_max = 0;
 
-int mux_poll__init(struct mosquitto__listener_sock *listensock, int listensock_count)
+int mux_poll__init(void)
 {
 	size_t i;
-	size_t pollfd_index = 0;
 
 #ifdef WIN32
 	pollfd_max = (size_t)_getmaxstdio();
@@ -82,6 +81,15 @@ int mux_poll__init(struct mosquitto__listener_sock *listensock, int listensock_c
 		pollfds[i].fd = INVALID_SOCKET;
 	}
 
+	return MOSQ_ERR_SUCCESS;
+}
+
+
+int mux_poll__add_listeners(struct mosquitto__listener_sock *listensock, int listensock_count)
+{
+	size_t i;
+	size_t pollfd_index = 0;
+
 	for(i=0; i<(size_t )listensock_count; i++){
 		pollfds[pollfd_index].fd = listensock[i].sock;
 		pollfds[pollfd_index].events = POLLIN;
@@ -89,7 +97,27 @@ int mux_poll__init(struct mosquitto__listener_sock *listensock, int listensock_c
 		pollfd_index++;
 	}
 
-	pollfd_current_max = pollfd_index-1;
+	if(pollfd_current_max == 0){
+		pollfd_current_max = pollfd_index-1;
+	}
+	return MOSQ_ERR_SUCCESS;
+}
+
+
+int mux_poll__delete_listeners(struct mosquitto__listener_sock *listensock, int listensock_count)
+{
+	size_t i;
+	size_t pollfd_index = 0;
+
+	UNUSED(listensock);
+
+	for(i=0; i<(size_t )listensock_count; i++){
+		pollfds[pollfd_index].fd = INVALID_SOCKET;
+		pollfds[pollfd_index].events = 0;
+		pollfds[pollfd_index].revents = 0;
+		pollfd_index++;
+	}
+
 	return MOSQ_ERR_SUCCESS;
 }
 

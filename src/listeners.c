@@ -200,6 +200,7 @@ int listeners__start(void)
 			}
 			return 1;
 		}
+		mux__add_listeners(g_listensock, g_listensock_count);
 		return MOSQ_ERR_SUCCESS;
 	}
 
@@ -234,6 +235,8 @@ int listeners__start(void)
 		log__printf(NULL, MOSQ_LOG_ERR, "Error: Unable to start any listening sockets, exiting.");
 		return 1;
 	}
+
+	mux__add_listeners(g_listensock, g_listensock_count);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -241,6 +244,8 @@ int listeners__start(void)
 void listeners__stop(void)
 {
 	int i;
+
+	mux__delete_listeners(g_listensock, g_listensock_count);
 
 	for(i=0; i<db.config->listener_count; i++){
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_LWS
@@ -262,4 +267,6 @@ void listeners__stop(void)
 		}
 	}
 	mosquitto__FREE(g_listensock);
+	g_listensock_count = 0;
+	listensock_index = 0;
 }
