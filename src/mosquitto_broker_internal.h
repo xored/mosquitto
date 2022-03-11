@@ -620,6 +620,7 @@ struct mosquitto__bridge{
 #ifdef WITH_TLS
 	bool tls_insecure;
 	bool tls_ocsp_required;
+	bool tls_use_os_certs;
 	char *tls_cafile;
 	char *tls_capath;
 	char *tls_certfile;

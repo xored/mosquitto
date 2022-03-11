@@ -53,6 +53,8 @@ Broker:
 - Add bridge_receive_maximum option for MQTT v5.0 bridges.
 - Add bridge_session_expiry_interval option for MQTT v5.0 bridges.
 - Bridge reconnection backoff improvements.
+- Add bridge_tls_use_os_certs option to allow bridges to be easily configured
+  to trust default CA certificates. Closes #2473.
 
 Plugins / plugin interface:
 - Add persist-sqlite plugin.

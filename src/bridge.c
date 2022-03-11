@@ -112,6 +112,7 @@ static struct mosquitto *bridge__new(struct mosquitto__bridge *bridge)
 	new_context->tls_13_ciphers = bridge->tls_13_ciphers;
 	new_context->tls_engine = db.config->default_listener.tls_engine;
 	new_context->tls_keyform = db.config->default_listener.tls_keyform;
+	new_context->tls_use_os_certs = bridge->tls_use_os_certs;
 	new_context->ssl_ctx_defaults = true;
 #ifdef FINAL_WITH_TLS_PSK
 	new_context->tls_psk_identity = bridge->tls_psk_identity;

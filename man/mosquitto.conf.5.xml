@@ -2297,8 +2297,8 @@ topic clients/total in 0 test/mosquitto/org/ $SYS/broker/
 				<varlistentry>
 					<term><option>bridge_cafile</option> <replaceable>file path</replaceable></term>
 					<listitem>
-						<para>One of <option>bridge_cafile</option> or
-							<option>bridge_capath</option> must be provided to
+						<para>At least one of <option>bridge_cafile</option>, <option>bridge_capath</option>, or
+							<option>bridge_tls_use_os_certs</option> must be provided to
 							allow SSL/TLS support.</para>
 						<para>bridge_cafile is used to define the path to a file
 							containing the PEM encoded CA certificates that
@@ -2309,8 +2309,8 @@ topic clients/total in 0 test/mosquitto/org/ $SYS/broker/
 				<varlistentry>
 					<term><option>bridge_capath</option> <replaceable>file path</replaceable></term>
 					<listitem>
-						<para>One of <option>bridge_capath</option> or
-							<option>bridge_cafile</option> must be provided to
+						<para>At least one of <option>bridge_cafile</option>, <option>bridge_capath</option>, or
+							<option>bridge_tls_use_os_certs</option> must be provided to
 							allow SSL/TLS support.</para>
 						<para>bridge_capath is used to define the path to a
 							directory containing the PEM encoded CA
@@ -2386,6 +2386,19 @@ topic clients/total in 0 test/mosquitto/org/ $SYS/broker/
 					<listitem>
 						<para>When set to true, the bridge requires OCSP on the TLS
 							connection it opens as client.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>bridge_tls_use_os_certs</option> [ true | false ]</term>
+					<listitem>
+						<para>At least one of <option>bridge_cafile</option>, <option>bridge_capath</option>, or
+							<option>bridge_tls_use_os_certs</option> must be provided to
+							allow SSL/TLS support.</para>
+						<para>Set <option>bridge_tls_use_os_certs</option>
+							to true to enable TLS for this bridge, and to
+							configure it to trust the default certificates
+							provided by openssl. This is typically a large
+							number of certificates. Defaults to false.</para>
 					</listitem>
 				</varlistentry>
 				<varlistentry>
