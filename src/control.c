@@ -36,6 +36,7 @@ int control__process(struct mosquitto *context, struct mosquitto_base_msg *base_
 	struct mosquitto__security_options *opts;
 	mosquitto_property *properties = NULL;
 	int rc = MOSQ_ERR_SUCCESS;
+	int rc2;
 
 	/* Check global plugins and non-per-listener settings first */
 	opts = &db.config->security_options;
@@ -68,9 +69,11 @@ int control__process(struct mosquitto *context, struct mosquitto_base_msg *base_
 	}
 
 	if(base_msg->qos == 1){
-		if(send__puback(context, base_msg->source_mid, MQTT_RC_SUCCESS, properties)) rc = 1;
+		rc2 = send__puback(context, base_msg->source_mid, MQTT_RC_SUCCESS, properties);
+		if(rc2) rc = rc2;
 	}else if(base_msg->qos == 2){
-		if(send__pubrec(context, base_msg->source_mid, MQTT_RC_SUCCESS, properties)) rc = 1;
+		rc2 = send__pubrec(context, base_msg->source_mid, MQTT_RC_SUCCESS, properties);
+		if(rc2) rc = rc2;
 	}
 	mosquitto_property_free_all(&properties);
 
