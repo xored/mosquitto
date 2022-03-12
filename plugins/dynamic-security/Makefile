@@ -23,12 +23,14 @@ OBJS=	\
 		grouplist.o \
 		hash.o \
 		json_help.o \
+		kicklist.o \
 		misc_mosq.o \
 		password_mosq.o \
 		plugin.o \
 		plugin_common.o \
 		roles.o \
-		rolelist.o
+		rolelist.o \
+		tick.o
 
 ifeq ($(WITH_CJSON),yes)
 ifeq ($(WITH_TLS),yes)
@@ -85,6 +87,9 @@ hash.o : hash.c dynamic_security.h
 json_help.o : ${R}/common/json_help.c ${R}/common/json_help.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
+kicklist.o : kicklist.c dynamic_security.h
+	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
+
 misc_mosq.o : ${R}/common/misc_mosq.c ${R}/common/misc_mosq.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
@@ -101,6 +106,9 @@ roles.o : roles.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 rolelist.o : rolelist.c dynamic_security.h
+	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
+
+tick.o : tick.c dynamic_security.h
 	${CROSS_COMPILE}${CC} $(LOCAL_CPPFLAGS) $(PLUGIN_CPPFLAGS) $(PLUGIN_CFLAGS) -c $< -o $@
 
 reallyclean : clean

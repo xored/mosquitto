@@ -101,6 +101,8 @@ Plugins / plugin interface:
   is present, including a set of default roles.
 - Add `mosquitto_set_clientid()` to allow plugins to force a client id for a
   client.
+- The dynamic security plugin now only kicks clients at the start of the next
+  network loop, to give chance for PUBACK/PUBREC to be sent. Closes #2474.
 
 Client library:
 - Add MOSQ_OPT_DISABLE_SOCKETPAIR to allow the disabling of the socketpair

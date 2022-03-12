@@ -65,6 +65,7 @@ int mosquitto_plugin_init(mosquitto_plugin_id_t *identifier, void **user_data, s
 	mosquitto_callback_register(plg_id, MOSQ_EVT_CONTROL, dynsec_control_callback, "$CONTROL/dynamic-security/v1", &dynsec_data);
 	mosquitto_callback_register(plg_id, MOSQ_EVT_BASIC_AUTH, dynsec_auth__basic_auth_callback, NULL, &dynsec_data);
 	mosquitto_callback_register(plg_id, MOSQ_EVT_ACL_CHECK, dynsec__acl_check_callback, NULL, &dynsec_data);
+	mosquitto_callback_register(plg_id, MOSQ_EVT_TICK, dynsec__tick_callback, NULL, &dynsec_data);
 
 	return MOSQ_ERR_SUCCESS;
 }

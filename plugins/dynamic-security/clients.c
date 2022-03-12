@@ -492,7 +492,7 @@ int dynsec_clients__process_delete(struct dynsec__data *data, struct plugin_cmd 
 		plugin__command_reply(cmd, NULL);
 
 		/* Enforce any changes */
-		mosquitto_kick_client_by_username(username, false);
+		dynsec_kicklist__add(data, username);
 
 		admin_clientid = mosquitto_client_id(context);
 		admin_username = mosquitto_client_username(context);
@@ -529,7 +529,7 @@ int dynsec_clients__process_disable(struct dynsec__data *data, struct plugin_cmd
 
 	client->disabled = true;
 
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	dynsec__config_save(data);
 	plugin__command_reply(cmd, NULL);
@@ -629,7 +629,7 @@ int dynsec_clients__process_set_id(struct dynsec__data *data, struct plugin_cmd 
 	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -689,7 +689,7 @@ int dynsec_clients__process_set_password(struct dynsec__data *data, struct plugi
 		plugin__command_reply(cmd, NULL);
 
 		/* Enforce any changes */
-		mosquitto_kick_client_by_username(username, false);
+		dynsec_kicklist__add(data, username);
 
 		admin_clientid = mosquitto_client_id(context);
 		admin_username = mosquitto_client_username(context);
@@ -769,7 +769,7 @@ int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd 
 			rc = client__set_password(client, password);
 			if(rc != MOSQ_ERR_SUCCESS){
 				plugin__command_reply(cmd, "Internal error");
-				mosquitto_kick_client_by_username(username, false);
+				dynsec_kicklist__add(data, username);
 				return MOSQ_ERR_NOMEM;
 			}
 		}
@@ -779,7 +779,7 @@ int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd 
 		str = mosquitto_strdup(text_name);
 		if(str == NULL){
 			plugin__command_reply(cmd, "Internal error");
-			mosquitto_kick_client_by_username(username, false);
+			dynsec_kicklist__add(data, username);
 			return MOSQ_ERR_NOMEM;
 		}
 		mosquitto_free(client->text_name);
@@ -790,7 +790,7 @@ int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd 
 		str = mosquitto_strdup(text_description);
 		if(str == NULL){
 			plugin__command_reply(cmd, "Internal error");
-			mosquitto_kick_client_by_username(username, false);
+			dynsec_kicklist__add(data, username);
 			return MOSQ_ERR_NOMEM;
 		}
 		mosquitto_free(client->text_description);
@@ -807,7 +807,7 @@ int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd 
 	}else if(rc == MOSQ_ERR_NOT_FOUND){
 		plugin__command_reply(cmd, "Role not found");
 		dynsec_rolelist__cleanup(&rolelist);
-		mosquitto_kick_client_by_username(username, false);
+		dynsec_kicklist__add(data, username);
 		return MOSQ_ERR_INVAL;
 	}else{
 		if(rc == MOSQ_ERR_INVAL){
@@ -816,7 +816,7 @@ int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd 
 			plugin__command_reply(cmd, "Internal error");
 		}
 		dynsec_rolelist__cleanup(&rolelist);
-		mosquitto_kick_client_by_username(username, false);
+		dynsec_kicklist__add(data, username);
 		return MOSQ_ERR_INVAL;
 	}
 
@@ -839,7 +839,7 @@ int dynsec_clients__process_modify(struct dynsec__data *data, struct plugin_cmd 
 	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -1122,7 +1122,7 @@ int dynsec_clients__process_add_role(struct dynsec__data *data, struct plugin_cm
 	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);
@@ -1176,7 +1176,7 @@ int dynsec_clients__process_remove_role(struct dynsec__data *data, struct plugin
 	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);

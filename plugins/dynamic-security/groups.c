@@ -60,9 +60,9 @@ static cJSON *add_group_to_json(struct dynsec__group *group);
 static void group__kick_all(struct dynsec__data *data, struct dynsec__group *group)
 {
 	if(group == data->anonymous_group){
-		mosquitto_kick_client_by_username(NULL, false);
+		dynsec_kicklist__add(data, NULL);
 	}
-	dynsec_clientlist__kick_all(group->clientlist);
+	dynsec_clientlist__kick_all(data, group->clientlist);
 }
 
 
@@ -569,7 +569,7 @@ int dynsec_groups__process_add_client(struct dynsec__data *data, struct plugin_c
 	}
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	return rc;
 }
@@ -666,7 +666,7 @@ int dynsec_groups__process_remove_client(struct dynsec__data *data, struct plugi
 	}
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(username, false);
+	dynsec_kicklist__add(data, username);
 
 	return rc;
 }
@@ -1031,7 +1031,7 @@ int dynsec_groups__process_set_anonymous_group(struct dynsec__data *data, struct
 	plugin__command_reply(cmd, NULL);
 
 	/* Enforce any changes */
-	mosquitto_kick_client_by_username(NULL, false);
+	dynsec_kicklist__add(data, NULL);
 
 	admin_clientid = mosquitto_client_id(context);
 	admin_username = mosquitto_client_username(context);

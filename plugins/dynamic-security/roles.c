@@ -31,7 +31,7 @@ Contributors:
 
 
 static cJSON *add_role_to_json(struct dynsec__role *role, bool verbose);
-static void role__remove_all_clients(struct dynsec__role *role);
+static void role__remove_all_clients(struct dynsec__data *data, struct dynsec__role *role);
 
 /* ################################################################
  * #
@@ -108,13 +108,13 @@ static void role__kick_all(struct dynsec__data *data, struct dynsec__role *role)
 {
 	struct dynsec__grouplist *grouplist, *grouplist_tmp = NULL;
 
-	dynsec_clientlist__kick_all(role->clientlist);
+	dynsec_clientlist__kick_all(data, role->clientlist);
 
 	HASH_ITER(hh, role->grouplist, grouplist, grouplist_tmp){
 		if(grouplist->group == data->anonymous_group){
-			mosquitto_kick_client_by_username(NULL, false);
+			dynsec_kicklist__add(data, NULL);
 		}
-		dynsec_clientlist__kick_all(grouplist->group->clientlist);
+		dynsec_clientlist__kick_all(data, grouplist->group->clientlist);
 	}
 }
 
@@ -437,12 +437,12 @@ error:
 }
 
 
-static void role__remove_all_clients(struct dynsec__role *role)
+static void role__remove_all_clients(struct dynsec__data *data, struct dynsec__role *role)
 {
 	struct dynsec__clientlist *clientlist, *clientlist_tmp = NULL;
 
 	HASH_ITER(hh, role->clientlist, clientlist, clientlist_tmp){
-		mosquitto_kick_client_by_username(clientlist->client->username, false);
+		dynsec_kicklist__add(data, clientlist->client->username);
 
 		dynsec_rolelist__client_remove(clientlist->client, role);
 	}
@@ -454,9 +454,9 @@ static void role__remove_all_groups(struct dynsec__data *data, struct dynsec__ro
 
 	HASH_ITER(hh, role->grouplist, grouplist, grouplist_tmp){
 		if(grouplist->group == data->anonymous_group){
-			mosquitto_kick_client_by_username(NULL, false);
+			dynsec_kicklist__add(data, NULL);
 		}
-		dynsec_clientlist__kick_all(grouplist->group->clientlist);
+		dynsec_clientlist__kick_all(data, grouplist->group->clientlist);
 
 		dynsec_rolelist__group_remove(grouplist->group, role);
 	}
@@ -479,7 +479,7 @@ int dynsec_roles__process_delete(struct dynsec__data *data, struct plugin_cmd *c
 
 	role = dynsec_roles__find(data, rolename);
 	if(role){
-		role__remove_all_clients(role);
+		role__remove_all_clients(data, role);
 		role__remove_all_groups(data, role);
 		role__free_item(data, role, true);
 		dynsec__config_save(data);

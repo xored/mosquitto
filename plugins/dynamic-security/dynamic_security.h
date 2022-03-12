@@ -75,6 +75,11 @@ struct dynsec__rolelist{
 	int priority;
 };
 
+struct dynsec__kicklist{
+	struct dynsec__kicklist *next, *prev;
+	char username[];
+};
+
 struct dynsec__client{
 	UT_hash_handle hh;
 	struct mosquitto_pw pw;
@@ -137,6 +142,7 @@ struct dynsec__data{
 	struct dynsec__group *groups;
 	struct dynsec__role *roles;
 	struct dynsec__group *anonymous_group;
+	struct dynsec__kicklist *kicklist;
 	struct dynsec__acl_default_access default_access;
 };
 
@@ -207,7 +213,7 @@ cJSON *dynsec_clientlist__all_to_json(struct dynsec__clientlist *base_clientlist
 int dynsec_clientlist__add(struct dynsec__clientlist **base_clientlist, struct dynsec__client *client, int priority);
 void dynsec_clientlist__cleanup(struct dynsec__clientlist **base_clientlist);
 void dynsec_clientlist__remove(struct dynsec__clientlist **base_clientlist, struct dynsec__client *client);
-void dynsec_clientlist__kick_all(struct dynsec__clientlist *base_clientlist);
+void dynsec_clientlist__kick_all(struct dynsec__data *data, struct dynsec__clientlist *base_clientlist);
 
 
 /* ################################################################
@@ -279,5 +285,15 @@ void dynsec_rolelist__group_remove(struct dynsec__group *group, struct dynsec__r
 int dynsec_rolelist__load_from_json(struct dynsec__data *data, cJSON *command, struct dynsec__rolelist **rolelist);
 void dynsec_rolelist__cleanup(struct dynsec__rolelist **base_rolelist);
 cJSON *dynsec_rolelist__all_to_json(struct dynsec__rolelist *base_rolelist);
+
+/* ################################################################
+ * #
+ * # Kick List Functions
+ * #
+ * ################################################################ */
+
+int dynsec_kicklist__add(struct dynsec__data *data, const char *username);
+void dynsec_kicklist__kick(struct dynsec__data *data);
+int dynsec__tick_callback(int event, void *event_data, void *userdata);
 
 #endif

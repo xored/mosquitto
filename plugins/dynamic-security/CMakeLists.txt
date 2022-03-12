@@ -32,12 +32,14 @@ if(CJSON_FOUND AND WITH_TLS)
 		grouplist.c
 		hash.c
 		../../common/json_help.c ../../common/json_help.h
+		kicklist.c
 		../../common/misc_mosq.c ../../common/misc_mosq.h
 		../../common/password_mosq.c ../../common/password_mosq.h
 		plugin.c
 		../common/plugin_common.c ../common/plugin_common.h
 		roles.c
 		rolelist.c
+		tick.c
 	)
 
 	target_include_directories(mosquitto_dynamic_security PRIVATE
