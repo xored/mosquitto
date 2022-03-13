@@ -155,6 +155,8 @@ struct dynsec__data{
 int dynsec__config_init(const char *filename);
 void dynsec__config_save(struct dynsec__data *data);
 int dynsec__config_load(struct dynsec__data *data);
+char *dynsec__config_to_json(struct dynsec__data *data);
+int dynsec__config_from_json(struct dynsec__data *data, const char *json_str);
 void dynsec__command_reply(cJSON *j_responses, struct mosquitto *context, const char *command, const char *error, const char *correlation_data);
 int dynsec_control_callback(int event, void *event_data, void *userdata);
 

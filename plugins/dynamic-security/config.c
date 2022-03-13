@@ -92,13 +92,37 @@ static int dynsec__general_config_save(struct dynsec__data *data, cJSON *tree)
 	return MOSQ_ERR_SUCCESS;
 }
 
+int dynsec__config_from_json(struct dynsec__data *data, const char *json_str)
+{
+	cJSON *tree;
+
+	tree = cJSON_Parse(json_str);
+	if(tree == NULL){
+		mosquitto_log_printf(MOSQ_LOG_ERR, "Error loading Dynamic security plugin config: File is not valid JSON.\n");
+		return 1;
+	}
+
+	if(dynsec__general_config_load(data, tree)
+			|| dynsec_roles__config_load(data, tree)
+			|| dynsec_clients__config_load(data, tree)
+			|| dynsec_groups__config_load(data, tree)
+			){
+
+		cJSON_Delete(tree);
+		return 1;
+	}
+
+	cJSON_Delete(tree);
+	return 0;
+}
+
 int dynsec__config_load(struct dynsec__data *data)
 {
 	FILE *fptr;
 	long flen_l;
 	size_t flen;
 	char *json_str;
-	cJSON *tree;
+	int rc;
 
 	/* Load from file */
 	fptr = fopen(data->config_file, "rb");
@@ -144,39 +168,18 @@ int dynsec__config_load(struct dynsec__data *data)
 	}
 	fclose(fptr);
 
-	tree = cJSON_Parse(json_str);
-	mosquitto_free(json_str);
-	if(tree == NULL){
-		mosquitto_log_printf(MOSQ_LOG_ERR, "Error loading Dynamic security plugin config: File is not valid JSON.\n");
-		return 1;
-	}
-
-	if(dynsec__general_config_load(data, tree)
-			|| dynsec_roles__config_load(data, tree)
-			|| dynsec_clients__config_load(data, tree)
-			|| dynsec_groups__config_load(data, tree)
-			){
-
-		cJSON_Delete(tree);
-		return 1;
-	}
-
-	cJSON_Delete(tree);
-	return 0;
+	rc = dynsec__config_from_json(data, json_str);
+	free(json_str);
+	return rc;
 }
 
-
-void dynsec__config_save(struct dynsec__data *data)
+char *dynsec__config_to_json(struct dynsec__data *data)
 {
 	cJSON *tree;
-	size_t file_path_len;
-	char *file_path;
-	FILE *fptr;
-	size_t json_str_len;
 	char *json_str;
 
 	tree = cJSON_CreateObject();
-	if(tree == NULL) return;
+	if(tree == NULL) return NULL;
 
 	if(dynsec__general_config_save(data, tree)
 			|| dynsec_clients__config_save(data, tree)
@@ -184,17 +187,28 @@ void dynsec__config_save(struct dynsec__data *data)
 			|| dynsec_roles__config_save(data, tree)){
 
 		cJSON_Delete(tree);
-		return;
+		return NULL;
 	}
 
 	/* Print json to string */
 	json_str = cJSON_Print(tree);
+	cJSON_Delete(tree);
+	return json_str;
+}
+
+void dynsec__config_save(struct dynsec__data *data)
+{
+	size_t file_path_len;
+	char *file_path;
+	FILE *fptr;
+	size_t json_str_len;
+	char *json_str;
+
+	json_str = dynsec__config_to_json(data);
 	if(json_str == NULL){
-		cJSON_Delete(tree);
 		mosquitto_log_printf(MOSQ_LOG_ERR, "Error saving Dynamic security plugin config: Out of memory.\n");
 		return;
 	}
-	cJSON_Delete(tree);
 	json_str_len = strlen(json_str);
 
 	/* Save to file */
