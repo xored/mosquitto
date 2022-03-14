@@ -15,7 +15,7 @@
 ## Introduction
 
 The Dynamic Security plugin is a Mosquitto plugin which provides role based
-authentication and access control features that can updated whilst the broker
+authentication and access control features that can be updated whilst the broker
 is running, using a special topic based API.
 
 It is supported since Mosquitto 2.0, and should be available in all
