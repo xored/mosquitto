@@ -255,7 +255,6 @@ struct mosquitto_evt_persist_subscription {
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_client_msg {
 	const char *client_id;
-	char *plugin_client_id;
 	uint64_t cmsg_id;
 	uint64_t store_id;
 	uint32_t subscription_identifier;
@@ -282,8 +281,6 @@ struct mosquitto_evt_persist_base_msg {
 	const char *source_username;
 	char *plugin_topic;
 	void *plugin_payload;
-	char *plugin_source_id;
-	char *plugin_source_username;
 	const mosquitto_property *properties;
 	mosquitto_property *plugin_properties;
 	uint32_t payloadlen;

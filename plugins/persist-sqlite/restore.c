@@ -216,25 +216,8 @@ static int msg_restore(struct mosquitto_sqlite *ms)
 				continue;
 			}
 		}
-		str = (const char *)sqlite3_column_text(stmt, 4);
-		if(str){
-			msg.plugin_source_id = strdup(str);
-			if(!msg.plugin_source_id){
-				free(msg.plugin_topic);
-				failed++;
-				continue;
-			}
-		}
-		str = (const char *)sqlite3_column_text(stmt, 5);
-		if(str){
-			msg.plugin_source_username = strdup(str);
-			if(!msg.plugin_source_username){
-				free(msg.plugin_topic);
-				free(msg.plugin_source_id);
-				failed++;
-				continue;
-			}
-		}
+		msg.source_id = (const char *)sqlite3_column_text(stmt, 4);
+		msg.source_username = (const char *)sqlite3_column_text(stmt, 5);
 		payload = (const void *)sqlite3_column_blob(stmt, 3);
 		msg.payloadlen = (uint32_t)sqlite3_column_int(stmt, 6);
 		if(payload && msg.payloadlen){
@@ -242,8 +225,6 @@ static int msg_restore(struct mosquitto_sqlite *ms)
 			if(!msg.plugin_payload){
 				free(msg.plugin_topic);
 				free(msg.plugin_topic);
-				free(msg.plugin_source_id);
-				free(msg.plugin_source_username);
 				failed++;
 				continue;
 			}
@@ -277,7 +258,6 @@ static int client_msg_restore(struct mosquitto_sqlite *ms)
 	struct mosquitto_evt_persist_client_msg msg;
 	int rc;
 	long count = 0, failed = 0;
-	const char *str;
 
 	rc = sqlite3_prepare_v2(ms->db,
 			"SELECT client_id, store_id, dup, direction, mid, qos, retain, state "
@@ -291,10 +271,7 @@ static int client_msg_restore(struct mosquitto_sqlite *ms)
 
 	memset(&msg, 0, sizeof(msg));
 	while(sqlite3_step(stmt) == SQLITE_ROW){
-		str = (const char *)sqlite3_column_text(stmt, 0);
-		if(str){
-			msg.plugin_client_id = strdup(str);
-		}
+		msg.client_id = (const char *)sqlite3_column_text(stmt, 0);
 		msg.store_id = (uint64_t)sqlite3_column_int64(stmt, 1);
 		msg.dup = sqlite3_column_int(stmt, 2);
 		msg.direction = (uint8_t)sqlite3_column_int(stmt, 3);

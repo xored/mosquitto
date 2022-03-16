@@ -614,13 +614,11 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 	struct mosquitto *context;
 	struct mosquitto_base_msg *base_msg;
 
-	if(client_msg == NULL || client_msg->plugin_client_id == NULL){
-		free(client_msg->plugin_client_id);
+	if(client_msg == NULL || client_msg->client_id == NULL){
 		return MOSQ_ERR_INVAL;
 	}
 
-	HASH_FIND(hh_id, db.contexts_by_id, client_msg->plugin_client_id, strlen(client_msg->plugin_client_id), context);
-	free(client_msg->plugin_client_id);
+	HASH_FIND(hh_id, db.contexts_by_id, client_msg->client_id, strlen(client_msg->client_id), context);
 	if(context == NULL){
 		return MOSQ_ERR_NOT_FOUND;
 	}
@@ -646,9 +644,9 @@ int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg 
 {
 	struct mosquitto *context;
 
-	if(client_msg == NULL || client_msg->plugin_client_id == NULL) return MOSQ_ERR_INVAL;
+	if(client_msg == NULL || client_msg->client_id == NULL) return MOSQ_ERR_INVAL;
 
-	HASH_FIND(hh_id, db.contexts_by_id, client_msg->plugin_client_id, strlen(client_msg->plugin_client_id), context);
+	HASH_FIND(hh_id, db.contexts_by_id, client_msg->client_id, strlen(client_msg->client_id), context);
 	if(context == NULL){
 		return MOSQ_ERR_NOT_FOUND;
 	}
@@ -666,9 +664,9 @@ int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg 
 {
 	struct mosquitto *context;
 
-	if(client_msg == NULL || client_msg->plugin_client_id == NULL) return MOSQ_ERR_INVAL;
+	if(client_msg == NULL || client_msg->client_id == NULL) return MOSQ_ERR_INVAL;
 
-	HASH_FIND(hh_id, db.contexts_by_id, client_msg->plugin_client_id, strlen(client_msg->plugin_client_id), context);
+	HASH_FIND(hh_id, db.contexts_by_id, client_msg->client_id, strlen(client_msg->client_id), context);
 	if(context == NULL){
 		return MOSQ_ERR_NOT_FOUND;
 	}
@@ -730,8 +728,10 @@ int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
 
 	memset(&context, 0, sizeof(context));
 
-	context.id = msg->plugin_source_id;
-	context.username = msg->plugin_source_username;
+	/* db__message_store only takes a copy of .id and .username, so it is reasonably safe
+	 * to cast the const char * to char * */
+	context.id = (char *)msg->source_id;
+	context.username = (char *)msg->source_username;
 
 	if(msg->expiry_time == 0){
 		message_expiry_interval = 0;
@@ -771,8 +771,6 @@ int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
 		}
 	}
 	rc = db__message_store(&context, base_msg, message_expiry_interval, msg->store_id, mosq_mo_broker);
-	free(context.id);
-	free(context.username);
 	return rc;
 
 error:
