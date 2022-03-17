@@ -161,6 +161,7 @@ static int client_add_admin(FILE *pwfile, cJSON *j_clients)
 	free(salt);
 
 	if(client_role_add(j_roles, "super-admin")
+	        || client_role_add(j_roles, "sys-observe")
 	        || client_role_add(j_roles, "topic-observe")){
 
 		free(password);
