@@ -52,7 +52,8 @@ enum mosquitto_protocol {
 
 enum mosquitto_broker_msg_direction {
 	mosq_bmd_in = 0,
-	mosq_bmd_out = 1
+	mosq_bmd_out = 1,
+	mosq_bmd_all = 2
 };
 
 /* =========================================================================
@@ -298,7 +299,6 @@ struct mosquitto_evt_persist_base_msg {
  * it may change in a future minor release. */
 struct mosquitto_evt_persist_retain_msg {
 	const char *topic;
-	char *plugin_topic;
 	uint64_t store_id;
 	void *future[8];
 };
@@ -911,16 +911,15 @@ int mosquitto_persist_client_delete(const char *client_id);
  * Use to add a client message for a particular client.
  *
  * Parameters:
- *   client_msg->plugin_client_id - the client id of the client that the
- *          message belongs to. The broker will *not* modify this string and it
- *          remains the property of the plugin.
+ *   client_msg->client_id - the client id of the client that the
+ *          message belongs to.
  *   client_msg->store_id - the ID of the base message that this client
  *          message references.
  *   client_msg->cmsg_id - the client message ID of the new message
  *   client_msg->mid - the MQTT message ID of the new message
  *   client_msg->qos - the MQTT QoS of the new message
  *   client_msg->direction - the direction of the new message from the perspective
- *          of the broker (mosq_md_in / mosq_md_out)
+ *          of the broker (mosq_bmd_in / mosq_bmd_out)
  *   client_msg->retain - the retain flag of the message
  *   client_msg->subscription_identifier - the MQTT v5 subscription identifier,
  *          for outgoing messages only.
@@ -940,14 +939,13 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
  * Use to delete a client message for a particular client.
  *
  * Parameters:
- *   client_msg->plugin_client_id - the client id of the client that the
- *          message belongs to. The broker will *not* modify this string and it
- *          remains the property of the plugin.
+ *   client_msg->client_id - the client id of the client that the
+ *          message belongs to.
  *   client_msg->cmsg_id - the client message id of the affected message
  *   client_msg->mid - the MQTT message id of the affected message
  *   client_msg->qos - the MQTT QoS of the affected message
  *   client_msg->direction - the direction of the message from the perspective
- *          of the broker (mosq_md_in / mosq_md_out)
+ *          of the broker (mosq_bmd_in / mosq_bmd_out)
  *
  *   All other members of struct mosquitto_evt_persist_client_msg are unused.
  *
@@ -964,14 +962,13 @@ int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg 
  * Use to update the state of a client message for a particular client.
  *
  * Parameters:
- *   client_msg->plugin_client_id - the client id of the client that the
- *          message belongs to. The broker will *not* modify this string and it
- *          remains the property of the plugin.
+ *   client_msg->client_id - the client id of the client that the
+ *          message belongs to.
  *   client_msg->cmsg_id - the client message id of the affected message
  *   client_msg->mid - the MQTT message id of the affected message
  *   client_msg->qos - the MQTT QoS of the affected message
  *   client_msg->direction - the direction of the message from the perspective
- *          of the broker (mosq_md_in / mosq_md_out)
+ *          of the broker (mosq_bmd_in / mosq_bmd_out)
  *   client_msg->state - the new state of the message
  *
  *   All other members of struct mosquitto_evt_persist_client_msg are unused.
@@ -983,6 +980,26 @@ int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg 
  */
 int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg *client_msg);
 
+
+/* Function: mosquitto_persist_client_msg_clear
+ *
+ * Clear all messages for the listed client and direction.
+ *
+ * Parameters:
+ *   client_msg->client_id - the client id of the client that the
+ *          message belongs to.
+ *   client_msg->direction - the direction of the messages to be cleared, from
+ *          the perspective of the broker (mosq_bmd_in / mosq_bmd_out / mosq_bmd_all)
+ *   client_msg->state - the new state of the message
+ *
+ *   All other members of struct mosquitto_evt_persist_client_msg are unused.
+ *
+ * Returns:
+ *   MOSQ_ERR_SUCCESS - on success
+ *   MOSQ_ERR_INVAL - if client_msg or client_msg->plugin_client_id is NULL
+ *   MOSQ_ERR_NOT_FOUND - the client is not found
+ */
+int mosquitto_persist_client_msg_clear(struct mosquitto_evt_persist_client_msg *client_msg);
 
 /* Function: mosquitto_persist_base_msg_add
  *

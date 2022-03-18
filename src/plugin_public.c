@@ -533,13 +533,13 @@ int mosquitto_persist_client_update(struct mosquitto_evt_persist_client *client)
 	if(client == NULL){
 		return MOSQ_ERR_INVAL;
 	}
-	if(client->plugin_client_id == NULL){
+	if(client->client_id == NULL){
 		rc = MOSQ_ERR_INVAL;
 		goto error;
 	}
 
 	context = NULL;
-	HASH_FIND(hh_id, db.contexts_by_id, client->plugin_client_id, strlen(client->plugin_client_id), context);
+	HASH_FIND(hh_id, db.contexts_by_id, client->client_id, strlen(client->client_id), context);
 	if(context == NULL){
 		rc = MOSQ_ERR_NOT_FOUND;
 		goto error;
@@ -633,8 +633,10 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 		}
 		return db__message_insert_outgoing(context, client_msg->cmsg_id, client_msg->mid, client_msg->qos, client_msg->retain,
 				base_msg, client_msg->subscription_identifier, false, false);
-	}else{
+	}else if(client_msg->direction == mosq_md_in){
 		return db__message_insert_incoming(context, client_msg->cmsg_id, base_msg, false);
+	}else{
+		return MOSQ_ERR_INVAL;
 	}
 	return MOSQ_ERR_SUCCESS;
 }
@@ -653,8 +655,10 @@ int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg 
 
 	if(client_msg->direction == mosq_md_out){
 		return db__message_delete_outgoing(context, client_msg->mid, client_msg->state, client_msg->qos);
-	}else{
+	}else if(client_msg->direction == mosq_md_in){
 		return db__message_remove_incoming(context, client_msg->mid);
+	}else{
+		return MOSQ_ERR_INVAL;
 	}
 	return MOSQ_ERR_SUCCESS;
 }
@@ -673,8 +677,30 @@ int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg 
 
 	if(client_msg->direction == mosq_md_out){
 		db__message_update_outgoing(context, client_msg->mid, client_msg->state, client_msg->qos, false);
-	}else{
+	}else if(client_msg->direction == mosq_md_in){
 		// FIXME db__message_update_incoming(context, client_msg->mid, client_msg->state, client_msg->qos, false);
+	}else{
+		return MOSQ_ERR_INVAL;
+	}
+	return MOSQ_ERR_SUCCESS;
+}
+
+
+int mosquitto_persist_client_msg_clear(struct mosquitto_evt_persist_client_msg *client_msg)
+{
+	struct mosquitto *context;
+
+	if(client_msg == NULL || client_msg->client_id == NULL) return MOSQ_ERR_INVAL;
+
+	HASH_FIND(hh_id, db.contexts_by_id, client_msg->client_id, strlen(client_msg->client_id), context);
+	if(context == NULL){
+		return MOSQ_ERR_NOT_FOUND;
+	}
+
+	if(client_msg->direction == mosq_bmd_in || client_msg->direction == mosq_bmd_all){
+		db__messages_delete_incoming(context);
+	}else if(client_msg->direction == mosq_bmd_out || client_msg->direction == mosq_bmd_all){
+		db__messages_delete_outgoing(context);
 	}
 	return MOSQ_ERR_SUCCESS;
 }
