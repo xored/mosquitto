@@ -39,6 +39,7 @@ struct mosquitto_sqlite {
 	sqlite3_stmt *client_msg_remove_stmt;
 	sqlite3_stmt *client_msg_update_stmt;
 	sqlite3_stmt *client_msg_clear_stmt;
+	sqlite3_stmt *client_msg_clear_all_stmt;
 	sqlite3_stmt *base_msg_add_stmt;
 	sqlite3_stmt *base_msg_remove_stmt;
 	sqlite3_stmt *base_msg_load_stmt;

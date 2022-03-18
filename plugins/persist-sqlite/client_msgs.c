@@ -119,19 +119,32 @@ int persist_sqlite__client_msg_clear_cb(int event, void *event_data, void *userd
 
 	UNUSED(event);
 
-	if(sqlite3_bind_text(ms->client_msg_clear_stmt, 1, ed->client_id, (int)strlen(ed->client_id), SQLITE_STATIC) == SQLITE_OK
-			&& sqlite3_bind_int64(ms->client_msg_clear_stmt, 2, ed->direction) == SQLITE_OK
-			){
-
-		ms->event_count++;
-		rc = sqlite3_step(ms->client_msg_clear_stmt);
-		if(rc == SQLITE_DONE){
-			rc = MOSQ_ERR_SUCCESS;
-		}else{
-			rc = MOSQ_ERR_UNKNOWN;
+	if(ed->direction == mosq_bmd_all){
+		if(sqlite3_bind_text(ms->client_msg_clear_all_stmt, 1, ed->client_id, (int)strlen(ed->client_id), SQLITE_STATIC) == SQLITE_OK){
+			ms->event_count++;
+			rc = sqlite3_step(ms->client_msg_clear_all_stmt);
+			if(rc == SQLITE_DONE){
+				rc = MOSQ_ERR_SUCCESS;
+			}else{
+				rc = MOSQ_ERR_UNKNOWN;
+			}
 		}
+		sqlite3_reset(ms->client_msg_clear_all_stmt);
+	}else{
+		if(sqlite3_bind_text(ms->client_msg_clear_stmt, 1, ed->client_id, (int)strlen(ed->client_id), SQLITE_STATIC) == SQLITE_OK
+				&& sqlite3_bind_int64(ms->client_msg_clear_stmt, 2, ed->direction) == SQLITE_OK
+				){
+
+			ms->event_count++;
+			rc = sqlite3_step(ms->client_msg_clear_stmt);
+			if(rc == SQLITE_DONE){
+				rc = MOSQ_ERR_SUCCESS;
+			}else{
+				rc = MOSQ_ERR_UNKNOWN;
+			}
+		}
+		sqlite3_reset(ms->client_msg_clear_stmt);
 	}
-	sqlite3_reset(ms->client_msg_clear_stmt);
 
 	return rc;
 }

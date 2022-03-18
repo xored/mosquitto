@@ -28,6 +28,7 @@
 	mosquitto_persist_client_add;
 	mosquitto_persist_client_delete;
 	mosquitto_persist_client_msg_add;
+	mosquitto_persist_client_msg_clear;
 	mosquitto_persist_client_msg_delete;
 	mosquitto_persist_client_msg_update;
 	mosquitto_persist_client_update;

@@ -203,6 +203,12 @@ static int prepare_statements(struct mosquitto_sqlite *ms)
 			&ms->client_msg_clear_stmt, NULL);
 	if(rc) goto fail;
 
+	rc = sqlite3_prepare_v3(ms->db,
+			"DELETE FROM client_msgs WHERE client_id=?",
+			-1, SQLITE_PREPARE_PERSISTENT,
+			&ms->client_msg_clear_all_stmt, NULL);
+	if(rc) goto fail;
+
 	/* Message store */
 	rc = sqlite3_prepare_v3(ms->db,
 			"INSERT INTO base_msgs "
@@ -297,6 +303,7 @@ void persist_sqlite__cleanup(struct mosquitto_sqlite *ms)
 	sqlite3_finalize(ms->client_msg_remove_stmt);
 	sqlite3_finalize(ms->client_msg_update_stmt);
 	sqlite3_finalize(ms->client_msg_clear_stmt);
+	sqlite3_finalize(ms->client_msg_clear_all_stmt);
 	sqlite3_finalize(ms->base_msg_add_stmt);
 	sqlite3_finalize(ms->base_msg_remove_stmt);
 	sqlite3_finalize(ms->base_msg_load_stmt);

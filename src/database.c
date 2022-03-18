@@ -718,7 +718,6 @@ int db__messages_delete_incoming(struct mosquitto *context)
 	context->msgs_in.queued_bytes12 = 0;
 	context->msgs_in.queued_count = 0;
 	context->msgs_in.queued_count12 = 0;
-	plugin_persist__handle_client_msg_clear(context, mosq_md_in);
 
 	return MOSQ_ERR_SUCCESS;
 }
@@ -738,7 +737,6 @@ int db__messages_delete_outgoing(struct mosquitto *context)
 	context->msgs_out.queued_bytes12 = 0;
 	context->msgs_out.queued_count = 0;
 	context->msgs_out.queued_count12 = 0;
-	plugin_persist__handle_client_msg_clear(context, mosq_md_out);
 
 	return MOSQ_ERR_SUCCESS;
 }
@@ -746,16 +744,27 @@ int db__messages_delete_outgoing(struct mosquitto *context)
 
 int db__messages_delete(struct mosquitto *context, bool force_free)
 {
+	bool clear_incoming = false, clear_outgoing = false;
 	if(!context) return MOSQ_ERR_INVAL;
 
 	if(force_free || context->clean_start || (context->bridge && context->bridge->clean_start)){
 		db__messages_delete_incoming(context);
+		clear_incoming = true;
 	}
 
 	if(force_free || (context->bridge && context->bridge->clean_start_local)
 			|| (context->bridge == NULL && context->clean_start)){
 
 		db__messages_delete_outgoing(context);
+		clear_outgoing = true;
+	}
+
+	if(clear_incoming && clear_outgoing){
+		plugin_persist__handle_client_msg_clear(context, mosq_bmd_all);
+	}else if(clear_incoming){
+		plugin_persist__handle_client_msg_clear(context, mosq_bmd_in);
+	}else if(clear_outgoing){
+		plugin_persist__handle_client_msg_clear(context, mosq_bmd_out);
 	}
 
 	return MOSQ_ERR_SUCCESS;
