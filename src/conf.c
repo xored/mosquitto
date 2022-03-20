@@ -1509,8 +1509,8 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 						cur_bridge->start_type = bst_automatic;
 						cur_bridge->idle_timeout = 60;
 						cur_bridge->restart_timeout = 0;
-						cur_bridge->backoff_base = 5;
-						cur_bridge->backoff_cap = 30;
+						cur_bridge->backoff_base = 5 * 1000;
+						cur_bridge->backoff_cap = 30 * 1000;
 						cur_bridge->stable_connection_period = 0;
 						cur_bridge->threshold = 10;
 						cur_bridge->try_private = true;

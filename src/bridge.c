@@ -889,7 +889,7 @@ static void bridge__update_backoff(struct mosquitto__bridge *bridge)
 
 	bridge->connected_at = 0;
 
-	log__printf(NULL, MOSQ_LOG_INFO, "Bridge %s next backoff will be %d", bridge->name, bridge->restart_timeout);
+	log__printf(NULL, MOSQ_LOG_INFO, "Bridge %s next backoff will be %d ms", bridge->name, bridge->restart_timeout);
 }
 
 static void bridge_check_pending(struct mosquitto *context)
