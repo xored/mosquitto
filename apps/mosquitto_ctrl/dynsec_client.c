@@ -207,6 +207,7 @@ int dynsec_client__file_set_password(int argc, char *argv[], const char *file)
 	if(fread(fstr, 1, (size_t)len, fptr) != (size_t)len){
 		fprintf(stderr, "Error: Incomplete read of %s.\n", file);
 		fclose(fptr);
+		free(fstr);
 		return MOSQ_ERR_NOMEM;
 	}
 	fclose(fptr);
