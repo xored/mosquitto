@@ -100,7 +100,7 @@ static int basic_auth_callback(int event, void *event_data, void *userdata)
 		client->request_time = time(NULL);
 		HASH_ADD_KEYPTR(hh, clients, client->id, strlen(client->id), client);
 
-		mosquitto_log_printf(MOSQ_LOG_DEBUG, "Starting auth for %s at %d", client->id, time(NULL));
+		mosquitto_log_printf(MOSQ_LOG_DEBUG, "Starting auth for %s at %ld", client->id, time(NULL));
 	}
 
 	return MOSQ_ERR_AUTH_DELAYED;
@@ -132,7 +132,7 @@ static int tick_callback(int event, void *event_data, void *userdata)
 				}else{
 					mosquitto_complete_basic_auth(client->id, MOSQ_ERR_SUCCESS);
 				}
-				mosquitto_log_printf(MOSQ_LOG_DEBUG, "Completing auth for %s at %d", client->id, now);
+				mosquitto_log_printf(MOSQ_LOG_DEBUG, "Completing auth for %s at %ld", client->id, now);
 				HASH_DELETE(hh, clients, client);
 				mosquitto_free(client->id);
 				mosquitto_free(client);

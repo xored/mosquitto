@@ -138,7 +138,7 @@ static int client_restore(struct mosquitto_sqlite *ms)
 	}
 	sqlite3_finalize(stmt);
 
-	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %d clients (%ld failed)", count, failed);
+	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %ld clients (%ld failed)", count, failed);
 
 	return rc;
 }
@@ -179,7 +179,7 @@ static int subscription_restore(struct mosquitto_sqlite *ms)
 	}
 	sqlite3_finalize(stmt);
 
-	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %d subscriptions (%ld failed)", count, failed);
+	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %ld subscriptions (%ld failed)", count, failed);
 
 	return MOSQ_ERR_SUCCESS;
 }
@@ -247,7 +247,7 @@ static int msg_restore(struct mosquitto_sqlite *ms)
 	}
 	sqlite3_finalize(stmt);
 
-	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %d messages (%ld failed)", count, failed);
+	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %ld messages (%ld failed)", count, failed);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -289,7 +289,7 @@ static int client_msg_restore(struct mosquitto_sqlite *ms)
 	}
 	sqlite3_finalize(stmt);
 
-	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %d client messages (%ld failed)", count, failed);
+	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %ld client messages (%ld failed)", count, failed);
 	return MOSQ_ERR_SUCCESS;
 }
 
@@ -329,7 +329,7 @@ static int retain_restore(struct mosquitto_sqlite *ms)
 	}
 	sqlite3_finalize(stmt);
 
-	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %d retained messages (%ld failed)", count, failed);
+	mosquitto_log_printf(MOSQ_LOG_INFO, "sqlite: Restored %ld retained messages (%ld failed)", count, failed);
 	return MOSQ_ERR_SUCCESS;
 }
 
