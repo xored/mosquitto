@@ -210,7 +210,10 @@ int http__read(struct mosquitto *mosq)
 	}
 
 	packet = mosquitto__calloc(1, sizeof(struct mosquitto__packet) + 1024 + WS_PACKET_OFFSET);
-	if(!packet) return MOSQ_ERR_NOMEM;
+	if(!packet){
+		SAFE_FREE(accept_key);
+		return MOSQ_ERR_NOMEM;
+	}
 	packet->packet_length = (uint32_t )snprintf((char *)&packet->payload[WS_PACKET_OFFSET], 1024,
 			"HTTP/1.1 101 Switching Protocols\r\n"
 			"Upgrade: WebSocket\r\n"
