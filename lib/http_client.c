@@ -51,7 +51,7 @@ int http_c__context_init(struct mosquitto *context)
 	const char *path;
 
 	context->transport = mosq_t_http;
-	context->http_request = mosquitto__calloc(1, (size_t)context->wsd.http_header_size);
+	context->http_request = mosquitto__calloc(1, (size_t)context->wsd.http_header_size + 1);
 	if(context->http_request == NULL){
 		return MOSQ_ERR_NOMEM;
 	}
