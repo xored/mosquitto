@@ -124,6 +124,7 @@ int persist__chunk_client_msg_write_v6(FILE *db_fptr, struct P_client_msg *chunk
 			prop_packet->packet_length = proplen;
 			rc = property__write_all(prop_packet, &subscription_id_prop, true);
 			if(rc){
+				SAFE_FREE(prop_packet);
 				return rc;
 			}
 
