@@ -94,9 +94,6 @@ int mosquitto_psk_key_get(struct mosquitto *context, const char *hint, const cha
 	}
 
 	rc = mosquitto_psk_key_get_default(context, hint, identity, key, max_key_len);
-	if(rc != MOSQ_ERR_PLUGIN_DEFER){
-		return rc;
-	}
 	if(rc == MOSQ_ERR_PLUGIN_IGNORE){
 		/* Do nothing */
 	}else if(rc == MOSQ_ERR_PLUGIN_DEFER){
