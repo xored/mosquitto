@@ -263,10 +263,12 @@ void plugin_persist__handle_client_msg_update(struct mosquitto *context, const s
 
 	event_data.client_id = context->id;
 	event_data.cmsg_id = cmsg->cmsg_id;
+	event_data.mid = cmsg->mid;
 	event_data.store_id = cmsg->base_msg->db_id;
 	event_data.state = cmsg->state;
 	event_data.dup = cmsg->dup;
 	event_data.direction = cmsg->direction;
+	event_data.qos = cmsg->qos;
 
 	DL_FOREACH(opts->plugin_callbacks.persist_client_msg_update, cb_base){
 		cb_base->cb(MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE, &event_data, cb_base->userdata);
