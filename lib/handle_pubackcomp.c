@@ -113,9 +113,7 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 		}
 	}
 	if(mosq->in_packet.pos < mosq->in_packet.remaining_length){
-#ifdef WITH_BROKER
 		mosquitto_property_free_all(&properties);
-#endif
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
@@ -150,4 +148,3 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 	return MOSQ_ERR_SUCCESS;
 #endif
 }
-
