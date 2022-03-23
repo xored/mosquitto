@@ -284,7 +284,7 @@ static int dump__base_msg_chunk_process(FILE *db_fptr, uint32_t length)
 
 	if(rc == MOSQ_ERR_SUCCESS){
 		stored->source_listener = chunk.source.listener;
-		stored->db_id = stored->db_id;
+		stored->db_id = chunk.F.store_id;
 
 		HASH_ADD(hh, db.msg_store, db_id, sizeof(dbid_t), stored);
 	}else{
