@@ -224,7 +224,6 @@ static int msg_restore(struct mosquitto_sqlite *ms)
 			msg.plugin_payload = malloc(msg.payloadlen+1);
 			if(!msg.plugin_payload){
 				free(msg.plugin_topic);
-				free(msg.plugin_topic);
 				failed++;
 				continue;
 			}
