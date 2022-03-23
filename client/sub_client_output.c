@@ -235,7 +235,7 @@ static int json_print_properties(cJSON *root, const mosquitto_property *properti
 				}
 
 				user_json = cJSON_CreateObject();
-				if(user_props == NULL){
+				if(user_json == NULL){
 					return MOSQ_ERR_NOMEM;
 				}
 				cJSON_AddItemToArray(user_props, user_json);
