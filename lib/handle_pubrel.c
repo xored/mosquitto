@@ -78,21 +78,18 @@ int handle__pubrel(struct mosquitto *mosq)
 		if(mosq->in_packet.remaining_length > 3){
 			rc = property__read_all(CMD_PUBREL, &mosq->in_packet, &properties);
 			if(rc) return rc;
+			/* Immediately free, we don't do anything with Reason String or
+			 * User Property at the moment */
+			mosquitto_property_free_all(&properties);
 		}
 	}
 
 	if(mosq->in_packet.pos < mosq->in_packet.remaining_length){
-#ifdef WITH_BROKER
-		mosquitto_property_free_all(&properties);
-#endif
 		return MOSQ_ERR_MALFORMED_PACKET;
 	}
 
 #ifdef WITH_BROKER
 	log__printf(NULL, MOSQ_LOG_DEBUG, "Received PUBREL from %s (Mid: %d)", SAFE_PRINT(mosq->id), mid);
-
-	/* Immediately free, we don't do anything with Reason String or User Property at the moment */
-	mosquitto_property_free_all(&properties);
 
 	rc = db__message_release_incoming(mosq, mid);
 	if(rc == MOSQ_ERR_NOT_FOUND){
@@ -118,7 +115,6 @@ int handle__pubrel(struct mosquitto *mosq)
 		/* Only pass the message on if we have removed it from the queue - this
 		 * prevents multiple callbacks for the same message. */
 		callback__on_message(mosq, &message->msg, message->properties);
-		mosquitto_property_free_all(&properties);
 		message__cleanup(&message);
 	}else if(rc == MOSQ_ERR_NOT_FOUND){
 		return MOSQ_ERR_SUCCESS;
@@ -129,4 +125,3 @@ int handle__pubrel(struct mosquitto *mosq)
 
 	return MOSQ_ERR_SUCCESS;
 }
-
