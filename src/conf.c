@@ -2472,7 +2472,10 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 						return MOSQ_ERR_NOMEM;
 					}
 					ws_origins[cur_listener->ws_origin_count] = NULL;
-					if(conf__parse_string(&token, "websockets_origin", &ws_origins[cur_listener->ws_origin_count], &saveptr)) return MOSQ_ERR_INVAL;
+					if(conf__parse_string(&token, "websockets_origin", &ws_origins[cur_listener->ws_origin_count], &saveptr)){
+						mosquitto__FREE(ws_origins);
+						return MOSQ_ERR_INVAL;
+					}
 					cur_listener->ws_origins = ws_origins;
 					cur_listener->ws_origin_count++;
 #  else
