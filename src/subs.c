@@ -297,13 +297,15 @@ static int sub__add_normal(struct mosquitto *context, const char *sub, uint8_t q
 		csub->hier = subhier;
 		csub->shared = NULL;
 
+		bool assigned = false;
 		for(i=0; i<context->sub_count; i++){
 			if(!context->subs[i]){
 				context->subs[i] = csub;
+				assigned = true;
 				break;
 			}
 		}
-		if(i == context->sub_count){
+		if(assigned == false){
 			subs = mosquitto__realloc(context->subs, sizeof(struct mosquitto__client_sub *)*(size_t)(context->sub_count + 1));
 			if(!subs){
 				DL_DELETE(subhier->subs, newleaf);
