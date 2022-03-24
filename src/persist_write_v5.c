@@ -149,7 +149,6 @@ int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_base_msg *chun
 	uint16_t source_username_len = chunk->F.source_username_len;
 	uint16_t topic_len = chunk->F.topic_len;
 	uint32_t proplen = 0;
-	struct mosquitto__packet *prop_packet = NULL;
 	int rc;
 
 	if(chunk->properties){
@@ -182,7 +181,7 @@ int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_base_msg *chun
 	}
 	if(chunk->properties){
 		if(proplen > 0){
-			prop_packet = calloc(1, sizeof(struct mosquitto__packet)+proplen);
+			struct mosquitto__packet *prop_packet = calloc(1, sizeof(struct mosquitto__packet)+proplen);
 			if(prop_packet == NULL){
 				return MOSQ_ERR_NOMEM;
 			}
@@ -190,18 +189,18 @@ int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_base_msg *chun
 			prop_packet->packet_length = proplen;
 			rc = property__write_all(prop_packet, chunk->properties, true);
 			if(rc){
+				SAFE_FREE(prop_packet);
 				return rc;
 			}
 
 			write_e(db_fptr, prop_packet->payload, proplen);
-			mosquitto__FREE(prop_packet);
+			SAFE_FREE(prop_packet);
 		}
 	}
 
 	return MOSQ_ERR_SUCCESS;
 error:
 	log__printf(NULL, MOSQ_LOG_ERR, "Error: %s.", strerror(errno));
-	mosquitto__FREE(prop_packet);
 	return 1;
 }
 
