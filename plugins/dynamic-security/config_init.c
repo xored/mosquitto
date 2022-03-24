@@ -70,26 +70,39 @@ static int generate_password(int iterations, char **password, char **password_ha
 	unsigned char vb;
 	unsigned long v;
 	size_t len;
+	char *pwenv;
 
 	memset(&pw, 0, sizeof(struct mosquitto_pw));
 	pw.hashtype = pw_sha512_pbkdf2;
 
-	*password = malloc(21);
-	if(*password == NULL){
-		return MOSQ_ERR_NOMEM;
+	pwenv = getenv("MOSQUITTO_DYNSEC_PASSWORD");
+	if(pwenv){
+		if(strlen(pwenv) < 12){
+			mosquitto_log_printf(MOSQ_LOG_ERR, "Error: Not generating dynsec config, MOSQUITTO_DYNSEC_PASSWORD must be at least 12 characters.");
+			return MOSQ_ERR_INVAL;
+		}
+		*password = strdup(pwenv);
+		if(*password == NULL){
+			return MOSQ_ERR_NOMEM;
+		}
+	}else{
+		*password = malloc(21);
+		if(*password == NULL){
+			return MOSQ_ERR_NOMEM;
+		}
+		len = sizeof(pw_chars)-1;
+		for(i=0; i<20; i++){
+			do{
+				if(RAND_bytes(&vb, 1) != 1){
+					free(*password);
+					return MOSQ_ERR_UNKNOWN;
+				}
+				v = vb;
+			}while(v >= (RAND_MAX - (RAND_MAX % len)));
+			(*password)[i] = pw_chars[v%len];
+		}
+		(*password)[20] = '\0';
 	}
-	len = sizeof(pw_chars)-1;
-	for(i=0; i<20; i++){
-		do{
-			if(RAND_bytes(&vb, 1) != 1){
-				free(*password);
-				return MOSQ_ERR_UNKNOWN;
-			}
-			v = vb;
-		}while(v >= (RAND_MAX - (RAND_MAX % len)));
-		(*password)[i] = pw_chars[v%len];
-	}
-	(*password)[20] = '\0';
 
 	if(pw__hash(*password, &pw, true, iterations) != MOSQ_ERR_SUCCESS){
 		free(*password);
@@ -181,6 +194,9 @@ static int client_add_user(FILE *pwfile, cJSON *j_clients)
 	char *password_hash = NULL;
 	char *salt = NULL;
 
+	if(getenv("MOSQUITTO_DYNSEC_PASSWORD")){
+		return MOSQ_ERR_SUCCESS;
+	}
 	if(generate_password(10000, &password, &password_hash, &salt)){
 		return MOSQ_ERR_UNKNOWN;
 	}
