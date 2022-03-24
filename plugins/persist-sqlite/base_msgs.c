@@ -115,7 +115,7 @@ static char *properties_to_json(const mosquitto_property *properties)
 			case MQTT_PROP_SERVER_REFERENCE:
 			case MQTT_PROP_REASON_STRING:
 				/* str */
-				if(mosquitto_property_read_string(properties, propid, &value, false)){
+				if(mosquitto_property_read_string(properties, propid, &value, false) == NULL){
 					cJSON_Delete(array);
 					return NULL;
 				}
