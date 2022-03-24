@@ -138,10 +138,14 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 		/* Only inform the client the message has been sent once. */
 		callback__on_publish(mosq, mid, reason_code, properties);
 		mosquitto_property_free_all(&properties);
-	}else if(rc != MOSQ_ERR_NOT_FOUND){
+	}else{
 		mosquitto_property_free_all(&properties);
-		return rc;
+
+		if(rc != MOSQ_ERR_NOT_FOUND){
+			return rc;
+		}
 	}
+
 	pthread_mutex_lock(&mosq->msgs_out.mutex);
 	message__release_to_inflight(mosq, mosq_md_out);
 	pthread_mutex_unlock(&mosq->msgs_out.mutex);
