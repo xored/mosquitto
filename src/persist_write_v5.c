@@ -193,7 +193,6 @@ int persist__chunk_message_store_write_v6(FILE *db_fptr, struct P_base_msg *chun
 				return rc;
 			}
 
-			write_e(db_fptr, prop_packet->payload, proplen);
 			if(fwrite(prop_packet, 1, proplen, db_fptr) != proplen){
 				SAFE_FREE(prop_packet);
 				goto error;
