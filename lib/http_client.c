@@ -146,8 +146,10 @@ int http_c__read(struct mosquitto *mosq)
 			}
 		}
 	}
+	hlen += (size_t)read_length;
+	mosq->http_request[hlen] = '\0';
 
-	read_length = phr_parse_response(mosq->http_request, strlen(mosq->http_request),
+	read_length = phr_parse_response(mosq->http_request, hlen,
 			&http_minor_version, &http_status,
 			&http_msg, &http_msg_len,
 			http_headers, &http_header_count,
