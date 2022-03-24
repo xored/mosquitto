@@ -246,13 +246,16 @@ int db__close(void)
 }
 
 
-void db__msg_store_add(struct mosquitto_base_msg *base_msg)
+int db__msg_store_add(struct mosquitto_base_msg *base_msg)
 {
 	struct mosquitto_base_msg *found;
 
 	HASH_FIND(hh, db.msg_store, &base_msg->db_id, sizeof(base_msg->db_id), found);
 	if(found == NULL){
 		HASH_ADD(hh, db.msg_store, db_id, sizeof(base_msg->db_id), base_msg);
+		return MOSQ_ERR_SUCCESS;
+	}else{
+		return MOSQ_ERR_ALREADY_EXISTS;
 	}
 }
 
@@ -909,6 +912,8 @@ uint64_t db__new_msg_id(void)
 /* This function requires topic to be allocated on the heap. Once called, it owns topic and will free it on error. Likewise payload and properties. */
 int db__message_store(const struct mosquitto *source, struct mosquitto_base_msg *base_msg, uint32_t message_expiry_interval, dbid_t base_msg_id, enum mosquitto_msg_origin origin)
 {
+	int rc;
+
 	assert(base_msg);
 
 	if(source && source->id){
@@ -950,7 +955,11 @@ int db__message_store(const struct mosquitto *source, struct mosquitto_base_msg 
 		base_msg->db_id = base_msg_id;
 	}
 
-	db__msg_store_add(base_msg);
+	rc = db__msg_store_add(base_msg);
+	if(rc){
+		db__msg_store_free(base_msg);
+		return rc;
+	}
 
 	return MOSQ_ERR_SUCCESS;
 }
