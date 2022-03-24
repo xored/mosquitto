@@ -219,7 +219,8 @@ void context__disconnect(struct mosquitto *context)
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == LWS_IS_BUILTIN
 	if(context->transport == mosq_t_ws){
 		uint8_t buf[4] = {0x88, 0x02, 0x03, context->wsd.disconnect_reason};
-		send(context->sock, buf, 4, 0);
+		/* Send the disconnect reason, but don't care if it fails */
+		if(send(context->sock, buf, 4, 0));
 	}
 #endif
 	plugin__handle_disconnect(context, -1);
