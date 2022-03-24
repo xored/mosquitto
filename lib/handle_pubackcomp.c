@@ -139,6 +139,7 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 		callback__on_publish(mosq, mid, reason_code, properties);
 		mosquitto_property_free_all(&properties);
 	}else if(rc != MOSQ_ERR_NOT_FOUND){
+		mosquitto_property_free_all(&properties);
 		return rc;
 	}
 	pthread_mutex_lock(&mosq->msgs_out.mutex);
