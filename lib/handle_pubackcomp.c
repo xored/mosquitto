@@ -101,6 +101,7 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 					&& reason_code != MQTT_RC_PAYLOAD_FORMAT_INVALID
 					){
 
+				mosquitto_property_free_all(&properties);
 				return MOSQ_ERR_PROTOCOL;
 			}
 		}else{
@@ -108,6 +109,7 @@ int handle__pubackcomp(struct mosquitto *mosq, const char *type)
 					&& reason_code != MQTT_RC_PACKET_ID_NOT_FOUND
 					){
 
+				mosquitto_property_free_all(&properties);
 				return MOSQ_ERR_PROTOCOL;
 			}
 		}
