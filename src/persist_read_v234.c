@@ -180,9 +180,9 @@ int persist__chunk_base_msg_read_v234(FILE *db_fptr, struct P_base_msg *chunk, u
 			log__printf(NULL, MOSQ_LOG_ERR, "Error: Out of memory.");
 			return MOSQ_ERR_NOMEM;
 		}
+		read_e(db_fptr, chunk->payload, chunk->F.payloadlen);
 		/* Ensure zero terminated regardless of contents */
 		((uint8_t *)chunk->payload)[chunk->F.payloadlen] = 0;
-		read_e(db_fptr, chunk->payload, chunk->F.payloadlen);
 	}
 
 	return MOSQ_ERR_SUCCESS;
