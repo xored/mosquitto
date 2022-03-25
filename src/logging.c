@@ -375,12 +375,12 @@ void log__internal(const char *fmt, ...)
 #endif
 }
 
-int mosquitto_log_vprintf(int level, const char *fmt, va_list va)
+BROKER_EXPORT int mosquitto_log_vprintf(int level, const char *fmt, va_list va)
 {
 	return log__vprintf((unsigned int)level, fmt, va);
 }
 
-void mosquitto_log_printf(int level, const char *fmt, ...)
+BROKER_EXPORT void mosquitto_log_printf(int level, const char *fmt, ...)
 {
 	va_list va;
 

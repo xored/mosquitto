@@ -90,4 +90,14 @@
 #define WS_IS_LWS 1
 #define WS_IS_WSLAY 2
 
+#ifdef WITH_BROKER
+#  ifdef __GNUC__
+#    define BROKER_EXPORT __attribute__((__used__))
+#  else
+#    define BROKER_EXPORT
+#  endif
+#else
+#  define BROKER_EXPORT
+#endif
+
 #endif

@@ -130,7 +130,7 @@ WITH_OLD_KEEPALIVE=no
 
 # Use link time optimisation - note that enabling this currently prevents
 # broker plugins from working.
-WITH_LTO=no
+WITH_LTO=yes
 
 # Build with sqlite3 support - this enables the sqlite persistence plugin.
 WITH_SQLITE=yes
@@ -164,7 +164,7 @@ ifeq ($(UNAME),SunOS)
 		CFLAGS?=-Wall -ggdb -O2
 	endif
 else
-	CFLAGS?=-Wall -ggdb -O2 -Wconversion -Wextra
+	CFLAGS?=-Wall -ggdb -O3 -Wconversion -Wextra
 endif
 
 STATIC_LIB_DEPS:=

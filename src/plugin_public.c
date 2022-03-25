@@ -31,7 +31,7 @@ Contributors:
 #  include <openssl/ssl.h>
 #endif
 
-int mosquitto_plugin_set_info(mosquitto_plugin_id_t *identifier,
+BROKER_EXPORT int mosquitto_plugin_set_info(mosquitto_plugin_id_t *identifier,
 		const char *plugin_name,
 		const char *plugin_version)
 {
@@ -50,7 +50,7 @@ int mosquitto_plugin_set_info(mosquitto_plugin_id_t *identifier,
 }
 
 
-const char *mosquitto_client_address(const struct mosquitto *client)
+BROKER_EXPORT const char *mosquitto_client_address(const struct mosquitto *client)
 {
 	if(client){
 		return client->address;
@@ -60,7 +60,7 @@ const char *mosquitto_client_address(const struct mosquitto *client)
 }
 
 
-struct mosquitto *mosquitto_client(const char *client_id)
+BROKER_EXPORT struct mosquitto *mosquitto_client(const char *client_id)
 {
 	size_t len;
 	struct mosquitto *context;
@@ -75,7 +75,7 @@ struct mosquitto *mosquitto_client(const char *client_id)
 }
 
 
-int mosquitto_client_port(const struct mosquitto *client)
+BROKER_EXPORT int mosquitto_client_port(const struct mosquitto *client)
 {
 	if(client && client->listener){
 		return client->listener->port;
@@ -85,7 +85,7 @@ int mosquitto_client_port(const struct mosquitto *client)
 }
 
 
-bool mosquitto_client_clean_session(const struct mosquitto *client)
+BROKER_EXPORT bool mosquitto_client_clean_session(const struct mosquitto *client)
 {
 	if(client){
 		return client->clean_start;
@@ -95,7 +95,7 @@ bool mosquitto_client_clean_session(const struct mosquitto *client)
 }
 
 
-const char *mosquitto_client_id(const struct mosquitto *client)
+BROKER_EXPORT const char *mosquitto_client_id(const struct mosquitto *client)
 {
 	if(client){
 		return client->id;
@@ -105,7 +105,7 @@ const char *mosquitto_client_id(const struct mosquitto *client)
 }
 
 
-int mosquitto_client_keepalive(const struct mosquitto *client)
+BROKER_EXPORT int mosquitto_client_keepalive(const struct mosquitto *client)
 {
 	if(client){
 		return client->keepalive;
@@ -115,7 +115,7 @@ int mosquitto_client_keepalive(const struct mosquitto *client)
 }
 
 
-void *mosquitto_client_certificate(const struct mosquitto *client)
+BROKER_EXPORT void *mosquitto_client_certificate(const struct mosquitto *client)
 {
 #ifdef WITH_TLS
 	if(client && client->ssl){
@@ -131,7 +131,7 @@ void *mosquitto_client_certificate(const struct mosquitto *client)
 }
 
 
-int mosquitto_client_protocol(const struct mosquitto *client)
+BROKER_EXPORT int mosquitto_client_protocol(const struct mosquitto *client)
 {
 #if defined(WITH_WEBSOCKETS) && WITH_WEBSOCKETS == WS_IS_LWS
 	if(client && client->wsi){
@@ -150,7 +150,7 @@ int mosquitto_client_protocol(const struct mosquitto *client)
 }
 
 
-int mosquitto_client_protocol_version(const struct mosquitto *client)
+BROKER_EXPORT int mosquitto_client_protocol_version(const struct mosquitto *client)
 {
 	if(client){
 		switch(client->protocol){
@@ -169,7 +169,7 @@ int mosquitto_client_protocol_version(const struct mosquitto *client)
 }
 
 
-int mosquitto_client_sub_count(const struct mosquitto *client)
+BROKER_EXPORT int mosquitto_client_sub_count(const struct mosquitto *client)
 {
 	if(client){
 		return client->sub_count;
@@ -179,7 +179,7 @@ int mosquitto_client_sub_count(const struct mosquitto *client)
 }
 
 
-const char *mosquitto_client_username(const struct mosquitto *client)
+BROKER_EXPORT const char *mosquitto_client_username(const struct mosquitto *client)
 {
 	if(client){
 #ifdef WITH_BRIDGE
@@ -196,7 +196,7 @@ const char *mosquitto_client_username(const struct mosquitto *client)
 }
 
 
-int mosquitto_broker_publish(
+BROKER_EXPORT int mosquitto_broker_publish(
 		const char *clientid,
 		const char *topic,
 		int payloadlen,
@@ -247,7 +247,7 @@ int mosquitto_broker_publish(
 }
 
 
-int mosquitto_broker_publish_copy(
+BROKER_EXPORT int mosquitto_broker_publish_copy(
 		const char *clientid,
 		const char *topic,
 		int payloadlen,
@@ -289,7 +289,7 @@ int mosquitto_broker_publish_copy(
 }
 
 
-int mosquitto_set_username(struct mosquitto *client, const char *username)
+BROKER_EXPORT int mosquitto_set_username(struct mosquitto *client, const char *username)
 {
 	char *u_dup;
 	char *old;
@@ -318,7 +318,7 @@ int mosquitto_set_username(struct mosquitto *client, const char *username)
 	}
 }
 
-int mosquitto_set_clientid(struct mosquitto *client, const char *clientid)
+BROKER_EXPORT int mosquitto_set_clientid(struct mosquitto *client, const char *clientid)
 {
 	struct mosquitto *found_client;
     char *id_dup;
@@ -404,7 +404,7 @@ static void disconnect_client(struct mosquitto *context, bool with_will)
 	do_disconnect(context, MOSQ_ERR_ADMINISTRATIVE_ACTION);
 }
 
-int mosquitto_kick_client_by_clientid(const char *clientid, bool with_will)
+BROKER_EXPORT int mosquitto_kick_client_by_clientid(const char *clientid, bool with_will)
 {
 	struct mosquitto *ctxt, *ctxt_tmp;
 
@@ -424,7 +424,7 @@ int mosquitto_kick_client_by_clientid(const char *clientid, bool with_will)
 	}
 }
 
-int mosquitto_kick_client_by_username(const char *username, bool with_will)
+BROKER_EXPORT int mosquitto_kick_client_by_username(const char *username, bool with_will)
 {
 	struct mosquitto *ctxt, *ctxt_tmp;
 
@@ -444,7 +444,7 @@ int mosquitto_kick_client_by_username(const char *username, bool with_will)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_apply_on_all_clients(int (*FUNC_client_functor)(const struct mosquitto *, void *), void *functor_context)
+BROKER_EXPORT int mosquitto_apply_on_all_clients(int (*FUNC_client_functor)(const struct mosquitto *, void *), void *functor_context)
 {
 	int rc = MOSQ_ERR_SUCCESS;
 	struct mosquitto *ctxt, *ctxt_tmp;
@@ -459,7 +459,7 @@ int mosquitto_apply_on_all_clients(int (*FUNC_client_functor)(const struct mosqu
 	return rc;
 }
 
-int mosquitto_persist_client_add(struct mosquitto_evt_persist_client *client)
+BROKER_EXPORT int mosquitto_persist_client_add(struct mosquitto_evt_persist_client *client)
 {
 	struct mosquitto *context;
 	int i;
@@ -524,7 +524,7 @@ error:
 }
 
 
-int mosquitto_persist_client_update(struct mosquitto_evt_persist_client *client)
+BROKER_EXPORT int mosquitto_persist_client_update(struct mosquitto_evt_persist_client *client)
 {
 	struct mosquitto *context;
 	int i;
@@ -575,7 +575,7 @@ error:
 }
 
 
-int mosquitto_persist_client_delete(const char *client_id)
+BROKER_EXPORT int mosquitto_persist_client_delete(const char *client_id)
 {
 	struct mosquitto *context;
 
@@ -609,7 +609,7 @@ struct mosquitto_base_msg *find_store_msg(uint64_t store_id)
 	return base_msg;
 }
 
-int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *client_msg)
+BROKER_EXPORT int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *client_msg)
 {
 	struct mosquitto *context;
 	struct mosquitto_base_msg *base_msg;
@@ -642,7 +642,7 @@ int mosquitto_persist_client_msg_add(struct mosquitto_evt_persist_client_msg *cl
 }
 
 
-int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg *client_msg)
+BROKER_EXPORT int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg *client_msg)
 {
 	struct mosquitto *context;
 
@@ -664,7 +664,7 @@ int mosquitto_persist_client_msg_delete(struct mosquitto_evt_persist_client_msg 
 }
 
 
-int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg *client_msg)
+BROKER_EXPORT int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg *client_msg)
 {
 	struct mosquitto *context;
 
@@ -686,7 +686,7 @@ int mosquitto_persist_client_msg_update(struct mosquitto_evt_persist_client_msg 
 }
 
 
-int mosquitto_persist_client_msg_clear(struct mosquitto_evt_persist_client_msg *client_msg)
+BROKER_EXPORT int mosquitto_persist_client_msg_clear(struct mosquitto_evt_persist_client_msg *client_msg)
 {
 	struct mosquitto *context;
 
@@ -706,7 +706,7 @@ int mosquitto_persist_client_msg_clear(struct mosquitto_evt_persist_client_msg *
 }
 
 
-int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t subscription_options, uint32_t subscription_identifier)
+BROKER_EXPORT int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t subscription_options, uint32_t subscription_identifier)
 {
 	struct mosquitto *context;
 
@@ -724,7 +724,7 @@ int mosquitto_subscription_add(const char *client_id, const char *topic, uint8_t
 }
 
 
-int mosquitto_subscription_delete(const char *client_id, const char *topic)
+BROKER_EXPORT int mosquitto_subscription_delete(const char *client_id, const char *topic)
 {
 	struct mosquitto *context;
 	uint8_t reason;
@@ -743,7 +743,7 @@ int mosquitto_subscription_delete(const char *client_id, const char *topic)
 }
 
 
-int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
+BROKER_EXPORT int mosquitto_persist_base_msg_add(struct mosquitto_evt_persist_base_msg *msg)
 {
 	struct mosquitto context;
 	struct mosquitto_base_msg *base_msg;
@@ -809,7 +809,7 @@ error:
 }
 
 
-int mosquitto_persist_base_msg_delete(uint64_t store_id)
+BROKER_EXPORT int mosquitto_persist_base_msg_delete(uint64_t store_id)
 {
 	struct mosquitto_base_msg *base_msg;
 
@@ -820,7 +820,7 @@ int mosquitto_persist_base_msg_delete(uint64_t store_id)
 }
 
 
-void mosquitto_complete_basic_auth(const char *client_id, int result)
+BROKER_EXPORT void mosquitto_complete_basic_auth(const char *client_id, int result)
 {
 	struct mosquitto *context;
 
@@ -845,7 +845,7 @@ void mosquitto_complete_basic_auth(const char *client_id, int result)
 	}
 }
 
-int mosquitto_broker_node_id_set(uint16_t id)
+BROKER_EXPORT int mosquitto_broker_node_id_set(uint16_t id)
 {
 	if(id > 1023){
 		return MOSQ_ERR_INVAL;

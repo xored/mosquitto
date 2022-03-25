@@ -181,7 +181,7 @@ static int remove_callback(mosquitto_plugin_id_t *identifier, int event, struct 
 }
 
 
-int mosquitto_callback_register(
+BROKER_EXPORT int mosquitto_callback_register(
 		mosquitto_plugin_id_t *identifier,
 		int event,
 		MOSQ_FUNC_generic_callback cb_func,
@@ -267,7 +267,7 @@ int plugin__callback_unregister_all(mosquitto_plugin_id_t *identifier)
 }
 
 
-int mosquitto_callback_unregister(
+BROKER_EXPORT int mosquitto_callback_unregister(
 		mosquitto_plugin_id_t *identifier,
 		int event,
 		MOSQ_FUNC_generic_callback cb_func,

@@ -244,7 +244,7 @@ void property__free(mosquitto_property **property)
 }
 
 
-void mosquitto_property_free_all(mosquitto_property **property)
+BROKER_EXPORT void mosquitto_property_free_all(mosquitto_property **property)
 {
 	mosquitto_property *p, *next;
 
@@ -443,7 +443,7 @@ int property__write_all(struct mosquitto__packet *packet, const mosquitto_proper
 }
 
 
-int mosquitto_property_check_command(int command, int identifier)
+BROKER_EXPORT int mosquitto_property_check_command(int command, int identifier)
 {
 	switch(identifier){
 		case MQTT_PROP_PAYLOAD_FORMAT_INDICATOR:
@@ -537,7 +537,7 @@ int mosquitto_property_check_command(int command, int identifier)
 }
 
 
-const char *mosquitto_property_identifier_to_string(int identifier)
+BROKER_EXPORT const char *mosquitto_property_identifier_to_string(int identifier)
 {
 	switch(identifier){
 		case MQTT_PROP_PAYLOAD_FORMAT_INDICATOR:
@@ -600,7 +600,7 @@ const char *mosquitto_property_identifier_to_string(int identifier)
 }
 
 
-int mosquitto_string_to_property_info(const char *propname, int *identifier, int *type)
+BROKER_EXPORT int mosquitto_string_to_property_info(const char *propname, int *identifier, int *type)
 {
 	if(!propname) return MOSQ_ERR_INVAL;
 
@@ -709,7 +709,7 @@ static void property__add(mosquitto_property **proplist, struct mqtt5__property 
 }
 
 
-int mosquitto_property_add_byte(mosquitto_property **proplist, int identifier, uint8_t value)
+BROKER_EXPORT int mosquitto_property_add_byte(mosquitto_property **proplist, int identifier, uint8_t value)
 {
 	mosquitto_property *prop;
 
@@ -737,7 +737,7 @@ int mosquitto_property_add_byte(mosquitto_property **proplist, int identifier, u
 }
 
 
-int mosquitto_property_add_int16(mosquitto_property **proplist, int identifier, uint16_t value)
+BROKER_EXPORT int mosquitto_property_add_int16(mosquitto_property **proplist, int identifier, uint16_t value)
 {
 	mosquitto_property *prop;
 
@@ -761,7 +761,7 @@ int mosquitto_property_add_int16(mosquitto_property **proplist, int identifier, 
 }
 
 
-int mosquitto_property_add_int32(mosquitto_property **proplist, int identifier, uint32_t value)
+BROKER_EXPORT int mosquitto_property_add_int32(mosquitto_property **proplist, int identifier, uint32_t value)
 {
 	mosquitto_property *prop;
 
@@ -786,7 +786,7 @@ int mosquitto_property_add_int32(mosquitto_property **proplist, int identifier, 
 }
 
 
-int mosquitto_property_add_varint(mosquitto_property **proplist, int identifier, uint32_t value)
+BROKER_EXPORT int mosquitto_property_add_varint(mosquitto_property **proplist, int identifier, uint32_t value)
 {
 	mosquitto_property *prop;
 
@@ -805,7 +805,7 @@ int mosquitto_property_add_varint(mosquitto_property **proplist, int identifier,
 }
 
 
-int mosquitto_property_add_binary(mosquitto_property **proplist, int identifier, const void *value, uint16_t len)
+BROKER_EXPORT int mosquitto_property_add_binary(mosquitto_property **proplist, int identifier, const void *value, uint16_t len)
 {
 	mosquitto_property *prop;
 
@@ -838,7 +838,7 @@ int mosquitto_property_add_binary(mosquitto_property **proplist, int identifier,
 }
 
 
-int mosquitto_property_add_string(mosquitto_property **proplist, int identifier, const char *value)
+BROKER_EXPORT int mosquitto_property_add_string(mosquitto_property **proplist, int identifier, const char *value)
 {
 	mosquitto_property *prop;
 	size_t slen = 0;
@@ -879,7 +879,7 @@ int mosquitto_property_add_string(mosquitto_property **proplist, int identifier,
 }
 
 
-int mosquitto_property_add_string_pair(mosquitto_property **proplist, int identifier, const char *name, const char *value)
+BROKER_EXPORT int mosquitto_property_add_string_pair(mosquitto_property **proplist, int identifier, const char *name, const char *value)
 {
 	mosquitto_property *prop;
 	size_t slen_name = 0, slen_value = 0;
@@ -923,7 +923,7 @@ int mosquitto_property_add_string_pair(mosquitto_property **proplist, int identi
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_property_check_all(int command, const mosquitto_property *properties)
+BROKER_EXPORT int mosquitto_property_check_all(int command, const mosquitto_property *properties)
 {
 	const mosquitto_property *p, *tail;
 	int rc;
@@ -997,7 +997,7 @@ static const mosquitto_property *property__get_property(const mosquitto_property
 }
 
 
-int mosquitto_property_identifier(const mosquitto_property *property)
+BROKER_EXPORT int mosquitto_property_identifier(const mosquitto_property *property)
 {
 	if(property == NULL) return 0;
 
@@ -1005,7 +1005,7 @@ int mosquitto_property_identifier(const mosquitto_property *property)
 }
 
 
-const mosquitto_property *mosquitto_property_next(const mosquitto_property *proplist)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_next(const mosquitto_property *proplist)
 {
 	if(proplist == NULL) return NULL;
 
@@ -1013,7 +1013,7 @@ const mosquitto_property *mosquitto_property_next(const mosquitto_property *prop
 }
 
 
-const mosquitto_property *mosquitto_property_read_byte(const mosquitto_property *proplist, int identifier, uint8_t *value, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_byte(const mosquitto_property *proplist, int identifier, uint8_t *value, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist) return NULL;
@@ -1037,7 +1037,7 @@ const mosquitto_property *mosquitto_property_read_byte(const mosquitto_property 
 }
 
 
-const mosquitto_property *mosquitto_property_read_int16(const mosquitto_property *proplist, int identifier, uint16_t *value, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_int16(const mosquitto_property *proplist, int identifier, uint16_t *value, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist) return NULL;
@@ -1057,7 +1057,7 @@ const mosquitto_property *mosquitto_property_read_int16(const mosquitto_property
 }
 
 
-const mosquitto_property *mosquitto_property_read_int32(const mosquitto_property *proplist, int identifier, uint32_t *value, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_int32(const mosquitto_property *proplist, int identifier, uint32_t *value, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist) return NULL;
@@ -1078,7 +1078,7 @@ const mosquitto_property *mosquitto_property_read_int32(const mosquitto_property
 }
 
 
-const mosquitto_property *mosquitto_property_read_varint(const mosquitto_property *proplist, int identifier, uint32_t *value, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_varint(const mosquitto_property *proplist, int identifier, uint32_t *value, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist) return NULL;
@@ -1095,7 +1095,7 @@ const mosquitto_property *mosquitto_property_read_varint(const mosquitto_propert
 }
 
 
-const mosquitto_property *mosquitto_property_read_binary(const mosquitto_property *proplist, int identifier, void **value, uint16_t *len, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_binary(const mosquitto_property *proplist, int identifier, void **value, uint16_t *len, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist || (value && !len) || (!value && len)) return NULL;
@@ -1122,7 +1122,7 @@ const mosquitto_property *mosquitto_property_read_binary(const mosquitto_propert
 }
 
 
-const mosquitto_property *mosquitto_property_read_string(const mosquitto_property *proplist, int identifier, char **value, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_string(const mosquitto_property *proplist, int identifier, char **value, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist) return NULL;
@@ -1151,7 +1151,7 @@ const mosquitto_property *mosquitto_property_read_string(const mosquitto_propert
 }
 
 
-const mosquitto_property *mosquitto_property_read_string_pair(const mosquitto_property *proplist, int identifier, char **name, char **value, bool skip_first)
+BROKER_EXPORT const mosquitto_property *mosquitto_property_read_string_pair(const mosquitto_property *proplist, int identifier, char **name, char **value, bool skip_first)
 {
 	const mosquitto_property *p;
 	if(!proplist) return NULL;
@@ -1184,7 +1184,7 @@ const mosquitto_property *mosquitto_property_read_string_pair(const mosquitto_pr
 }
 
 
-int mosquitto_property_copy_all(mosquitto_property **dest, const mosquitto_property *src)
+BROKER_EXPORT int mosquitto_property_copy_all(mosquitto_property **dest, const mosquitto_property *src)
 {
 	mosquitto_property *pnew, *plast = NULL;
 

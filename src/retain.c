@@ -71,7 +71,7 @@ int retain__init(void)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_persist_retain_msg_set(const char *topic, uint64_t base_msg_id)
+BROKER_EXPORT int mosquitto_persist_retain_msg_set(const char *topic, uint64_t base_msg_id)
 {
 	struct mosquitto_base_msg *base_msg;
 	int rc = MOSQ_ERR_UNKNOWN;
@@ -94,7 +94,7 @@ int mosquitto_persist_retain_msg_set(const char *topic, uint64_t base_msg_id)
 
 
 
-int mosquitto_persist_retain_msg_delete(const char *topic)
+BROKER_EXPORT int mosquitto_persist_retain_msg_delete(const char *topic)
 {
 	struct mosquitto_base_msg base_msg;
 	int rc = MOSQ_ERR_UNKNOWN;

@@ -48,7 +48,7 @@ Contributors:
  * Also returns MOSQ_ERR_INVAL if the topic string is too long.
  * Returns MOSQ_ERR_SUCCESS if everything is fine.
  */
-int mosquitto_pub_topic_check(const char *str)
+BROKER_EXPORT int mosquitto_pub_topic_check(const char *str)
 {
 	int len = 0;
 #ifdef WITH_BROKER
@@ -79,7 +79,7 @@ int mosquitto_pub_topic_check(const char *str)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_pub_topic_check2(const char *str, size_t len)
+BROKER_EXPORT int mosquitto_pub_topic_check2(const char *str, size_t len)
 {
 	size_t i;
 #ifdef WITH_BROKER
@@ -114,7 +114,7 @@ int mosquitto_pub_topic_check2(const char *str, size_t len)
  * Also returns MOSQ_ERR_INVAL if the topic string is too long.
  * Returns MOSQ_ERR_SUCCESS if everything is fine.
  */
-int mosquitto_sub_topic_check(const char *str)
+BROKER_EXPORT int mosquitto_sub_topic_check(const char *str)
 {
 	char c = '\0';
 	int len = 0;
@@ -153,7 +153,7 @@ int mosquitto_sub_topic_check(const char *str)
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_sub_topic_check2(const char *str, size_t len)
+BROKER_EXPORT int mosquitto_sub_topic_check2(const char *str, size_t len)
 {
 	char c = '\0';
 	size_t i;
@@ -523,28 +523,28 @@ static int sub_matches_acl(const char *acl, const char *sub, const char *clienti
 	return MOSQ_ERR_SUCCESS;
 }
 
-int mosquitto_sub_matches_acl(const char *acl, const char *sub, bool *result)
+BROKER_EXPORT int mosquitto_sub_matches_acl(const char *acl, const char *sub, bool *result)
 {
 	return sub_matches_acl(acl, sub, NULL, NULL, false, result);
 }
 
-int mosquitto_sub_matches_acl_with_pattern(const char *acl, const char *sub, const char *clientid, const char *username, bool *result)
+BROKER_EXPORT int mosquitto_sub_matches_acl_with_pattern(const char *acl, const char *sub, const char *clientid, const char *username, bool *result)
 {
 	return sub_matches_acl(acl, sub, clientid, username, true, result);
 }
 
-int mosquitto_topic_matches_sub(const char *sub, const char *topic, bool *result)
+BROKER_EXPORT int mosquitto_topic_matches_sub(const char *sub, const char *topic, bool *result)
 {
 	return topic_matches_sub(sub, topic, NULL, NULL, false, result);
 }
 
-int mosquitto_topic_matches_sub_with_pattern(const char *sub, const char *topic, const char *clientid, const char *username, bool *result)
+BROKER_EXPORT int mosquitto_topic_matches_sub_with_pattern(const char *sub, const char *topic, const char *clientid, const char *username, bool *result)
 {
 	return topic_matches_sub(sub, topic, clientid, username, true, result);
 }
 
 /* Does a topic match a subscription? */
-int mosquitto_topic_matches_sub2(const char *sub, size_t sublen, const char *topic, size_t topiclen, bool *result)
+BROKER_EXPORT int mosquitto_topic_matches_sub2(const char *sub, size_t sublen, const char *topic, size_t topiclen, bool *result)
 {
 	size_t spos, tpos;
 
