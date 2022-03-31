@@ -97,7 +97,7 @@ try:
     store_id = sqlite_help.check_store_msg(cur, 0, topic, payload_b, source_id, None, len(payload_b), source_mid, port, qos, 0)
 
     # Check client msg
-    sqlite_help.check_client_msg(cur, client_id, store_id, 1, sqlite_help.dir_out, 1, qos, 0, sqlite_help.ms_publish_qos2)
+    sqlite_help.check_client_msg(cur, client_id, store_id, 1, sqlite_help.dir_out, 1, qos, 0, sqlite_help.ms_wait_for_pubrec)
 
     rc = 0
 finally:
