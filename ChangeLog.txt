@@ -103,6 +103,8 @@ Plugins / plugin interface:
   client.
 - The dynamic security plugin now only kicks clients at the start of the next
   network loop, to give chance for PUBACK/PUBREC to be sent. Closes #2474.
+- Add MOSQ_EVT_SUBSCRIBE and MOSQ_EVT_UNSUBSCRIBE events that are called when
+  subscribe/unsubscribes actually succeed.
 
 Client library:
 - Add MOSQ_OPT_DISABLE_SOCKETPAIR to allow the disabling of the socketpair

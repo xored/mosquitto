@@ -63,6 +63,8 @@ const char evt_topics[][60] = {
 	TOPIC_BASE "tick", /* MOSQ_EVT_TICK */
 	TOPIC_BASE "disconnect", /* MOSQ_EVT_DISCONNECT */
 	TOPIC_BASE "connect", /* MOSQ_EVT_CONNECT */
+	TOPIC_BASE "subscribe", /* MOSQ_EVT_SUBSCRIBE */
+	TOPIC_BASE "unsubscribe", /* MOSQ_EVT_UNSUBSCRIBE */
 	TOPIC_BASE "persist/restore", /* MOSQ_EVT_PERSIST_RESTORE */
 	TOPIC_BASE "persist/config/add", /* MOSQ_EVT_PERSIST_CONFIG_ADD */
 	TOPIC_BASE "persist/message/base/add", /* MOSQ_EVT_PERSIST_MSG_ADD */

@@ -75,23 +75,25 @@ enum mosquitto_plugin_event {
 	MOSQ_EVT_TICK = 9,
 	MOSQ_EVT_DISCONNECT = 10,
 	MOSQ_EVT_CONNECT = 11,
-	MOSQ_EVT_PERSIST_RESTORE = 12,
-	MOSQ_EVT_PERSIST_CONFIG_ADD = 13,
-	MOSQ_EVT_PERSIST_BASE_MSG_ADD = 14,
-	MOSQ_EVT_PERSIST_BASE_MSG_DELETE = 15,
-	MOSQ_EVT_PERSIST_BASE_MSG_LOAD = 16,
-	MOSQ_EVT_PERSIST_RETAIN_MSG_SET = 17,
-	MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE = 18,
-	MOSQ_EVT_PERSIST_CLIENT_ADD = 19,
-	MOSQ_EVT_PERSIST_CLIENT_DELETE = 20,
-	MOSQ_EVT_PERSIST_CLIENT_UPDATE = 21,
-	MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD = 22,
-	MOSQ_EVT_PERSIST_SUBSCRIPTION_DELETE = 23,
-	MOSQ_EVT_PERSIST_CLIENT_MSG_ADD = 24,
-	MOSQ_EVT_PERSIST_CLIENT_MSG_DELETE = 25,
-	MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE = 26,
-	MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR = 27,
-	MOSQ_EVT_PERSIST_CLIENT_MSG_LOAD = 28,
+	MOSQ_EVT_SUBSCRIBE = 12,
+	MOSQ_EVT_UNSUBSCRIBE = 13,
+	MOSQ_EVT_PERSIST_RESTORE = 14,
+	MOSQ_EVT_PERSIST_CONFIG_ADD = 15,
+	MOSQ_EVT_PERSIST_BASE_MSG_ADD = 16,
+	MOSQ_EVT_PERSIST_BASE_MSG_DELETE = 17,
+	MOSQ_EVT_PERSIST_BASE_MSG_LOAD = 18,
+	MOSQ_EVT_PERSIST_RETAIN_MSG_SET = 19,
+	MOSQ_EVT_PERSIST_RETAIN_MSG_DELETE = 20,
+	MOSQ_EVT_PERSIST_CLIENT_ADD = 21,
+	MOSQ_EVT_PERSIST_CLIENT_DELETE = 22,
+	MOSQ_EVT_PERSIST_CLIENT_UPDATE = 23,
+	MOSQ_EVT_PERSIST_SUBSCRIPTION_ADD = 24,
+	MOSQ_EVT_PERSIST_SUBSCRIPTION_DELETE = 25,
+	MOSQ_EVT_PERSIST_CLIENT_MSG_ADD = 26,
+	MOSQ_EVT_PERSIST_CLIENT_MSG_DELETE = 27,
+	MOSQ_EVT_PERSIST_CLIENT_MSG_UPDATE = 28,
+	MOSQ_EVT_PERSIST_CLIENT_MSG_CLEAR = 29,
+	MOSQ_EVT_PERSIST_CLIENT_MSG_LOAD = 30,
 };
 
 /* Data for the MOSQ_EVT_RELOAD event */
@@ -203,6 +205,30 @@ struct mosquitto_evt_disconnect {
 	int reason;
 	void *future2[4];
 };
+
+/* Data for the MOSQ_EVT_SUBSCRIBE event */
+struct mosquitto_evt_subscribe {
+	void *future;
+	struct mosquitto *client;
+	const char *topic;
+	const mosquitto_property *properties;
+	uint32_t subscription_identifier;
+	uint8_t subscription_options;
+	uint8_t qos;
+	uint8_t padding[2];
+	void *future2[8];
+};
+
+
+/* Data for the MOSQ_EVT_UNSUBSCRIBE event */
+struct mosquitto_evt_unsubscribe {
+	void *future;
+	struct mosquitto *client;
+	const char *topic;
+	const mosquitto_property *properties;
+	void *future2[8];
+};
+
 
 /* Data for the MOSQ_EVT_PERSIST_RESTORE event */
 /* NOTE: The persistence interface is currently marked as unstable, which means

@@ -72,6 +72,8 @@ OBJS=	mosquitto.o \
 		plugin_persist.o \
 		plugin_psk_key.o \
 		plugin_public.o \
+		plugin_subscribe.o \
+		plugin_unsubscribe.o \
 		plugin_tick.o \
 		read_handle.o \
 		retain.o \
@@ -314,7 +316,13 @@ plugin_psk_key.o : plugin_psk_key.c ${R}/include/mosquitto_plugin.h mosquitto_br
 plugin_public.o : plugin_public.c ${R}/include/mosquitto_plugin.h mosquitto_broker_internal.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
+plugin_subscribe.o : plugin_subscribe.c ${R}/include/mosquitto_plugin.h mosquitto_broker_internal.h
+	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
+
 plugin_tick.o : plugin_tick.c ${R}/include/mosquitto_plugin.h mosquitto_broker_internal.h
+	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
+
+plugin_unsubscribe.o : plugin_unsubscribe.c ${R}/include/mosquitto_plugin.h mosquitto_broker_internal.h
 	${CROSS_COMPILE}${CC} $(BROKER_CPPFLAGS) $(BROKER_CFLAGS) -c $< -o $@
 
 read_handle.o : read_handle.c mosquitto_broker_internal.h
