@@ -240,6 +240,13 @@ target_link_libraries(mosquitto
 	${MOSQ_LIBS}
 )
 
+if (WITH_THREADING AND NOT WIN32)
+	set(THREADS_PREFER_PTHREAD_FLAG ON)
+	find_package(Threads REQUIRED)
+
+	target_link_libraries(mosquitto PRIVATE Threads::Threads)
+endif()
+
 if(WIN32)
 	set_target_properties(mosquitto PROPERTIES
 		ENABLE_EXPORTS 1
