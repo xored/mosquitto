@@ -57,9 +57,9 @@ if(CJSON_FOUND AND WITH_TLS)
 		POSITION_INDEPENDENT_CODE 1
 	)
 
-	target_link_libraries(mosquitto_dynamic_security ${CJSON_LIBRARIES} ${OPENSSL_LIBRARIES})
+	target_link_libraries(mosquitto_dynamic_security PRIVATE ${CJSON_LIBRARIES} ${OPENSSL_LIBRARIES})
 	if(WIN32)
-		target_link_libraries(mosquitto_dynamic_security mosquitto)
+		target_link_libraries(mosquitto_dynamic_security PRIVATE mosquitto)
 		install(TARGETS mosquitto_dynamic_security
 			DESTINATION "${CMAKE_INSTALL_BINDIR}")
 	else()

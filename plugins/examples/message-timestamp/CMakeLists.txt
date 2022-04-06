@@ -18,7 +18,7 @@ set_target_properties(${PLUGIN_NAME} PROPERTIES
 )
 
 if(WIN32)
-	target_link_libraries(${PLUGIN_NAME} mosquitto)
+	target_link_libraries(${PLUGIN_NAME} PRIVATE mosquitto)
 endif()
 
 # Don't install, these are example plugins only.
