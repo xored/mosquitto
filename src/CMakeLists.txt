@@ -47,7 +47,9 @@ set (MOSQ_SRCS
 	plugin_init.c plugin_cleanup.c plugin_persist.c
 	plugin_acl_check.c plugin_basic_auth.c plugin_connect.c plugin_disconnect.c
 	plugin_extended_auth.c plugin_message.c plugin_psk_key.c plugin_public.c
+	plugin_subscribe.c
 	plugin_tick.c
+	plugin_unsubscribe.c
 	property_broker.c
 	../lib/property_mosq.c ../lib/property_mosq.h
 	read_handle.c
@@ -237,6 +239,7 @@ if(WITH_BUNDLED_DEPS)
 endif()
 
 target_link_libraries(mosquitto
+  PRIVATE
 	${MOSQ_LIBS}
 )
 

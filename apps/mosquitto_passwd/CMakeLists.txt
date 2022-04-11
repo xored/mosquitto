@@ -20,7 +20,8 @@ if(WITH_TLS)
 		"${mosquitto_SOURCE_DIR}/src"
 	)
 
-	target_link_libraries(mosquitto_passwd
+    target_link_libraries(mosquitto_passwd
+	  PRIVATE
 		${OPENSSL_LIBRARIES}
 	)
 

@@ -41,14 +41,14 @@ if(WITH_TLS AND CJSON_FOUND)
 	endif()
 
 	if(WITH_STATIC_LIBRARIES)
-		target_link_libraries(mosquitto_ctrl libmosquitto_static)
+		target_link_libraries(mosquitto_ctrl PRIVATE libmosquitto_static)
 	else()
-		target_link_libraries(mosquitto_ctrl libmosquitto)
+		target_link_libraries(mosquitto_ctrl PRIVATE libmosquitto)
 	endif()
 
 	if(UNIX)
 		if(APPLE)
-			target_link_libraries(mosquitto_ctrl dl)
+			target_link_libraries(mosquitto_ctrl PRIVATE dl)
 		elseif(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
 			#
 		elseif(${CMAKE_SYSTEM_NAME} MATCHES "NetBSD")
@@ -56,11 +56,12 @@ if(WITH_TLS AND CJSON_FOUND)
 		elseif(QNX)
 			#
 		else()
-			target_link_libraries(mosquitto_ctrl dl)
+			target_link_libraries(mosquitto_ctrl PRIVATE dl)
 		endif()
 	endif()
 
 	target_link_libraries(mosquitto_ctrl
+	  PRIVATE
 		${OPENSSL_LIBRARIES}
 		${CJSON_LIBRARIES}
 	)

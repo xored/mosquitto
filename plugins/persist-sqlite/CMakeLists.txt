@@ -34,9 +34,9 @@ if(SQLITE3_FOUND AND CJSON_FOUND)
 		POSITION_INDEPENDENT_CODE 1
 	)
 
-	target_link_libraries(mosquitto_persist_sqlite ${SQLITE3_LIBRARIES})
+	target_link_libraries(mosquitto_persist_sqlite PRIVATE ${SQLITE3_LIBRARIES})
 	if(WIN32)
-		target_link_libraries(mosquitto_persist_sqlite mosquitto)
+		target_link_libraries(mosquitto_persist_sqlite PRIVATE mosquitto)
 	endif()
 
 	install(TARGETS mosquitto_persist_sqlite
