@@ -110,8 +110,11 @@ bool db__ready_for_queue(struct mosquitto *context, int qos, struct mosquitto_ms
 		return true;
 	}
 
-	if(qos == 0 && db.config->queue_qos0_messages == false){
+	if(qos == 0 && !db.config->queue_qos0_messages){
 		return false; /* This case is handled in db__ready_for_flight() */
+	}else if(db.config->queue_qos0_messages){
+		source_bytes = (ssize_t)msg_data->queued_bytes;
+		source_count = msg_data->queued_count;
 	}else{
 		source_bytes = (ssize_t)msg_data->queued_bytes12;
 		source_count = msg_data->queued_count12;
