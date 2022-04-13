@@ -1,0 +1,44 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ develop-bridge ]
+  pull_request:
+    branches: [ develop-bridge ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: xored-mosquitto
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install xsltproc
+      run: |
+        sudo apt update
+        sudo apt install xsltproc docbook-xsl
+
+    - name: Prepare files for the docker build
+      run: make preparedockerbuild
+
+    - name: Build docker image
+      run: cd docker/local && docker build . -t $IMAGE_NAME
+
+    - name: Log into registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Push docker image
+      run: |
+        IMAGE_ID=ghcr.io/${{ github.repository }}
+        VERSION=latest
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$VERSION
+        docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION
