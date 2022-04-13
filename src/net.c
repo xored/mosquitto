@@ -19,15 +19,16 @@ Contributors:
 #include "config.h"
 
 #ifndef WIN32
-#include <netdb.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
-#include <ifaddrs.h>
+#  include <arpa/inet.h>
+#  include <ifaddrs.h>
+#  include <netdb.h>
+#  include <netinet/tcp.h>
+#  include <strings.h>
+#  include <sys/socket.h>
+#  include <unistd.h>
 #else
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#  include <winsock2.h>
+#  include <ws2tcpip.h>
 #endif
 
 #include <assert.h>
@@ -36,7 +37,7 @@ Contributors:
 #include <stdio.h>
 #include <string.h>
 #ifdef WITH_WRAP
-#include <tcpd.h>
+#  include <tcpd.h>
 #endif
 
 #ifdef HAVE_NETINET_IN_H
@@ -49,7 +50,7 @@ Contributors:
 #endif
 
 #ifdef __QNX__
-#include <net/netbyte.h>
+#  include <net/netbyte.h>
 #endif
 
 #include "mosquitto_broker_internal.h"
@@ -59,8 +60,8 @@ Contributors:
 #include "util_mosq.h"
 
 #ifdef WITH_TLS
-#include "tls_mosq.h"
-#include <openssl/err.h>
+#  include "tls_mosq.h"
+#  include <openssl/err.h>
 static int tls_ex_index_context = -1;
 static int tls_ex_index_listener = -1;
 #endif

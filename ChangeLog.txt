@@ -1,3 +1,16 @@
+2.0.15 - 2022-xx-xx
+===================
+
+Broker:
+- Fix memory leak when a plugin modifies the topic of a message in
+  MOSQ_EVT_MESSAGE.
+- Fix bridge `restart_timeout` not being honoured.
+
+Client library:
+- Fix threads library detection on Windows under cmake. Bumps the minimum
+  cmake version to 3.1, which is still ancient.
+
+
 2.0.14 - 2021-11-17
 ===================
 
