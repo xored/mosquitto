@@ -1695,6 +1695,10 @@ static int config__read_file_core(struct mosquitto__config *config, bool reload,
 					if(conf__parse_int(&token, "max_queued_messages", &tmp_int, saveptr)) return MOSQ_ERR_INVAL;
 					if(tmp_int < 0) tmp_int = 0;
 					config->max_queued_messages = tmp_int;
+				}else if(!strcmp(token, "queue_memory_limit")){
+					if(conf__parse_int(&token, "queue_memory_limit", &tmp_int, saveptr)) return MOSQ_ERR_INVAL;
+					if(tmp_int < 0) tmp_int = 0;
+					config->queue_memory_limit = (size_t)tmp_int;
 				}else if(!strcmp(token, "memory_limit")){
 					ssize_t lim;
 					if(conf__parse_ssize_t(&token, "memory_limit", &lim, saveptr)) return MOSQ_ERR_INVAL;
