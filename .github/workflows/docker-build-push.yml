@@ -3,8 +3,6 @@ name: Docker CI
 on:
   push:
     branches: [ develop-bridge ]
-  pull_request:
-    branches: [ develop-bridge ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
