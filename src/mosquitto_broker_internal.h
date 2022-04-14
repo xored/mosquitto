@@ -277,6 +277,7 @@ struct mosquitto__config {
 	size_t max_inflight_bytes;
 	size_t max_queued_bytes;
 	int max_queued_messages;
+	size_t queue_memory_limit;
 	uint32_t max_packet_size;
 	uint32_t message_size_limit;
 	uint16_t max_inflight_messages;
