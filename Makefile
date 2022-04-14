@@ -122,9 +122,6 @@ coverage :
 	lcov --capture --directory . --output-file coverage.info
 	genhtml coverage.info --output-directory out
 
-localdocker : preparedockerbuild
-	cd docker/local && docker build . -t eclipse-mosquitto:local
-
 preparedockerbuild: reallyclean
 	set -e; for d in ${DISTDIRS}; do $(MAKE) -C $${d} dist; done
 	rm -rf dockertmp/
@@ -133,3 +130,6 @@ preparedockerbuild: reallyclean
 	cd dockertmp/; tar -zcf mosq.tar.gz mosquitto-${VERSION}/
 	cp dockertmp/mosq.tar.gz docker/local
 	rm -rf dockertmp/
+
+localdocker : preparedockerbuild
+	cd docker/local && docker build . -t eclipse-mosquitto:local
