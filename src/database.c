@@ -106,6 +106,10 @@ bool db__ready_for_queue(struct mosquitto *context, int qos, struct mosquitto_ms
 	bool valid_bytes;
 	bool valid_count;
 
+	if(db.config->queue_memory_limit && db.msg_store_bytes >= db.config->queue_memory_limit) {
+		return false;
+	}
+
 	if(db.config->max_queued_messages == 0 && db.config->max_queued_bytes == 0){
 		return true;
 	}
