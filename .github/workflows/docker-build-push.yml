@@ -2,50 +2,58 @@ name: Docker CI
 
 on:
   push:
-    branches: [ develop-bridge ]
+    branches: [develop-bridge]
+    tags: [v*]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-env:
-  IMAGE_NAME: xored-mosquitto
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
 
-    - uses: actions/checkout@v3
+      - name: Install xsltproc and docbook-xsl
+        run: |
+          sudo apt update
+          sudo apt install xsltproc docbook-xsl
 
-    - name: Install xsltproc and docbook-xsl
-      run: |
-        sudo apt update
-        sudo apt install xsltproc docbook-xsl
+      - name: Prepare files for the docker build
+        run: make preparedockerbuild
 
-    - name: Prepare files for the docker build
-      run: make preparedockerbuild
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: amd64,arm,arm64
 
-    - name: Set up QEMU
-      id: qemu
-      uses: docker/setup-qemu-action@v1
-      with:
-        image: tonistiigi/binfmt:latest
-        platforms: amd64,arm,arm64
+      - name: Set up docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Set up docker buildx
-      id: buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-    - name: Log into registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Build and push docker image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository }}
 
-    - name: Build and push docker image
-      run: |
-        IMAGE_ID=ghcr.io/${{ github.repository }}
-        VERSION=latest
-        echo IMAGE_ID=$IMAGE_ID
-        echo VERSION=$VERSION
-        cd docker/local
-        docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --push --cache-to=$IMAGE_ID:cache --cache-from=$IMAGE_ID:cache -t $IMAGE_ID:$VERSION .
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Append `-xored` to the version tag
+          [ "$VERSION" != "develop-bridge" ] && VERSION="$VERSION"-xored
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "develop-bridge" ] && VERSION=latest
+
+          echo IMAGE_ID="$IMAGE_ID"
+          echo VERSION="$VERSION"
+          cd docker/local
+          docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --push --cache-to=$IMAGE_ID:cache --cache-from=$IMAGE_ID:cache -t $IMAGE_ID:$VERSION .
